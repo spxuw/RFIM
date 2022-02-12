@@ -1,6 +1,6 @@
 # RFIM
 
-This is the repository for the "Disease module detection using random-fiedl Ising model (RFIM)".
+This is the repository for the "Disease module detection using random-field Ising model (RFIM)".
 
 # code
 * Source: C++ codes for the diseas module detection using RFIM.
