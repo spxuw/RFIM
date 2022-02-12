@@ -4,7 +4,7 @@ This is the repository for the "Disease module detection using random-field Isin
 
 # code
 * Source: C++ codes for the diseas module detection using RFIM.
-* Prepared_RFIM_input.R: preaprae the input data format of RFIM.
+* Prepare_RFIM_input.R: preaprae the input data format of RFIM.
 
 # Run RFIM
 * Build the code: (1): change to working directory to the "Source/BUILD/". (2): type: "make clean".
