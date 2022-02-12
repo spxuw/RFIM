@@ -1,0 +1,95 @@
+FFSM Software (V.3.0)
+Introduction:
+The FFSM (Fast Frequent Subgraph Mining) algorithm is part of our on-going effort to develop effective and efficient algorithms for knowledge discovery in complex data. 
+Download & Install:
+The source package, together with one sample data sets and a README file, is distributed as a zip file (FFSM.zip). After saving the zip file into your local directory,  please run commands: unzip FFSM.zip and then compile it in your local machine: make. Finally rename the main excuetable: mv sym FFSM. There are two executables: FFSM, mine frequent subgraphs; queryDB: using output frequent subgraphs to perform subgraph isomorphsim with other graphs.
+
+Command Line Parameters for FFSM:
+$./FFSM nodeFile edgeFile outNodeFile outEdgeFile outFeatureFile support density sizelimit sizeuplimit
+/*  
+nodeFile: input graph node file. edgeFile: input graph edge file.
+outNodeFile: output subgraph node file with the same format as input graph node file.
+outEdgeFile: output subgraph edge file with the same format as input graph edge file.
+outFeatureFile: subgraph feature file, each row represents a subgraph feature with frequency information and occurence information. 
+support: a positive integer between [0 100], mimimum frequency threshold.
+density: output subgraph density threshold
+sizelimit: the minmum number of nodes for output subgraphs
+sizeuplimit: the maxumum number of nodes for output subgraphs.
+*/
+Example: In the directory, there are one sample data set of chemical compounds. 
+./FFSM compounds.nodes compounds.edges out.nodes out.edges feature.out 30 10 2 10
+
+Sample Output:
+=========Welcome using FFSM: fast frequent subgraph mining=========
+Developed by University of North Carolina at Chaple Hill
+graph database size 53 threshold 30
+Total frequent patterns: 101    Search Time 0.008329 seconds
+statistics: (if TIMERFLAG or REGISTERFLAG is turned on)
+start output final result: out.nodes
+end
+
+Input File Format:
+There are two input files: node file and edge file with the following formats:
+
+node file:
+node <g_index> <n_index> <n_label>
+<g_index> : an integer from 0 to n-1 where n is the size of the graph database.
+<n_index> : the index of a node in a  graph
+<n_label>  : a positive integer label of the related node
+
+edge file:
+edge <g_index> <n1_index> <n2_index> <e_label>
+<g_index>       : an integer from 0 to n-1 where n is the size of the graph database.
+<n1/2_indices>: the indices of the nodes which the edge connects
+<e_label>        : a positive integer  label of the edge
+
+Limitations & Disclaimer:
+FFSM supports graph databases that contain maximal 32k graphs; each graph may have up to 32k nodes. There may be no more than a total of 80 distinct labels for nodes and edges combined together. Single-node patterns are not included in results. The current software is confined to performance comparison only; full functional one is available upon request. The executable is provided "as it is" and we assume no responsibility for any damage that it may cause to your system/files.
+
+Command Line Parameters for queryDB: queryDB is used for extracting features for graph learning. Once subgraph features are extracted from training data using FFSM, given the test data, queryDB will construct object feature matrix for graph learning.
+
+$./queryDB feature_atom feature_bond target_atom target_bond feature_act svm_out binary sub/auto(0/1)
+/*  
+feature_atom: input subgragraph node file from FFSM. feature_bond: input subgragraph edge file from FFSM..
+target_atom: test graph node file with the same format as FFSM input node file. target_bond: test graph node file with the same format as FFSM input node file.
+feature_act: test sample label file in a column vector format, each row represents a label.  
+svm_out: generate a data file ready for libsvm training or test.
+binary: 1 if binary features, 0 otherwise.
+sub/auto(0/1): 0 use subgraph isomorphism, 1 otherwise. 
+*/
+Example:
+ ./queryDB out.nodes out.edges object.nodes object.edges object.label svmout 1 0
+output:
+constructing first: binary 1
+constructing two now:
+check frequency and output SVM format101 22
+total 101
+total 41
+total 46
+total 87
+total 101
+total 87
+total 63
+total 75
+total 101
+.total 35
+total 80
+total 100
+total 76
+total 62
+total 75
+total 46
+total 100
+total 86
+total 28
+.total 76
+total 101
+total 101
+
+References:
+Algorithm:
+
+    * [1] Jun Huan, Wei Wang, and Jan Prins. "Efficient Mining of Frequent Subgraph in the Presence of Isomorphism", in Proceedings of the 3rd IEEE International Conference on Data Mining (ICDM), pp. 549-552, 2003. PDF
+    * [2] Jun Huan, Wei Wang, and Jan Prins. "Efficient Mining of Frequent Subgraph in the Presence of Isomorphism", in Technical Reports produced by the Department of Computer Science at the University of North Carolina, Chapel Hill, 2003. PDF
+
+For any proglems, contact Hongliang Fei: hfei@ittc.ku.edu

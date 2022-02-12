@@ -1,0 +1,8 @@
+set terminal postscript eps enhanced color 
+set size 0.6,0.6
+set xlabel 'H'  font 'Times, 20'         
+set ylabel 'M'  font 'Times, 20'        
+set yrange [-1.2:1.2]                             
+set output './/data/MH-Diabetes_Even_ppirevise_iRefIndex_v3_f_0.txt.eps'     
+set nolabel
+plot './/data/MH-Diabetes_Even_ppirevise_iRefIndex_v3_f_0.txt' u 1:2 notitle w lp

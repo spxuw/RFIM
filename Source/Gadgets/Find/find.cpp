@@ -1,0 +1,257 @@
+#include <iostream>
+#include <string>
+#include "find.h"
+
+using namespace std;
+
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+// find whether the element j is in the list nbl
+bool find(Nbl& nbl, int j)
+{
+  for(Nbl::iterator p = nbl.begin(); p!= nbl.end(); p++) {
+    if(j==(*p)) 
+      return true;
+  }
+    
+  return false;
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+bool find(set<int>& nbl, int j)
+{
+  for(set<int>::iterator p = nbl.begin(); p!= nbl.end(); p++) {
+    if(j==(*p)) 
+      return true;
+  }
+    
+  return false;
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+// find whether the element j is in the list nbl
+bool find(vector<vector<int> >& Vv, vector<int>& v)
+{
+  for(vector<vector<int> >::iterator p = Vv.begin(); p!= Vv.end(); p++) {
+    if(v==(*p)) 
+      return true;
+  }
+    
+  return false;
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+// find whether the element j is in the list nbl
+bool find(vector<vector<string> >& Vs, vector<string>& v)
+{
+  for(vector<vector<string> >::iterator p = Vs.begin(); p!= Vs.end(); p++) {
+    if(v==(*p)) 
+      return true;
+  }
+    
+  return false;
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+// find whether the state s is in the state pool
+bool find(vector< vector<char>  >& Vstate, vector<char>& state)
+{
+  for(vector< vector<char> >::iterator p = Vstate.begin(); p!= Vstate.end(); p++) {
+    if(state==(*p)) 
+      return true;
+  }
+    
+  return false;
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+// find whether the element j is in the vector nbv
+bool find(vector<int>& nbv, int j)
+{
+  int n = nbv.size();
+  for(int i=0; i<n; i++)
+    if(j==nbv[i]) 
+      return true;
+
+  return false;
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+// find whether the element j is in the vector nbv
+bool find(vector<string>& nbs, string s)
+{
+  int n = nbs.size();
+  for(int i=0; i<n; i++)
+    if(s==nbs[i]) 
+      return true;
+
+  return false;
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+// find whether the element x is in the deque Q
+bool find(deque<int>& Q, int x)
+{
+  for(deque<int>::iterator q = Q.begin(); q!= Q.end(); q++) {
+    if(x==(*q)) 
+      return true;
+  }
+  
+  return false;
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+bool find(vector<set<int> >& X, set<int>& j) {
+  for(vector<set<int> >::iterator p = X.begin(); p!= X.end(); p++) {
+    if(j==(*p)) 
+      return true;
+  }
+  return false;
+}
+
+bool find(vector<list<int> >& X, list<int>& j) {
+  for(vector<list<int> >::iterator p = X.begin(); p!= X.end(); p++) {
+    if(j==(*p)) 
+      return true;
+  }
+  return false;
+}
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+// find the position of the element j in the list nbl  (assume j is definitely in the list)
+int findpos(Nbl& nbl, int j)
+{
+  int pos=0;
+  for(Nbl::iterator p = nbl.begin(); p!= nbl.end(); p++) {
+    if(j==(*p)) 
+      return pos;
+    else
+      pos++;
+  }
+
+  return -1;
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+// find the position of the element j in the vector nbv  (assume j is definitely in the vector)
+int findpos(vector<int>& nbv, int j)
+{
+  int n = nbv.size();
+  for(int i=0; i<n; i++)
+    if(j==nbv[i]) 
+      return i;
+  
+  return -1;
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+// find the position of the element j in the vector nbv  (assume j is definitely in the vector)
+int findpos(vector<string>& nbs, string s)
+{
+  int n = nbs.size();
+  for(int i=0; i<n; i++)
+    if(s==nbs[i]) 
+      return i;
+  
+  return -1;
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+// return the element in the list nbl with a given position (index)
+int print(Nbl& nbl)
+{
+  Nbl::iterator p = nbl.begin();
+  cout << *p;
+  p++;
+  for(; p!= nbl.end(); p++) {
+    cout << "-->" << *p;
+  }
+  cout << endl;
+
+  return 1;
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+// return the element in the list nbl with a given position (index)
+int getnodeinNbl(Nbl& nbl, int index)
+{
+  int pos=0;
+  for(Nbl::iterator p = nbl.begin(); p!= nbl.end(); p++, pos++) {
+    if(pos==index) 
+      return (*p);
+  }
+  
+  return -1;
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+// return the element in the list X with a given position (index)
+double getnodeinlist(list<double>& X, int index)
+{
+  int pos=0;
+  for(list<double>::iterator p = X.begin(); p!= X.end(); p++, pos++) {
+    if(pos==index) 
+      return (*p);
+  }
+
+  return -1;
+}
+
+int getnodeinlist(list<int>& X, int index)
+{
+  int pos=0;
+  for(list<int>::iterator p = X.begin(); p!= X.end(); p++, pos++) {
+    if(pos==index) 
+      return (*p);
+  }
+
+  return -1;
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////

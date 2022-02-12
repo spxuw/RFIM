@@ -1,0 +1,71 @@
+############################################################
+#            Makefile for test.cpp                         #
+#                     Yang Liu                             #
+#                     09/05/04                             #
+############################################################
+# home directory
+BASE = /home/yangliu/work/C++ing/NR/cpp
+
+# directory for include files
+INCLS = -I$(BASE)/other 
+
+# head file
+HEAD = $(BASE)/other/nr.h
+
+############################################################
+# main file
+MAIN = test.cpp
+OBJMAIN = test.o 
+
+# numerical recipe file  
+RECIPE1 = $(BASE)/recipes/airy.cpp 
+RECIPE2 = $(BASE)/recipes/bessik.cpp 
+RECIPE3 = $(BASE)/recipes/bessjy.cpp 
+RECIPE4 = $(BASE)/recipes/beschb.cpp 
+RECIPE5 = $(BASE)/recipes/chebev.cpp 
+
+OBJRECIPE1 = airy.o
+OBJRECIPE2 = bessik.o
+OBJRECIPE3 = bessjy.o
+OBJRECIPE4 = beschb.o
+OBJRECIPE5 = chebev.o
+############################################################
+
+# object file 
+OBJS = $(OBJMAIN) $(OBJRECIPE1) $(OBJRECIPE2) $(OBJRECIPE3) $(OBJRECIPE4) $(OBJRECIPE5)
+
+# executable file
+EXE = run
+
+# macro for name of my compiler: 
+CC   = g++
+
+# macro for compilation options:
+CFLAG = -O
+
+$(EXE): $(OBJS) 
+	@echo "linking ..."
+	$(CC) $(CFLAG) -o $(EXE) $(OBJS)
+
+$(OBJMAIN): $(MAIN) $(HEAD) 
+	$(CC) $(CFLAG) -c $*.cpp $(INCLS)
+
+$(OBJRECIPE1): $(RECIPE1) $(HEAD)
+	$(CC) $(CFLAG) -c $(RECIPE1) $(INCLS)
+
+$(OBJRECIPE2): $(RECIPE2) $(HEAD)
+	$(CC) $(CFLAG) -c $(RECIPE2) $(INCLS)
+
+$(OBJRECIPE3): $(RECIPE3) $(HEAD)
+	$(CC) $(CFLAG) -c $(RECIPE3) $(INCLS)
+
+$(OBJRECIPE4): $(RECIPE4) $(HEAD)
+	$(CC) $(CFLAG) -c $(RECIPE4) $(INCLS)
+
+$(OBJRECIPE5): $(RECIPE5) $(HEAD)
+	$(CC) $(CFLAG) -c $(RECIPE5) $(INCLS)
+
+clean:	
+	rm -f $(OBJS) $(EXE)
+
+

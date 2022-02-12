@@ -1,0 +1,1001 @@
+********************************************************************************
+Package:      AIGS version 2.0
+Author:       Yang-Yu Liu  (yyl@channing.harvard.edu)
+Organization: Channing Division of Network Medicine
+              Brigham and Women's Hospital and Harvard Medical School   
+Date:         04/16/2014
+What's new in v2.0? 
+We can consider the random magnet model on a random network, rather than just lattice.  
+********************************************************************************
+
+Package:      AIGS version 1.0
+Author:       Yang Liu  (yangliu@illinois.edu)
+Organization: Department of Physics
+              University of Illinois at Urbana-Champaign
+Date:         05/05/2009
+********************************************************************************
+
+
+
+1. Goal
+   This software contains code for calculating 
+   (1) the Ground State of RFIM at given disorder (R) and external field (H)
+   (2) the equilibrium M(H) curve, i.e. the ground state evolution of RFIM, at given disorder (R)
+
+
+2. History
+   The ``Window" class is based on Middleton's DropletAnalysis code. 
+   The ``State" class is based on Kuntz's Hysteresis code.
+   The ``HIPR" part is based on the HI_PR package, which is an efficient
+   implementation of the push-relabel method to solve the max-flow problem of
+   a network.
+   The main function is based on the Vives's algorithm (J. Comp. Phys. 160
+   (2000) 117-125).  
+
+
+3. Installation
+   UNIX/Linux: Type "make" at the prompt. It should compile the package.
+   Note that Numerical Recipes (NR) is needed. Modify the makefile about the
+   install path of the NR. 
+  
+
+4. Executables:    AIGS    
+
+   Command format:  ./AIGS mode D L R dist seed (H)";
+   mode = 0 : Calculate the Ground States of RFIM at given D, L, R, dist, seed and H.
+   mode = 1 : Calculate the Avalanches in the Ground State evolution of RFIM
+
+   int D      = atoi(argv[2]);             // dimensionality
+   int L      = atoi(argv[3]);             // linear size of the hypercubic lattice
+   double R   = atof(argv[4]);             // disorder parameter(standard deviation of the Gaussian)
+       dist   = atoi(argv[5]);             // distribution: 0 : bimodal 1: gaussian 2: rectangular 
+   int seed   = atoi(argv[6]);             // random seed
+
+5. Output
+   1). MH file: this file contains two columns: the external field and the magnetization 
+       H    M 
+   2). Surface-Q file: The file contains the geometrical information of each
+   avalanche:
+
+v_D a_D v_CC a_CC bv_CC md_CC A1 A2 Asp. Pro.    tr_P2   trQ_2 tr_P3      trQ_3 ev[0]...ev[D-1] Nhole H
+4    16   4   16   4      2    0 1 0.25 -0.125 0.0416667 0.25 -0.00347222 0.125 0.25 0.25 0     0 0.440124
+
+v_D   : volume (include holes) 
+a_D   : area of the outermost surface
+v_CC  : size of the avalanche 
+a_CC  : area of the outermost surface + the surface of holes
+bv_CC : volume of the smallest box enclosing the avalanche/cluster
+md_CC : maximal linear size 
+A1    : Anisotropy measure A1
+A2    : Anisotropy measure A2
+Asp.  : Asphericity 
+Pro.  : Prolateness
+
+For the radius of gyration tensor Q, we introduce a traceless matrix P = Q -
+lambda_ave * I.
+
+tr_P2 : Sum_i (lambda[i]-lambda_ave)^2;
+trQ_2 : (trQ)^2
+tr_P3 : Sum_i (lambda[i]-lambda_ave)^3;
+trQ_3 : (trQ)^3
+ev[0]...ev[D-1]: eigenvalues (lambda[i]) of the tensor Q
+
+
+Nhole: number of holes inside the avalanche/cluster
+H    : external field when the avalanche occurs
+
+
+6. Debug
+
+
+04/17/2014 YYL   
+
+#########################################################################################################
+1. I find that for random networks, if the external field is very high, then we could have the error:
+"line 0 of input - source or sink doesn't have incident arcs."
+
+For example, 
+
+--------------------------------------------------------------------------------------------------------
+sagroups-imac:BUILD spyli$ ./AIGS 0 1000 5 6.0 1 1 19
+-------------------------------------------------------------------------------------------------------
+Spin Clusters in the Ground States of Random-Bond Random-Field Ising Model on a random network (CIGS-RBRFIM):
+ N=1000 c=5 R=6 dist=1 seed=1 H=19 RESOLUTION=1e+17
+# of edges E= 2510
+hmin = -17.9937
+hmax = 21.8542
+havg = 0.257779
+M=1
+
+ To get the GS takes 0.0387 s
+Egs= -19779.2  Mgs=1
+
+ Done!  &:)
+--------------------------------------------------------------------------------------------------------
+sagroups-imac:BUILD spyli$ ./AIGS 0 1000 5 6.0 1 1 19.5
+-------------------------------------------------------------------------------------------------------
+Spin Clusters in the Ground States of Random-Bond Random-Field Ising Model on a random network (CIGS-RBRFIM):
+ N=1000 c=5 R=6 dist=1 seed=1 H=19.5 RESOLUTION=1e+17
+# of edges E= 2510
+hmin = -17.9937
+hmax = 21.8542
+havg = 0.257779
+
+line 0 of input - source or sink doesn't have incident arcs.
+
+
+H=19.5 will cause trouble. Yet H=19 is OK. Why??????
+Simple error also appears for lattice system, e.g, 
+
+--------------------------------------------------------------------------------------------------------
+sagroups-imac:BUILD spyli$ ./AIGS_Lattice 0 2 50 4.0 1 1 14
+-------------------------------------------------------------------------------------------------------
+Spin Clusters in the Ground States of Random Field Ising Model (CIGS-RFIM):
+ D=2 L=50 R=4 dist=1 seed=1 H=14 RESOLUTION=1e+17
+M=1
+
+ To get the GS takes 0.001205 s
+Egs= -39959.7  Mgs=1
+ Now do the Data Analysis ......
+ Data Analysis takes 3.90038e-05 s
+
+ Done!  &:)
+--------------------------------------------------------------------------------------------------------
+sagroups-imac:BUILD spyli$ ./AIGS_Lattice 0 2 50 4.0 1 1 15
+-------------------------------------------------------------------------------------------------------
+Spin Clusters in the Ground States of Random Field Ising Model (CIGS-RFIM):
+ D=2 L=50 R=4 dist=1 seed=1 H=15 RESOLUTION=1e+17
+
+line 0 of input - source or sink doesn't have incident arcs.
+
+
+Similarly, if H is very negative, we will have the same issue. 
+
+sagroups-imac:BUILD spyli$ ./AIGS_Lattice 0 2 50 4.0 1 1 -14
+-------------------------------------------------------------------------------------------------------
+Spin Clusters in the Ground States of Random Field Ising Model (CIGS-RFIM):
+ D=2 L=50 R=4 dist=1 seed=1 H=-14 RESOLUTION=1e+17
+M=-1
+
+ To get the GS takes 0.001211 s
+Egs= -39959.7  Mgs=-1
+ Now do the Data Analysis ......
+ Data Analysis takes 3.99947e-05 s
+
+ Done!  &:)
+--------------------------------------------------------------------------------------------------------
+sagroups-imac:BUILD spyli$ ./AIGS_Lattice 0 2 50 4.0 1 1 -15
+-------------------------------------------------------------------------------------------------------
+Spin Clusters in the Ground States of Random Field Ising Model (CIGS-RFIM):
+ D=2 L=50 R=4 dist=1 seed=1 H=-15 RESOLUTION=1e+17
+
+line 0 of input - source or sink doesn't have incident arcs.
+
+
+
+SOLUTION: See State_mapping.cpp
+// Note that if all Wi's are positive, then the source node will be isolated.
+    // Similarly,if all Wi's are negative, then the sink   node will be isolated.   
+    // This will cause error: "line 0 of input - source or sink doesn't have incident arcs."
+    // To avoid this issue, we need to consider an edge connecting source and sink directly:
+    hType Cst = -0.25*sum_Cij - 0.5*sum_absWi; // See Eq.(A.16) in my thesis
+    myarc arc(0, N+1, Cst);
+    ArcList.push_back(arc);
+    nEdge++;
+    
+
+
+
+
+#########################################################################################################
+2. Another interesting issue: 
+sagroups-imac:BUILD spyli$ ./AIGS_Lattice 0 2 50 4.0 1 1 50
+-------------------------------------------------------------------------------------------------------
+Spin Clusters in the Ground States of Random Field Ising Model (CIGS-RFIM):
+ D=2 L=50 R=4 dist=1 seed=1 H=50 RESOLUTION=1e+17
+ # of positive Wi = 2076;# of negative Wi = 424
+M=-0.6608
+
+ To get the GS takes 0.001322 s
+Egs= 77640.3  Mgs=-0.6608
+ Now do the Data Analysis ......
+ Data Analysis takes 4.00022e-05 s
+
+ Done!  &:)
+--------------------------------------------------------------------------------------------------------
+
+I set the external field to be H=50, yet the ground state is not all spin UP. That's weird. What happened????
+If I set H=20. We are good.
+
+--------------------------------------------------------------------------------------------------------
+sagroups-imac:BUILD spyli$ ./AIGS_Lattice 0 2 50 4.0 1 1 20
+-------------------------------------------------------------------------------------------------------
+Spin Clusters in the Ground States of Random Field Ising Model (CIGS-RFIM):
+ D=2 L=50 R=4 dist=1 seed=1 H=20 RESOLUTION=1e+17
+ # of positive Wi = 0;# of negative Wi = 2500
+M=1
+
+ To get the GS takes 0.001237 s
+Egs= -54959.7  Mgs=1
+ Now do the Data Analysis ......
+ Data Analysis takes 3.69996e-05 s
+
+ Done!  &:)
+--------------------------------------------------------------------------------------------------------
+
+But if we set H=40. We start seeing weird behavior:
+
+sagroups-imac:BUILD spyli$ ./AIGS_Lattice 0 2 50 4.0 1 1 40
+-------------------------------------------------------------------------------------------------------
+Spin Clusters in the Ground States of Random Field Ising Model (CIGS-RFIM):
+ D=2 L=50 R=4 dist=1 seed=1 H=40 RESOLUTION=1e+17
+ # of positive Wi = 183;# of negative Wi = 2317
+M=0.8536
+
+ To get the GS takes 0.001235 s
+Egs= -90319.7  Mgs=0.8536
+ Now do the Data Analysis ......
+ Data Analysis takes 3.69996e-05 s
+
+ Done!  &:)
+
+This could be due to the constant J=RESOLUTION is too high, such that if H is high, 
+then we have overflow problem. Note that: We define hType == long long int, 
+and biggest long long int: 9,223,372,036,854,775,807 (on iMac) 
+
+Right now, we set 
+const hType  RESOLUTION=(hType)1e17;// used to distinguish two arbitrary random fields in the lattice
+                                    // resolution = 1/discreteness
+
+But if we set
+const hType  RESOLUTION=(hType)1e15;
+then,
+
+sagroups-imac:BUILD spyli$ ./AIGS_Lattice 0 2 50 4.0 1 1 40
+-------------------------------------------------------------------------------------------------------
+Spin Clusters in the Ground States of Random Field Ising Model (CIGS-RFIM):
+ D=2 L=50 R=4 dist=1 seed=1 H=40 RESOLUTION=1e+15
+ # of positive Wi = 0;# of negative Wi = 2500
+M=1
+
+ To get the GS takes 0.001257 s
+Egs= -104960  Mgs=1
+ Now do the Data Analysis ......
+ Data Analysis takes 3.89963e-05 s
+
+ Done!  &:)
+
+It works now. So, it is a overflow problem. To avoid rechoosing RESOLUTION, we should be able to tell if a field value is too high. 
+We know that: for ferro-magnetic random-bond random field Ising model, if the external field H satisfies
+H + h_i > 0 for all i, in other words, H is larger than the absoluate value of the most negative local field, 
+then of course, all spins will be UP.
+If instead, H + h_i < 0 for all i, i.e., H is smaller than the absolute value of the most 
+then of course, all spins will be DOWN.
+
+
+
+
+
+#########################################################################################################
+3. 
+
+
+sagroups-imac:BUILD spyli$ ./AIGS_Network 1 2500 4 3.0 1 1
+-------------------------------------------------------------------------------------------------------
+Avalanches in the Ground States of Random-Bond Random-Field Ising Model on a random network (AIGS-RBRFIM):
+ N=2500 c=4 R=3 dist=1 seed=1 RESOLUTION=1e+17 fastpoint= 0.15
+# of edges E= 5047
+hmin = -9.92962
+hmax = 9.91573
+havg = -0.0195695
+
+ Hx=  0.0195695,# of GS:2,  M=0.0072
+
+ Hx=   -8.26626,# of GS:3,
+ Hx=    8.42558,# of GS:3,
+ Hx=    7.49067,# of GS:4,
+ Hx=    1167.71,# of GS:5,
+ Hx=    7.44529,# of GS:5,
+ Hx=    26.2022,# of GS:5,  H > -hmin. The external field is too positive! We can reset it to be H= -hmin * 1.01.
+
+line 0 of input - source or sink doesn't have incident arcs.
+
+
+Why Hx could be very high, e.g., 1167.71???? What happened???
+Note that for lattice, we don't have this problem at all. Hx is well behavaed: 
+
+
+sagroups-imac:BUILD spyli$ ./AIGS_Lattice 1 2 4 4.0 1 1
+-------------------------------------------------------------------------------------------------------
+Avalanches in the Ground States of Random Field Ising Model (AIGS-RFIM):
+ D=2 L=4 R=4 dist=1 seed=1 RESOLUTION=1e+17 fastpoint= 0.15
+hmin= -5.42224
+hmax= 6.46176
+
+ Hx=  -0.944151,# of GS:2,   # of positive Wi = 7;# of negative Wi = 9
+M=-0.125
+
+ Hx=   -2.03211,# of GS:3,
+ Hx= -0.0979626,# of GS:4,
+ Hx=   -2.37049,# of GS:5,
+ Hx=   -1.58093,# of GS:6,
+ Hx=  -0.458364,# of GS:7,
+ Hx=    1.16344,# of GS:8,
+ Hx=   -2.46709,# of GS:9,
+ Hx=   -2.08071,# of GS:10,
+ Hx=   -1.70284,# of GS:10,
+ Hx=   -1.51997,# of GS:10,
+ Hx=  -0.612579,# of GS:10,
+ Hx=  -0.432661,# of GS:10,
+ Hx=   0.904642,# of GS:10,
+ Hx=    1.42224,# of GS:10,
+ Hx=   -2.46975,# of GS:10,
+ Hx=   -2.46176,# of GS:10,
+ The full ramp of the M-H curve takes 0.000639997 s
+ Now do the Data Analysis ......
+ Data Analysis takes 0.000349 s
+
+ Delete temporary ground-state-spin-configuration files.
+
+ Done!  &:)
+--------------------------------------------------------------------------------------------------------
+
+
+
+I realize the weird behavior of Hx for network system might be due to a bug in the calculation of energy:
+State_energy.cpp
+
+	E0 += -Jij * (2*spin[i]-1)*(2*spin[j]-1) - h[i]*(2*spin[i]-1);       
+should be replaced by 
+	E0 += -0.5* Jij * (2*spin[i]-1)*(2*spin[j]-1) - h[i]*(2*spin[i]-1);       
+Because the energy of each bond is shared by two nodes. 
+
+
+But I still have trouble:
+
+sagroups-imac:BUILD spyli$ ./AIGS_Network 1 2500 6 5.0 1 1
+-------------------------------------------------------------------------------------------------------
+Avalanches in the Ground States of Random-Bond Random-Field Ising Model on a random network (AIGS-RBRFIM):
+ N=2500 c=6 R=5 dist=1 seed=1 RESOLUTION=1e+17 fastpoint= 0.15
+# of edges E= 7545
+hmin = -18.9387
+hmax = 14.9213
+havg = 0.0703977
+
+ Hx= -0.0703977,# of GS:2,  M=0.012
+
+ Hx=   -21.8346,# of GS:3,  H < -hmax. The external field is too negative! We can reset it to be H= -hmax * 1.01.
+
+line 0 of input - source or sink doesn't have incident arcs.
+
+WHY????
+I find a serious issue about the energy calculation: 
+
+      for(Nbl_itr p = A[i].begin(); p!= A[i].end(); p++) {
+	int j = *p;
+	double Jij = edgeweight(i, j); 
+	//E0 += -Jij * (2*spin[i]-1)*(2*spin[j]-1) - h[i]*(2*spin[i]-1);      // Wrong!!!
+	E0 += -0.5* Jij * (2*spin[i]-1)*(2*spin[j]-1) - h[i]*(2*spin[i]-1);   // This is also wrong!!!! We keep calculating the site energy for node i for K[i] times.        
+      }
+
+This should be replaced by 
+
+    for(int i=0; i<N; i++)  {
+      E0 -= h[i]*(2*spin[i]-1);       
+      for(Nbl_itr p = A[i].begin(); p!= A[i].end(); p++) {
+	int j = *p;
+	double Jij = edgeweight(i, j); 
+	//E0 += -Jij * (2*spin[i]-1)*(2*spin[j]-1) - h[i]*(2*spin[i]-1);      // Wrong!!!
+	//E0 += -0.5 * Jij * (2*spin[i]-1)*(2*spin[j]-1) - h[i]*(2*spin[i]-1);// This is also wrong!!!! We keep calculating the site energy for node i for K[i] times.     
+	E0 -= 0.5* Jij * (2*spin[i]-1)*(2*spin[j]-1);       
+      }
+    }
+
+Now it works!!!!!!!!!!!
+
+sagroups-imac:BUILD spyli$ ./AIGS_Network 1 2500 6 5.0 1 1
+...........
+ Hx=    6.48003,# of GS:1644,
+ Hx=    6.73268,# of GS:1644,
+ Hx=    6.73937,# of GS:1644,
+ Hx=    7.33652,# of GS:1644,
+ Hx=    7.33883,# of GS:1644,
+ Hx=   -2.86719,# of GS:1644,
+ Hx=   -2.86691,# of GS:1644,
+ Hx=   -1.39654,# of GS:1644,
+ Hx=   -1.39617,# of GS:1644,
+ Hx=   -1.25816,# of GS:1644,
+ Hx=   -1.25801,# of GS:1644,
+ Hx=   0.105412,# of GS:1644,
+ Hx=   0.105469,# of GS:1644,
+ Hx=   0.852048,# of GS:1644,
+ Hx=   0.852073,# of GS:1644,
+ The full ramp of the M-H curve takes 36.8889 s
+ Now do the Data Analysis ......
+ Data Analysis takes 0.0396652 s
+
+ Delete temporary ground-state-spin-configuration files.
+
+ Done!  &:)
+--------------------------------------------------------------------------------------------------------
+
+
+
+04/18/2014 YYL   
+
+#########################################################################################################
+1. Error: 
+on iMac: libc++abi.dylib: terminating with uncaught exception of type std::length_error: vector 
+on MBA: Segmentation fault 11
+
+In main_Network_Real.cpp, mode=1. If I define State C0 and C1 as follows
+
+      State C0(N);                       // ground state(GS) C0 with all spins DOWN, M=-N
+      C0.Read_Fields_Bonds(networkfile);
+      C0.SetE0(DOWN);                         // C0 has internal energy = -N*D + sum(hi) with all spins DOWN
+
+      State C1(N);                         // state C1 with all spins UP, M=+N
+      C1.SetE0(UP);                           // C1 has internal energy = -N*D - sum(hi) with all spins UP
+
+      C0.Save_State(file, 0);                 // save the spin configuration into a file with name: `0`
+      C1.Save_State(file, 1);                 // save the spin configuration into a file with name: `1`
+    
+Then M will never be calculated for C0 and C1. And of course it will not be saved in files.
+
+Then I will have trouble in 
+void State::Node_Map_Loc(char FZdir)
+{
+........
+
+      // get the number of free sites. if we freeze UP spins, then Nfs=nDOWN=(N-M)/2; otherwise Nfs=nUP=(N+M)/2;
+      if (FZdir==1) Nfs = (N-M)/2; 
+      else 	    Nfs = (N+M)/2 ; 
+
+      //cout << "I am here with N= " << N << "; M= " << M << "; Nfs= " << Nfs << endl; //debug
+      // Note that if M has not been calculated, then we may have trouble, e.g., N= 20611; M= 1625051553; Nfs= -812515471
+      // This causes error: libc++abi.dylib: terminating with uncaught exception of type std::length_error: vector
+      LocVec.resize(1+Nfs); 
+
+............
+}
+
+In other words, the undefined M values cause Nfs negative, which consequently cause length_error of vector.
+
+
+SOLUTION: 
+
+      State C0(N,DOWN);                       // ground state(GS) C0 with all spins DOWN, M=-N
+      State C1(N,UP);                         // state C1 with all spins UP, M=+N
+This way we will calculate M.
+
+
+#########################################################################################################
+2. I find an interesting bug about the parameter RESOLUTION.
+
+(1) I set RESOLUTION=1e+10. H is low enough so that I expect m=-1. 
+sagroups-imac:BUILD spyli$ ./AIGS_Network_Real 0 ./Disease/ copd+ppi.dat -10
+-------------------------------------------------------------------------------------------------------
+Spin Clusters in the Ground States of Random-Bond Random-Field Ising Model on a real network (CIGS-RBRFIM):
+ N=20611; H=-10 RESOLUTION=1e+10
+# of nodes N= 20611
+# of edges E= 149341
+20611 149341 9.99e-07 9.99e-07 1 0.009776 1
+LINK.size() = 149341
+# of isolated up-spin   = 3403
+# of isolated down-spin = 3135
+# of free spin = 14073
+hmin = -8.12546
+hmax = 4.75346
+havg = -0.824645
+Finish reading fields and bonds from file!
+
+
+ To get the GS takes 1.44769 s
+H= -10, E= -325295, m=-1    -------------> Correct!!!
+
+ Done!  &:)
+--------------------------------------------------------------------------------------------------------
+
+
+(2) I set RESOLUTION=1e+17. H is still low enough. 
+sagroups-imac:BUILD spyli$ ./AIGS_Network_Real 0 ./Disease/ copd+ppi.dat -10
+-------------------------------------------------------------------------------------------------------
+Spin Clusters in the Ground States of Random-Bond Random-Field Ising Model on a real network (CIGS-RBRFIM):
+ N=20611; H=-10 RESOLUTION=1e+17
+# of nodes N= 20611
+# of edges E= 149341
+20611 149341 9.99e-07 9.99e-07 1 0.009776 1
+LINK.size() = 149341
+# of isolated up-spin   = 3403
+# of isolated down-spin = 3135
+# of free spin = 14073
+hmin = -8.12546
+hmax = 4.75346
+havg = -0.824645
+Finish reading fields and bonds from file!
+
+
+ To get the GS takes 1.49804 s
+H= -10, E= -285727, m=-0.977003  --------------> Wrong!!!!
+
+ Done!  &:)
+--------------------------------------------------------------------------------------------------------
+
+
+(3) I set RESOLUTION=1e+19. But (double)RESOLUTION=9.22337e+18
+sagroups-imac:BUILD spyli$ ./AIGS_Network_Real 0 ./Disease/ copd+ppi.dat -10
+-------------------------------------------------------------------------------------------------------
+Spin Clusters in the Ground States of Random-Bond Random-Field Ising Model on a real network (CIGS-RBRFIM):
+ N=20611; H=-10 RESOLUTION=9.22337e+18
+# of nodes N= 20611
+# of edges E= 149341
+20611 149341 9.99e-07 9.99e-07 1 0.009776 1
+LINK.size() = 149341
+# of isolated up-spin   = 3403
+# of isolated down-spin = 3135
+# of free spin = 14073
+hmin = -8.12546
+hmax = 4.75346
+havg = -0.824645
+Finish reading fields and bonds from file!
+
+
+ To get the GS takes 1.46792 s
+H= -10, E= 135426, m=0.520256   ------------> Completely Wrong!!!
+
+ Done!  &:)
+--------------------------------------------------------------------------------------------------------
+
+
+Can I set RESOLUTION adaptively so that it is high enough to distinguish two arbitrary random fields
+and also low enough to avoid overflow problem for hType=long long int numbers??????
+Note that on iMac biggest long long int: 9223372036854775807 = 9.2*10^{18}
+So if we choose RESOLUTION=9.22337e+18, then apparently this will cause overflow problem.  
+
+
+SOLUTION:
+
+Set RESOLUTION=1e+15 so that it is low enough to avoid overflow problem. (We know that in real network, many nodes have exactly the same p-values and hence the same random fields. They will not be distinguished no matter how high value we choose for RESOLUTION.)
+
+Open question: 
+1. How can we make sure there is no overflow occur? 
+2. How can we make sure the degenerate random fields will not cause trouble?
+
+
+#########################################################################################################
+3. Can we calculate the exact M(H) curves for a given range of H, say [H0, H1]? 
+
+ Yes. But I find a series bug:
+If we don't initiate the spin value correctly, then calculate_GS.cpp actually will not set the spin value correctly:
+(I actually made a comment in 2006. See below:)
+
+Also, if the random field distribution does not have mean 0, then actually H<0 does NOT imply that M<0.
+(But this should not affect my phD work, where I typically assume <hi>=0.
+Also, in my phD work, I generally focus more on the calculation of M(H) curve, where we set up C0 with all spins DOWN and C1 with all spins UP, then I use early solution, so all the initial spin values are correctly set up.)
+
+In my current project, <hi> typically are not zero at all, so I cannot rely on the following code segment:
+
+	double H = W.Get_Hext();
+
+	if(H <= 0.0) // this means the GS will have M<0, i.e. Nup<Ndn
+	{
+	 
+	    int Nup=0;  // number of initial UP spins
+	    forAllNodes(j){
+		int nj = nNode(j);
+		if (j->d >= n && nj != 0 && nj != n-1) { // ATTENTION: j->d >= n (source side) means SPINUP
+		    W.FlipUP(nj-1); // node index : nj ---> spin loc= nj-1
+		    // flip the spin with location: nj-1 to be UP.
+		    // Note that in this case, the initial spins must all be DOWN
+		    // If initially all spins UP, then finnally all spins stay UP
+		    // So pay attention to the initial value of spins. Y.L. 06/12/06     <--------------------- Attention Here!!!
+		    Nup++;                        
+		}
+	    }
+	    W.CalMbyNup(Nup);
+
+	    //cout << "M=" << W.Getm() << endl;//test
+
+	}// end of if H<=0
+	else // this means the GS will have M>0, i.e. Ndn<Nup
+	{
+	    int Ndn=0;  // number of initial DOWN spins
+	    forAllNodes(j){
+		int nj = nNode(j);
+		if (j->d < n && nj != 0 && nj != n-1) {  // ATTENTION: j->d < n (sink side) means SPINDN
+		    W.FlipDN(nj-1); // node index : nj ---> spin loc= nj-1
+		    // flip the spin with location: nj-1 to be DOWN.
+		    // Note that in this case, the initial spins must all be UP
+		    Ndn++;                        
+		}
+	    }
+	    W.CalMbyNdn(Ndn);
+
+	    //cout << "M=" << W.Getm() << endl;//test
+	    
+	}// end of if H>0
+
+The above code segment may cause series error. Because if the initial state is not correctly assigned (i.e., I initial a State object with 
+State C(N); then all the spin values are actually not assigned), then the spin values can not be correctly calculated through the above code sedment, this will affect the internal energy calculation, and then the crossing fields. (However, this magnetization M is calculated by counting Nup, so it is OK.)
+
+This is such a intricate bug!!!!
+
+
+
+Yang-Lius-MacBook-Air:BUILD yangliu61$ ./AIGS_Network_Real 12 ./Disease/ copd+ppi.dat -1 1
+-------------------------------------------------------------------------------------------------------
+Avalanches in the Ground States of Random-Bond Random-Field Ising Model on a random network (AIGS-RBRFIM):
+ N=20611; RESOLUTION=1e+15
+N      E      pmin     p1min     pmax    wmin     wmax 
+20611 149341 9.99e-07 9.99e-07 1 0.009776 1
+# of isolated spins   = 6538
+hmin = -8.12546
+hmax = 4.75346
+havg = -0.824645
+Finish reading fields and bonds from file!
+
+-1 1
+0 4.75346 1
+1 4.75346 1
+2 4.75346 0
+3 4.61146 1
+4 4.26507 1
+5 4.23436 1
+6 4.14509 1
+7 4.09642 1
+8 4.01687 1
+9 3.97686 0
+10 3.97534 1
+11 3.84441 1
+12 3.82765 1
+13 3.82474 1
+14 3.80164 1
+15 3.80164 -64  <----------- Note that spin[15] = -64 !!!! Of course, it is wrong!!!
+16 3.80002 116
+17 3.7866 -50
+18 3.75328 1
+19 3.74927 113
+E0 = -2.79476e+06
+H0= -1, E0= -2.79476e+06, E= -2.8116e+06, m=-0.816991
+
+
+Here is the corrected result: 
+
+Yang-Lius-MacBook-Air:BUILD yangliu61$ ./AIGS_Network_Real 12 ./Disease/ copd+ppi.dat -1 1 
+-------------------------------------------------------------------------------------------------------
+Avalanches in the Ground States of Random-Bond Random-Field Ising Model on a random network (AIGS-RBRFIM):
+ N=20611; RESOLUTION=1e+15
+N      E      pmin     p1min     pmax    wmin     wmax 
+20611 149341 9.99e-07 9.99e-07 1 0.009776 1
+# of isolated spins   = 6538
+hmin = -8.12546
+hmax = 4.75346
+havg = -0.824645
+Finish reading fields and bonds from file!
+
+-1 1
+0 4.75346 1
+1 4.75346 1
+2 4.75346 0
+3 4.61146 1
+4 4.26507 1
+5 4.23436 1
+6 4.14509 1
+7 4.09642 1
+8 4.01687 1
+9 3.97686 0
+10 3.97534 1
+11 3.84441 1
+12 3.82765 1
+13 3.82474 1
+14 3.80164 1
+15 3.80164 0
+16 3.80002 0
+17 3.7866 0
+18 3.75328 1
+19 3.74927 0
+E0 = -125207
+H0= -1, E0= -125207, E= -142046, m=-0.816991
+
+Note that previously we have 
+H0= -1, E0= -2.79476e+06, E= -2.8116e+06, m=-0.816991
+now we have
+H0= -1, E0= -125207, E= -142046, m=-0.816991
+
+We see that M or m is not affected. But E0 is totally affected!!!
+
+SOLUTION:
+
+      int Nup = 0;
+      forAllNodes(j){
+	int nj = nNode(j);
+	if(nj != 0 && nj != n-1) {
+	  if (j->d >= n) { // ATTENTION: j->d >= n (source side) means SPINUP
+	    W.SetUP(nj-1); // node index : nj ---> spin loc= nj-1, set the spin with location: nj-1 to be UP.
+	    Nup++;                        
+	  }
+	  else { // ATTENTION: j->d < n (sink side) means SPINDN
+	    W.SetDN(nj-1);
+	  }
+	}
+      }
+      W.CalMbyNup(Nup);
+
+
+
+Similarly, the following function should be used with special care! Because typically H<0 does not imply M<0.
+But with the above code segment, we should be OK to get the correct ground state spin values.
+ 
+////////////////////////////////////////////////////////////////////////////////////////////////////// 
+// initialize the lattice (State) with spins UP if H>0 
+void State::Initialize_fromfield(double H)  
+{
+    if(H<=0.0)
+    {
+	for(int i=0; i<N; i++) 
+	    spin[i] = DOWN;
+ 	M = -N;  
+	m = -1.0;
+    }
+    else
+    {
+	for(int i=0; i<N; i++) 
+	    spin[i] = UP;
+	M = N;  
+	m = 1.0;
+    }
+
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+############################################################################################
+04/19/2014 YYL   
+############################################################################################
+
+
+sagroups-imac:Scripts spyli$ ../Source/BUILD/AIGS_Network_Real 0 ../Data/1_COPD/ Integrated_copd+ppi.txt 0.579584
+N      E      pmin     p1min     pmax    wmin     wmax
+20611 149341 9.99e-07 9.99e-07 1 0.00977607 1
+-------------------------------------------------------------------------------------------------------
+Spin Clusters in the Ground States of Random-Bond Random-Field Ising Model on a real network (CIGS-RBRFIM):
+ N=20611; H=0.579584 RESOLUTION=1e+15
+N      E      pmin     p1min     pmax    wmin     wmax
+20611 149341 9.99e-07 9.99e-07 1 0.00977607 1
+# of isolated spins   = 6538
+hmin = -8.12546
+hmax = 4.75346
+havg = -0.824645
+Finish reading fields and bonds from file!
+
+Read the background module z-score distribution.
+
+ To get the GS takes 1.54208 s
+H= 0.579584, E0= -126979, E= -123166, m=-0.319198, Score= 2.71761 19 :  CLEC5A RAET1E KLRC2 KLRC4 CD300LB KLRC3 RAET1G KLRK1 SIGLEC14 TREM2 SIGLEC5 TREM1 MICA MICB SIRPB1 CD300E TYROBP SIGLEC15 NCR2
+here Ne= 16777216
+
+
+Note that Ne=LINK.size()=16777216 is much higher than the actual number of edges (149341). And WriteGML will run forever. What shall we do?
+
+
+
+
+############################################################################################
+01/06/2015: debug 
+############################################################################################
+1. 
+
+PC001759:BUILD spyli$ ./HMS_Network 0 1000 5 6.0 1 1 0
+-------------------------------------------------------------------------------------------------------
+Spin Clusters in the Ground States of Random-Bond Random-Field Ising Model on a random network (CIGS-RBRFIM):
+ N=1000 c=5 R=6 dist=1 seed=1 H=0 RESOLUTION=1e+17
+# of edges E= 2510
+hmin = -17.9937
+hmax = 21.8542
+havg = 0.257779
+
+Assertion failed: (i->excess > 0), function stageOne, file ..//HIPR/hi_pr.cpp, line 732.
+ Stage One : Abort trap: 6
+
+
+Reason: This is due to the fact that I am using
+inline double State::edgeweight(int i, int j) {  
+   stringstream sst; 
+   sst << i << ">" << j; 
+   return Weight[sst.str()]*fabs(h[i] + h[j])/(2*abshmax); 
+Yet, abshmax is not defined at all. So all the weights will be infinty. 
+
+
+2. I find that I cannot correctly calcualte M(H) even for the 2D lattice. 
+
+PC001759:BUILD spyli$ ./HMS_Lattice 1 2 20 0.6 1 1
+-------------------------------------------------------------------------------------------------------
+Avalanches in the Ground States of Random Field Ising Model (AIGS-RFIM):
+ D=2 L=20 R=0.6 dist=1 seed=1 RESOLUTION=1e+17 fastpoint= 0.15
+hmin= -1.68688
+hmax= 1.69863
+ # of positive Wi = 205;# of negative Wi = 195
+
+ Stage One :
+ The full ramp of the M-H curve takes 0.000933 s
+ Now do the Data Analysis ......
+ Data Analysis takes 0.000424 s
+
+ Delete temporary ground-state-spin-configuration files.
+
+ Done!  &:)
+--------------------------------------------------------------------------------------------------------
+PC001759:BUILD spyli$ cat ./data/MH-D2-L20-R0.600-dist1-seed1
+/ seed=1    H               m
+       -1.69863              -1
+     -0.0245125              -1
+     -0.0245125               1
+        1.68688               1
+
+The calculated M(H) curve is apparently wrong!!! This happens even if we increase the disorder R to 1.0.
+When we increase R to even higher value, the left part of the M(H) looks weird (but the right part looks normal). Why?
+
+ANSWER: These error is due to the fact that in the new code, we use 
++1/-1 to represent spin up/down, while in the original AIGS code, we use 1/0 to represent spin up/down. 
+So in the original code when the calculation invovles spin[i], we use (2*spin[i]-1) 
+                                                      FZdir           (2*FZdir[i]-1)
+in the calculation of energy, and auxilary field Wi (in the advanced mapping)  
+
+
+
+
+
+############################################################################################
+01/16/2015: The difference between the code HMS_Lattice and HMS_Network_Lattice  
+############################################################################################
+
+1. mode 0 : calculate the ground state
+
+PC001759:BUILD spyli$ ./HMS_Network_Lattice 0 2 20 7 1 1 0
+-------------------------------------------------------------------------------------------------------
+Spin Clusters in the Ground States of Random Field Ising Model (CIGS-RFIM):
+ D=2 L=20 R=7 dist=1 seed=1 H=0 RESOLUTION=1e+15
+hmin= -19.6802
+hmax= 19.8174
+# of edge= 760
+
+ To get the GS takes 0.00582 s
+Egs= -2398.07  Mgs=0.045
+ Now do the Data Analysis ......
+ Data Analysis takes 0.006491 s
+
+ Done!  &:)
+--------------------------------------------------------------------------------------------------------
+PC001759:BUILD spyli$ ./HMS_Lattice 0 2 20 7 1 1 0
+-------------------------------------------------------------------------------------------------------
+Spin Clusters in the Ground States of Random Field Ising Model (CIGS-RFIM):
+ D=2 L=20 R=7 dist=1 seed=1 H=0 RESOLUTION=1e+15
+hmin= -19.6802
+hmax= 19.8174
+ # of positive Wi = 195;# of negative Wi = 205
+
+ To get the GS takes 0.000839 s
+Egs= -2398.64  Mgs=0.05
+ Now do the Data Analysis ......
+ Data Analysis takes 0.000237 s
+
+ Done!  &:)
+--------------------------------------------------------------------------------------------------------
+
+
+This is due to the fact that when we set up lattice as network, we choose PBC=0.
+Note that in AIGS, when we set up lattice, we usually choose PBC=1.
+
+
+
+2. mode 1: calculate M(H)
+
+PC001759:BUILD spyli$ ./HMS_Lattice 1 2 20 1.2 1 1
+-------------------------------------------------------------------------------------------------------
+Avalanches in the Ground States of Random Field Ising Model (AIGS-RFIM):
+ D=2 L=20 R=1.2 dist=1 seed=1 RESOLUTION=1e+17 fastpoint= 0.15
+hmin= -3.26328
+hmax= 3.75832
+
+ Hx=  -0.087856,# of GS:2,
+ Hx= -0.0885321,# of GS:3,
+ Hx= -0.0716304,# of GS:3,
+ Hx= -0.0816816,# of GS:4,
+ Hx= -0.0670617,# of GS:4,
+ The full ramp of the M-H curve takes 0.002945 s
+ Now do the Data Analysis ......
+ Data Analysis takes 0.000901 s
+
+ Delete temporary ground-state-spin-configuration files.
+
+ Done!  &:)
+--------------------------------------------------------------------------------------------------------
+PC001759:BUILD spyli$ ./HMS_Network_Lattice 1 2 20 1.2 1 1
+-------------------------------------------------------------------------------------------------------
+Avalanches in the Ground States of Random Field Ising Model (AIGS-RFIM):
+ D=2 c=4 L=20 R=1.2 dist=1 seed=1 RESOLUTION=1e+17 fastpoint= 0.15
+hmin= -3.26328
+hmax= 3.75832
+# of edge= 800
+
+ Hx=  -0.087856,# of GS:2,
+ Hx=  -0.613742,# of GS:3,
+ Hx=    12.5334,# of GS:3,
+ The full ramp of the M-H curve takes 0.00938 s
+ Now do the Data Analysis ......
+ Data Analysis takes 0.000349999 s
+
+ Delete temporary ground-state-spin-configuration files.
+
+ Done!  &:)
+
+Why they have different Hx's? (Note that the M(H) curves actually look the same. See Build/debug/*.eps for the case of R=2.0, 7.0)
+Why????
+
+ANSWER: This is because when we set up the lattice as a network, we are using
+   C0.Set_RandomField_RandomBond_Lattice(D, L, R, seed, 1); // PBC=1
+where we set random bond as double wij = rand.ran1();  // random bond
+if we replace it by		double wij = 1.0;            // identical bond
+"HMS_Network_Lattice" will get the exact same result of "HMS_Lattice"
+
+PC001759:BUILD spyli$ ./HMS_Network_Lattice 1 2 20 1.2 1 1
+-------------------------------------------------------------------------------------------------------
+Avalanches in the Ground States of Random Field Ising Model (AIGS-RFIM):
+ D=2 c=4 L=20 R=1.2 dist=1 seed=1 RESOLUTION=1e+17 fastpoint= 0.15
+hmin= -3.26328
+hmax= 3.75832
+# of edge= 800
+
+ Hx=  -0.087856,# of GS:2,
+ Hx= -0.0885321,# of GS:3,
+ Hx= -0.0716304,# of GS:3,
+ Hx= -0.0816816,# of GS:4,
+ Hx= -0.0670617,# of GS:4,
+ The full ramp of the M-H curve takes 0.014297 s
+ Now do the Data Analysis ......
+ Data Analysis takes 0.000441 s
+
+ Delete temporary ground-state-spin-configuration files.
+
+ Done!  &:)   
+
+
+
+
+############################################################################################
+02/06/2015: debug: 
+############################################################################################
+
+1. why set wij = rand.ran1() in the function 
+void State::Set_RandomField_RandomBond(int num, double kmean, double gamma, double disorder, int rngseed)
+will cause trouble of M(H) calculation, even if we effectively set edgeweight=1
+by 
+inline double State::edgeweight(int i, int j) { stringstream sst; sst << i << ">" << j; return 1.0;}
+? 
+
+The reason is that: 
+   void SetE0(char signed dir) {
+      if(!network)  E0 = (dir==UP) ? (-N*D-hsum) : (-N*D+hsum);       // lattice with PBC=1
+      else   	    E0 = (dir==UP) ? (-Wsum-hsum) : (-Wsum+hsum);     // network 
+    } // set E0 according to m=+1 or -1
+When we calculate E0 for the states C0 and C1, we used the value of Wsum, which is the sum of all edge weights. And the edge weights will be later on used to calculate the energy of other ground states, and the mapping of RFIM to max-flow. So edge weights must be consistent. 
+
+
+2. Note that even after we set 
+inline double State::edgeweight(int i, int j) { stringstream sst; sst << i << ">" << j; return Weight[sst.str()];}
+we still have trouble. The calculated M(H) is not correct (not monotinic). Why? 
+
+This might be due to every time when I recompile/relink the files, I just did "rm State.o; make".
+What I really need to do is: make clean; make
+
+Now the code works very well for all kinds of non-negative edge weights!!!! Nice!!!
+
+
+
+
+
+
+
+Next step: calculate the exact M(H) curve for real data (without setting 100 H bins). Can we get better result on the disease module?? 

@@ -1,0 +1,5 @@
+./HMS_Network_Real 22 ./data_xuwen /Simulated_expression_merged.txt 100 -10 10
+
+SetEffectiveField: State_setRandomField.cpp
+
+Energy: State_energy.cpp
