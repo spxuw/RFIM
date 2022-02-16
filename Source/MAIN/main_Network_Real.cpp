@@ -1,8 +1,5 @@
 /*########################################################################################################################
-  #  Avalanches in the Ground States of Random Field Ising Model (AIGS-RFIM)                                             #
-  #  Implementation of Vives's algorithm.                                                                                #
-  #  Yang Liu                                                                                                            #
-  #  06/26/06                                                                                                            #
+  #  Avalanches in the Ground States of Random Field Ising Model (AIGS-RFIM)                                             #                                                                                                     #
   #######################################################################################################################*/
 #include <iostream>
 #include <list>
@@ -59,9 +56,6 @@ int main (int argc, char** argv)
 
       cout <<"\nmode = 22 : Calculate the equilibrium M(H) curve, i.e., he Ground State evolution of RBHMS on a REAL network for a given number (nH) of field values. The H boundaries [H1, Hb] are given.\n";	
       cout <<"\nCommand format:  ./HMS 22 path file nH Ha Hb [benchmarkgenefile]\n";
-
-      //      cout <<"\nmode = 23 : Calculate the equilibrium M(H) curve, i.e., he Ground State evolution of RBHMS on a REAL network for a given number (nH) of field values. The H boundaries [H1, Hb] are automatically chosen. The gene sets file is given.\n";	
-      //cout <<"\nCommand format:  ./HMS 23 path file nH benchmarkpath benchmarkgenefile \n";
 
       cout <<"\nmode = 23 : Calculate the equilibrium M(H) curve, i.e., he Ground State evolution of RBHMS on a REAL network for a given number (nH) of field values. The H boundaries [H1, Hb] are automatically chosen.\n";	
       cout <<"\nCommand format:  ./HMS 23 path file nH \n";
@@ -148,14 +142,8 @@ int main (int argc, char** argv)
       cout << Normal << endl;
 
       char fname[256];       
-      //sprintf(fname,"./data/network-%s-H%e",parameters, H);
       sprintf(fname,"./data/network-%s-H%5.1f",parameters, H);
-      //C.WriteGML(fname);
       C.WriteGML(UP,fname);
-      //C.WriteGML(UP,0, fname);
-      //C.WriteGML(UP,1, fname);
-      //C.WriteGML(UP,2, fname);
-      //C.WriteGML(UP,3, fname);
 
     }// end of if mode==0
 
@@ -175,8 +163,6 @@ int main (int argc, char** argv)
 	
       State C(N);  
       C.Read_Fields_Bonds(networkfile);
-      //C.Get_BackgroundScore(networkfile);
-      //C.ReadGeneSetsFile(benchmarkfile);
       C.DFS();
    
 
@@ -196,14 +182,8 @@ int main (int argc, char** argv)
 
     
       module Module;
-      //int LCC = C.CalModule(Module);
       int LCC = C.CalLCC(Module);
       double lcc = LCC/(double)N;
-
-
-      //char fname[256];       
-      //sprintf(fname,"./data/module-%s-H%e.txt",parameters, H);
-      //ofstream fout(fname,ios_base::out);
 
 
       cout << "H= " << H << ", E0= " << E0 << ", E= " << E << ", m=" << m 
@@ -211,23 +191,11 @@ int main (int argc, char** argv)
 	   << "; |LCC|= "              << LCC 
 	   << "; nup= "                << nup 
 	   << "; lcc= "              << lcc << endl;
-	//	   <<  ", Score= " << Module.score << ' ' << Module.size << " : " << Green;
-      //for(Nbl_itr p = Module.nodelist.begin(); p!= Module.nodelist.end(); p++) {
-	//cout << ' ' << namelist[*p];
-	//fout << namelist[*p] << endl;
-	//}
-      //cout << Normal << endl;
-      //fout.close();
 
       char fname[256];        
       sprintf(fname,"./data/network-%s-H%e",parameters, H);
       C.WriteGML(fname);
       C.WriteGML(UP,fname);
-      //C.WriteGML_HightlightBenchmarkGenes(UP,0, fname);
-      //C.WriteGML_HightlightBenchmarkGenes(UP,1, fname);
-      //C.WriteGML_HightlightBenchmarkGenes(UP,2, fname);
-      //C.WriteGML_HightlightBenchmarkGenes(UP,3, fname);
-
     }// end of if mode==1
 
 
@@ -256,7 +224,6 @@ int main (int argc, char** argv)
   
       State C0(N);                       // ground state(GS) C0 with H=H0
       State C1(N);                       // ground state(GS) C1 with H=H1
-      //double E0, E, m;
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////
       if(mode==11) {
@@ -270,26 +237,15 @@ int main (int argc, char** argv)
 	if(argc!=6) {cout <<"\nCommand format:  ./AIGS 12 path file H0 H1\n"; exit(0); }
 	H0 = atof(argv[4]);  
 	H1 = atof(argv[5]);  
-	//cout << H0 << ' ' << H1 << endl; //debug
 	C0.SetEffectiveField(H0);                // set the effective local field with external field H
 	Calculate_GS_M(C0, false, NONE);        // Using Pre-Relabel Algorithm to get the Ground State    
-	C0.CalE0();
-	//C0.CalE(H0);                     // calculate the total energy of State C(Hext=H)
-	//E0 = C0.GetE0();
-	//E  = C0.GetE();          // the ground state energy
-	//m  = C0.Getm();          // the ground state magnetization
-   
+	C0.CalE0();   
                   
 	C1.SetEffectiveField(H1);                // set the effective local field with external field H
 	Calculate_GS_M(C1, false, NONE);        // Using Pre-Relabel Algorithm to get the Ground State    
 	C1.CalE0();
-	//C1.CalE(H1);                     // calculate the total energy of State C(Hext=H)
-	//E0 = C1.GetE0();
-	//E  = C1.GetE();          // the ground state energy
-	//m  = C1.Getm();          // the ground state magnetization
 
 	Hx0 = (C1.GetE0()-C0.GetE0())/(double)(C1.GetM()-C0.GetM());
-	//cout << "Hx0 = " << Hx0 << endl ; //debug
 
       }
 	
@@ -341,41 +297,27 @@ int main (int argc, char** argv)
 
 	  deltaM = (*p_LSk).GetM()-(*p_LSl).GetM();
 
-	  // In Middletion's note, he suggests that one just consider big avalanches to speed up the code.
-	  // But this will cause trouble, since small avalanches will be considered as big one.
-	  // This size distribution must be changed. Only the size distribution of avalanches with size > Smin 
-	  // can be correctly calculated.
-	  // if( fabs(deltaM) > 2* Smin ) // if we just consider big avalanches with size > Smin
-
 	  if ((deltaM-2) !=0 && (deltaM+2) != 0) // if at least one spins flips between Ck and Cl, 
 	    {
 	      //////////////  Find the Ground State at the crossing field Hx. Begin //////////////////////////////
 	      if((*p_LSk).Get_nup() > FASTPOINT)              
 		{	    
-		  //cout << " with frozen UP spins !"; //test
 		  uES = true; FZdir = UP;
 		  C.Initialize_fromfile(file, k);           // copy state C with Ck(from a file) with UP spins frozen
-		  //C.Show_State();//test
 		}
 	      else if((*p_LSl).Get_ndn() > FASTPOINT)
 		{
-		  //cout << " with frozen DOWN spins !"; //test
 		  uES = true; FZdir = DOWN;
 		  C.Initialize_fromfile(file, l);           // copy state C with Cl(from a file) with DOWN spins frozen
-		  //C.Show_State();//test
 		}
 	      else
 		{
-		  //cout << " uES= false !"; //test
 		  uES = false; FZdir = NONE;
 		  C.Initialize_fromfield(Hx);         // state C with initial all spins DOWN if Hx<0 (UP if Hx>0)
-		  //C.Show_State();  //test
 		}
 
 	      C.SetEffectiveField(Hx);       // set the effective local field with external field Hx
 	      Calculate_GS_M(C, uES, FZdir); // Using Pre-Relabel Algorithm to get the Ground State 
-	      //cout << "Here!" << endl; //debug
-	      //exit(0);
 
 
    
@@ -385,7 +327,6 @@ int main (int argc, char** argv)
 
 	      //////////////  Compare the total energy of state G and Ck(Cl) at Hx. Begin////////////////////////
 	      (*p_LSk).CalE(Hx);             // calculate the total energy of State Ck(Hx), which should be 
-	      // equal to Cl(Hx) due to  the definition of Hx.
 
 	      if( (*p_LSk).GetE()-C.GetE() >= EPSILON &&  // Ek > E will cause sth/0=inf problem
 		  (*p_LSk).GetM() != C.GetM() &&          // I think the strong condition: Mk != M != Ml 
@@ -393,7 +334,6 @@ int main (int argc, char** argv)
 		{                                                                         
 		  C.Save_State(file, sizeofList);               // save the spin configuration into a file: `sizeofList`	
 		  LineSegment LS(C,sizeofList);           // get the GS C's macro information, saved as linesegment LS
-		  // with index `sizeofList`
 
 		  B = Get_CrossField((*p_LSk), LS);       // calculate the CF for GS Ck and C                     
 		  b = Get_CrossField(LS, (*p_LSl));       // calculate the CF for GS C and Cl                      
@@ -427,11 +367,7 @@ int main (int argc, char** argv)
       ///////////////////////////////////////////////////////////////////////////////////////////
       char fname1[256]; 
       sprintf(fname1,"./data/MH-%s",parameters);
-      //ofstream outf1(fname1, ios::app);
       ofstream outf1(fname1, ios::out);
-
-      //char fname2[256]; 
-      //sprintf(fname2,"./data/Surface-Q-Avala-D%d-L%d-R%.3lf-dist%d",D,L,R,dist);
       ///////////////////////////////////////////////////////////////////////////////////////////
 
       cout << " Now do the Data Analysis ......\n"; 
@@ -442,7 +378,6 @@ int main (int argc, char** argv)
 
       double Hlower, Hupper, m; // LineSegment's information
       list<int> avalanche;      // list of locs of those spins participating in the avalanche
-      //int size;
       int wholesize;      // size of the avalanche (should be equal to the whole size of those flipping spins)
       // i.e. there is one and only one avalanche during each M jump
       bool mark=true;           // if mark=true, then write a comment line in the data file to record the value of 
@@ -469,9 +404,6 @@ int main (int argc, char** argv)
 	  outf1.width(15); outf1 << m       << endl;
 	  outf1.width(15); outf1 << Hupper << ' ';
 	  outf1.width(15); outf1 << m       << endl;
-
-	  //cout << Hlower << ' ' << m << endl; //test
-
 	  
 	  if(j<sizeofList)
 	    {
@@ -480,21 +412,14 @@ int main (int argc, char** argv)
 	      B.Initialize_fromfile(file, LSb.Get_index());  // copy state B from a file with name given by LSb's index 
 
 	      Cal_Avalanche(A,B,avalanche);
-	      //Window W(D, L, avalanche);
 
 	      wholesize = (B.GetM() - A.GetM())/2;
 
 	      //draw this avalanche in the state X with index: avalancheindex 
-	      //		X.DrawOneAvalanche(avalancheindex,avalanche);
 	      avalancheindex++;
 	    }
 
 	}
-
-      // draw all the avalanches (with different colors) for postscript file.
-      //	char fname[256]; 
-      //	sprintf(fname,"./data/Avalanches-%s",parameters);
-      //	X.DrawAllAvalanches(fname);
 
       ///////////////////////////////////////////////////////////////////////////////////////////
       outf1.close();
@@ -520,7 +445,6 @@ int main (int argc, char** argv)
     cout<<"Calculate the Ground States of Random-Bond Random-Field Ising Model on a random network at a series of field values :\n";
     cout << " N="<< N << "; RESOLUTION="<< (double)RESOLUTION << endl;
 
-    //MakeDirectory(file);
     MakeDirectory();
 
    char fname1[256]; 
@@ -528,7 +452,6 @@ int main (int argc, char** argv)
 
     State C0(N);  
     C0.Read_Fields_Bonds(networkfile);
-    //C0.Get_BackgroundScore(networkfile);
 
     if (mode==211) { // perform randomization of node weights (random fields)
       cout << "Randomize the local fields.\n";
@@ -542,9 +465,7 @@ int main (int argc, char** argv)
 
     if(argc==6 || argc==8)
       sprintf(fname1,"./data/MH-%s-%s",parameters,argv[argc-1]);
-    //sprintf(fname1,"./data-%s/MH-%s-%s",file.c_str(),parameters,argv[argc-1]);
     else
-      //sprintf(fname1,"./data-%s/MH-%s",file.c_str(),parameters);
       sprintf(fname1,"./data/MH-%s",parameters);
     
     
@@ -586,34 +507,10 @@ int main (int argc, char** argv)
       C.SetEffectiveField(H);                // set the effective local field with external field H
       Calculate_GS_M(C, false, NONE);        // Using Pre-Relabel Algorithm to get the Ground State    
 
-      //C.CalE0();                     // calculate the internal energy of State C
-      //C.CalE(H);                     // calculate the total energy of State C(Hext=H)
-      //double E = C.GetE();          // the ground state energy
+
       double m = C.Getm();          // the ground state magnetization
-      //double Score = C.GetScore();    // the ground state score:= the largest score of active subgraphs 
-      //cout  << H << ' ' << m << ' ' << Score << endl; 
-      //outf1 << H << ' ' << m << ' ' << Score << endl; 
-      
-      /*
-      module Module;
-      C.CalModule(Module);
- 
-      cout << Normal << "H= " << H << "; m= "  << m << "; Score= " <<  Module.score  << "; Size= " <<  Module.size << " : " << Green;
-      fout <<           H << ' '  << m << ' ' <<         Module.score  << ' '        << Module.size << " : ";
-      
-      for(Nbl_itr p = Module.nodelist.begin(); p!= Module.nodelist.end(); p++) {
-	cout << ' ' << namelist[*p];
-	fout << ' ' << namelist[*p];
-      }
-      cout << Normal << endl;
-      fout << endl;
-      */
       cout << "H= " << H << "; m= "  << m << "; n_up= " << (1+m)/2.0 << endl;
       fout          << H << ' '      << m << endl;
-
-      //sprintf(fname2,"./data/network-%s-H%e",parameters, H);
-      //C.WriteGML(fname2);
-
 
       double dm= m;
       if((1+m)/2.0<0.05) { 
@@ -677,16 +574,7 @@ int main (int argc, char** argv)
  
 
     sprintf(fname,"./data/network-%s-H%e",parameters, Hc);
-    //C.WriteGML(fname);
     C0.WriteGML(UP,fname);
-    //C0.WriteGML(UP,0, fname);
-    //C0.WriteGML(UP,1, fname);
-    //C0.WriteGML(UP,2, fname);
-    //C0.WriteGML(UP,3, fname);
-    //C0.WriteGML_HightlightBenchmarkGenes(UP,0, fname);
-    //C0.WriteGML_HightlightBenchmarkGenes(UP,1, fname);
-    //C0.WriteGML_HightlightBenchmarkGenes(UP,2, fname);
-    //C0.WriteGML_HightlightBenchmarkGenes(UP,3, fname);
  	
   }// end of mode==2
 
@@ -698,20 +586,15 @@ int main (int argc, char** argv)
     cout<<"-------------------------------------------------------------------------------------------------------\n";
     cout<<"Calculate the Ground States of Random-Bond Random-Field Ising Model on a random network at a series of field values :\n";
     cout << " N="<< N << "; RESOLUTION="<< (double)RESOLUTION << endl;
-    //char benchmarkfile[256]; 
-    //sprintf(benchmarkfile,"%s/%s", argv[5],argv[6]);
  
     MakeDirectory();
 
     State C0(N);  
     C0.Read_Fields_Bonds(networkfile);
-    //C0.Get_BackgroundScore(networkfile);
-    //int Nbgs = C0.ReadGeneSetsFile(benchmarkfile);
     C0.DFS();
  
     char fname1[256]; 
-    //sprintf(fname1,"./data-%s/MH-%s-%s",file.c_str(),parameters,argv[6]);
-    //   sprintf(fname1,"./data/MH-%s-%s",parameters,argv[6]);
+
     sprintf(fname1,"./data/MH-%s",parameters);
 
     ofstream fout(fname1, ios::out);
@@ -749,12 +632,9 @@ int main (int argc, char** argv)
       double nup = C.Get_nup();
 
       module Module;
-      //int LCC = C.CalModule(Module);
       int LCC = C.CalLCC(Module);
       double lcc = LCC/(double)N;
- 
-      //vector<double> P;
-      //C.FisherExactTest(P);
+
 
       cout << Normal;
       cout << "H= "                    << H 
@@ -763,17 +643,7 @@ int main (int argc, char** argv)
 	   << "; |LCC|= "              << LCC 
 	   << "; nup= "                << nup 
 	   << "; lcc= "              << lcc
-	/*   << "; HighestModuleScore= " << Module.score  
-	   << " with size= "           <<  Module.size 
-	   << ". Enrichment analysis: p-values= (";  
-      for(unsigned int a=0;a<P.size();a++) 
-	cout << P[a] << ',';
-      cout << "); "; 
-      cout << "Highestscoring module: {" << Green; 
-      for(Nbl_itr p = Module.nodelist.begin(); p!= Module.nodelist.end(); p++) 
-	cout << namelist[*p] << ' ';
-      cout << Normal << "}\n"; 
-	*/
+
 	   << endl;
 
       fout <<  H  << ' '                 // 1
@@ -782,14 +652,7 @@ int main (int argc, char** argv)
 	   << LCC << ' '                 // 4
 	   << nup << ' '                 // 5
 	   << lcc << ' '                 // 6
-	/*	   << Module.score  << ' '       // 7 
-	   << Module.size << ' ';        // 8
-      for(unsigned int a=0; a<P.size(); a++)           
-	fout << P[a] << ' ';
-      for(Nbl_itr p = Module.nodelist.begin(); p!= Module.nodelist.end(); p++) 
-	fout << namelist[*p] << ' ';
-	fout << endl;
- 	*/
+
 	   << endl;
 
       double dm= m-m0;
@@ -806,22 +669,12 @@ int main (int argc, char** argv)
     float t = timer() - t0;                
     cout << "\n The rough ramp of the M-H curve takes " << t << " s \n";
 
-    // output the benchmark gene set's minimum p-value and the corresponding H value; the minimum p-value (for active LCC only) and the corresponding H value
-    //char fname2[256]; 
-    //sprintf(fname2,"./data-%s/GeneSets-%s-%s",file.c_str(),parameters,argv[6]);
-    //sprintf(fname2,"./data/GeneSets-%s", parameters);
-    //C0.WriteGeneSetsFile(fname2);
 
     char cmd[256];
     //    sprintf(cmd,"./showps.MH         ./data-%s %s %s &",file.c_str(),parameters,argv[6]);
     sprintf(cmd,"./showps  ./  %s &",parameters);
     system(cmd);
-
-    //sprintf(cmd,"./showps.enrichment ./data-%s %s %s %d &",file.c_str(),parameters,argv[6],Nbgs);
-    //sprintf(cmd,"./showps.enrichment ./data %s %s %d &",parameters,argv[6],Nbgs);
-    //system(cmd);
 	
-
     
     cout << "\n The largest avlanche occurs at H=Hc= " << Hc << " with size= " << dm_max*0.5 << " \n";
     C0.SetEffectiveField(Hc);   
@@ -836,58 +689,23 @@ int main (int argc, char** argv)
     double nup = C0.Get_nup();
 
     module Module;
-    //int LCC = C0.CalModule(Module);
     int LCC = C0.CalLCC(Module);
     double lcc = LCC/(double)N;
     
-    /*vector<double> P;
-    C0.FisherExactTest(P);
-    */
-
   
     cout << "H= " << Hc << ", E0= " << E0 << ", E= " << E << ", m=" << m 
 	 << "; Nup= "                << Nup 
 	 << "; |LCC|= "              << LCC 
 	 << "; nup= "                << nup 
 	 << "; lcc= "              << lcc
-      /*	   << "; HighestModuleScore= " << Module.score  
-	   << " with size= "           <<  Module.size 
-	 << ". Enrichment analysis:\n";
-    cout << "p-values= (";  
-      for(unsigned int a=0;a<P.size();a++) 
-	cout << P[a] << ',';
-      cout << "); "; 
-      */
+
 	 << endl;
  
     char fname[256];        
-    
-    /*
-    sprintf(fname,"./data/module-%s-H%e.txt",parameters, Hc);
-    ofstream fout2(fname,ios_base::out);
-    //cout << "Highestscoring module: {" << Green; 
-    for(Nbl_itr p = Module.nodelist.begin(); p!= Module.nodelist.end(); p++) {
-      //cout << ' ' << namelist[*p];
-      fout2 << namelist[*p] << endl;
-    }
-    //cout << Normal << "}\n";
-    fout2.close();
-    */
 
     sprintf(fname,"./data/network-%s-H%e",parameters, Hc);
     C0.WriteGML(fname);
     C0.WriteGML(UP,fname);
-    //C0.WriteGML(UP,0, fname);
-    //C0.WriteGML(UP,1, fname);
-    //C0.WriteGML(UP,2, fname);
-    //C0.WriteGML(UP,3, fname);
-    //C0.WriteGML_HightlightBenchmarkGenes(UP,0, fname);
-    //C0.WriteGML_HightlightBenchmarkGenes(UP,1, fname);
-    //C0.WriteGML_HightlightBenchmarkGenes(UP,2, fname);
-    //C0.WriteGML_HightlightBenchmarkGenes(UP,3, fname);
- 
-    //C0.WriteGML_HightlightBenchmarkGenes_NearestNeighbors(UP, 0, fname);
-
 
   }// end of mode==23
 
@@ -945,44 +763,17 @@ int main (int argc, char** argv)
       int Nup = C.Get_Nup();
       double nup = C.Get_nup();
 
-      //module Module;
-      //int LCC = C.CalModule(Module);
-      //double lcc = LCC/(double)N;
- 
-      //vector<double> P;
-      //C.FisherExactTest(P);
-
       cout << Normal;
       cout << "H= "                    << H 
 	   << "; m= "                  << m 
 	   << "; Nup= "                << Nup 
-	//   << "; |LCC|= "              << LCC 
 	   << "; nup= "                << nup 
-	//  << "; lcc= "              << lcc
-	//  << "; HighestModuleScore= " << Module.score  
-	//   << " with size= "           <<  Module.size 
-	//   << ". Enrichment analysis: p-values= (";  
-	//for(unsigned int a=0;a<P.size();a++) 
-	//cout << P[a] << ',';
-	//cout << "); "; 
-	//cout << "Highestscoring module: {" << Green; 
-	//for(Nbl_itr p = Module.nodelist.begin(); p!= Module.nodelist.end(); p++) 
-	//cout << namelist[*p] << ' ';
-	//cout << Normal << "}\n"; 
 	   << endl; 
 
       fout <<  H  << ' '                 // 1
 	   <<  m  << ' '                 // 2
 	   << Nup << ' '                 // 3
-	//<< LCC << ' '                 // 4
 	   << nup << ' '                 // 5
-	// << lcc << ' '                 // 6
-	// << Module.score  << ' '       // 7 
-	// << Module.size << ' ';        // 8
-	//for(unsigned int a=0; a<P.size(); a++)           
-	//fout << P[a] << ' ';
-	//for(Nbl_itr p = Module.nodelist.begin(); p!= Module.nodelist.end(); p++) 
-	//fout << namelist[*p] << ' ';
 	 << endl;
  
       double dm= m-m0;
@@ -1037,17 +828,6 @@ int main (int argc, char** argv)
     fout2.close();
  
     sprintf(fname,"./data/network-%s-H%e",parameters, Hc);
-    //C0.WriteGML(fname);
-    //C0.WriteGML(UP,fname);
-    //C0.WriteGML(UP,0, fname);
-    //C0.WriteGML(UP,1, fname);
-    //C0.WriteGML(UP,2, fname);
-    //C0.WriteGML(UP,3, fname);
-    //C0.WriteGML_HightlightBenchmarkGenes(UP,0, fname);
-    //C0.WriteGML_HightlightBenchmarkGenes(UP,1, fname);
-    //C0.WriteGML_HightlightBenchmarkGenes(UP,2, fname);
-    //C0.WriteGML_HightlightBenchmarkGenes(UP,3, fname);
- 
     C0.WriteGML_HightlightBenchmarkGenes_NearestNeighbors(UP, 0, fname);
 
 
@@ -1148,19 +928,16 @@ int main (int argc, char** argv)
 
     // output the benchmark gene set's minimum p-value and the corresponding H value; the minimum p-value (for active LCC only) and the corresponding H value
     char fname2[256]; 
-    //sprintf(fname2,"./data-%s/GeneSets-%s-%s",file.c_str(),parameters,argv[6]);
     sprintf(fname2,"./data/GeneSets-%s-%s", parameters,argv[6]);
     C0.WriteGeneSetsFile(fname2);
 
 
     char cmd[256];
-    //    sprintf(cmd,"./showps.MH         ./data-%s %s %s &",file.c_str(),parameters,argv[6]);
     sprintf(cmd,"./showps  ./  %s &",parameters);
     system(cmd);
 
 
 
-    //sprintf(cmd,"./showps.enrichment ./data-%s %s %s %d &",file.c_str(),parameters,argv[6],Nbgs);
     sprintf(cmd,"./showps.enrichment ./data %s %s %d &",parameters,argv[6],Nbgs);
     system(cmd);
 	

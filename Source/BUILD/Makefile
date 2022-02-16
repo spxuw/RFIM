@@ -1,13 +1,11 @@
 ############################################################
 #                 Makefile for RFIM                        #
-#                     Yang Liu                             #
-#                    04/27/2014                            #
 ############################################################
 # home directory
-#BASEBGL= /Users/xu-wenwang/Dropbox/Projects/K25/code/Source/boost_1_33_1
-#BASENR = /Users/xu-wenwang/Dropbox/Projects/K25/code/Source/NR/cpp
+#BASEBGL= /Users/xu-wenwang/Dropbox/Github/RFIM/RFIM/Source/boost_1_33_1
+#BASENR = /Users/xu-wenwang/Dropbox/Github/RFIM/RFIM/Source/NR/cpp
 BASE   = ../
-LIBRARY = /Users/xu-wenwang/Dropbox/Projects/K25/code/Source/Gadgets/
+LIBRARY = /Users/xu-wenwang/Dropbox/Github/RFIM/RFIM/Source/Gadgets/
 
 INCLALL   =  -I$(LIBRARY)/Random \
              -I$(LIBRARY)/Timer \
