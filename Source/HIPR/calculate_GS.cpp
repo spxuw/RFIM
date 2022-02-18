@@ -1,17 +1,11 @@
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// The following function is added by Yang Liu 06/12/06. Goal: get the ground state of the RFIM from the min-cut of the 
-// corresponding network using the HIPR algorithm. But here we use the earlier solution as an input to remove some spins 
-// (nodes) from the ground state calculation.  
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 #include "hi_pr.cpp"
 
-//uES: use earlier solution
-//FZdir: frozen spin direction, for increasing field, UP spins are frozen; for decreasing field, DOWN spins are frozen.
+
+
 void Calculate_GS_M(State &W, bool uES, char FZdir)
 {
 
-    initilize_pointer(); // to avoid abnormal-pointer
+    initilize_pointer(); 
 
 #if (defined(PRINT_FLOW) || defined(CHECK_SOLUTION))
     node *i = NULL;
@@ -35,21 +29,21 @@ void Calculate_GS_M(State &W, bool uES, char FZdir)
 
     globUpdtFreq = GLOB_UPDT_FREQ;
 
-    ////////////////////////////////////////////////////////////////
-    //cout<< "\n start parsing: "; // debug
+    
+    
     parse(W, uES, FZdir, n, m, nodes, arcs, caps, source, sink);
-    //cout<< "\n parse successfully!"; // debug
-    ////////////////////////////////////////////////////////////////
+    
+    
 
     cc = allocDS();
     if ( cc ) {fprintf ( stderr, "Allocation error\n");	exit ( 1 );}
 
     init(); 
 
-    //cout<< "\n Stage One : "; // debug
+    
     stageOne ( );
 
-    //printf ("c flow:       %12.01f\n", flow);
+    
 
  
 #ifndef CUT_ONLY
@@ -59,11 +53,11 @@ void Calculate_GS_M(State &W, bool uES, char FZdir)
 
 #ifdef CHECK_SOLUTION
 
-    // check if you have a flow (pseudoflow) 
-    // check arc flows 
+    
+    
     forAllNodes(i) {
 	forAllArcs(i,a) {
-	    if (caps[a - arcs] > 0) // original arc 
+	    if (caps[a - arcs] > 0) 
 		if ((a->resCap + a->rev->resCap != caps[a - arcs]) 
 		    || (a->resCap < 0)
 		    || (a->rev->resCap < 0)) {
@@ -73,7 +67,7 @@ void Calculate_GS_M(State &W, bool uES, char FZdir)
 	}
     }
 
-    // check conservation 
+    
     forAllNodes(i)
 	if ((i != source) && (i != sink)) {
 #ifdef CUT_ONLY
@@ -90,7 +84,7 @@ void Calculate_GS_M(State &W, bool uES, char FZdir)
 
 	    sum = 0;
 	    forAllArcs(i,a) {
-		if (caps[a - arcs] > 0) // original arc 
+		if (caps[a - arcs] > 0) 
 		    sum -= caps[a - arcs] - a->resCap;
 		else
 		    sum += a->resCap;
@@ -102,7 +96,7 @@ void Calculate_GS_M(State &W, bool uES, char FZdir)
 	    }
 	}
 
-    // check if mincut is saturated 
+    
     aMax = dMax = 0;
     for (l = buckets; l < buckets + n; l++) {
 	l->firstActive = sentinelNode;
@@ -145,108 +139,66 @@ void Calculate_GS_M(State &W, bool uES, char FZdir)
   
 
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////
-//Get the Ground state spin configuration from the min-cut
+
+
 #ifdef PRINT_CUT  
     globalUpdate();
-    //printf ("\n Check nodes on the sink side or not (i.e. spin DOWN or UP )\n"); 
+    
 
-    // This is done by checking whether j->d >= n. if j->d >= n, then this node 
-    // (index given by nNode(j)) is on the source side, in other words, according 
-    // to the definition given in Hartmann's book, x[nNode(j)] = 1, and the 
-    // corresponding spin value is given by  S[nNode(j)] = 2*x[nNode(j)]-1 = +1, 
-    // i.e. spin UP!  Comments by YL 05/24/06. 
+    
+    
+    
+    
+    
 
-    if(uES) // using earlier solution /////////////////////////////////////////////////////////////////
+    if(uES) 
     {
-	if(FZdir==1) // this means there are many frozen UP spins
-	{            // we just need to flip UP a small number of spins
-	    int Nup = W.Get_Nup();                 // number of earlier UP spins
+	if(FZdir==1) 
+	{            
+	    int Nup = W.Get_Nup();                 
 	    forAllNodes(j){
 		int nj = nNode(j);
-		if (j->d >= n && nj != 0 && nj != n-1)  // ATTENTION: j->d >= n (source side) means SPINUP
+		if (j->d >= n && nj != 0 && nj != n-1)  
 		{
-		    int loc = W.LocVec[nj];        // the node index is given by nj-nMin, the 
-		    // corresponding spin loc is then given by LocVec[nj-nMin]
-		    W.FlipUP(loc);                 // flip this spin to be UP.
+		    int loc = W.LocVec[nj];        
+		    
+		    W.FlipUP(loc);                 
 		    Nup++;                        
 		}
 	    }
 	    W.CalMbyNup(Nup);
-	}//end of if frozen direction=UP
-	else  // this means there are many frozen DOWN spins
-	{     // we just need to flip DOWN a small number of spins
-	    int Ndn = W.Get_Ndn();                // number of earlier DOWN spins
+	}
+	else  
+	{     
+	    int Ndn = W.Get_Ndn();                
 	    forAllNodes(j) {
 		int nj = nNode(j);
-		if (j->d < n && nj != 0 && nj != n-1)  // ATTENTION: j->d < n (sink side) means SPINDN
+		if (j->d < n && nj != 0 && nj != n-1)  
 		{
-		    int loc = W.LocVec[nj];       // the node index is given by nj-nMin, the 
-		    // corresponding spin loc is then given by LocVec[nj-nMin]
-		    W.FlipDN(loc);                // flip this spin to be DOWN.
+		    int loc = W.LocVec[nj];       
+		    
+		    W.FlipDN(loc);                
 		    Ndn++;                        
 		}
 	    }
   
 	    W.CalMbyNdn(Ndn);
-	}//end of if frozen direction=DOWN
-    }// end of if use earlier solution
+	}
+    }
 
-    else // don't use earlier solution  //////////////////////////////////////////////////////////////////////
+    else 
     {
-
-      /*------------------------ See my debug note on 04/18/2014 ------------------------------------------------------------------------------
-	double H = W.Get_Hext();
-
-	if(H <= 0.0) // this means the GS will have M<0, i.e. Nup<Ndn
-	{
-	 
-	    int Nup=0;  // number of initial UP spins
-	    forAllNodes(j){
-		int nj = nNode(j);
-		if (j->d >= n && nj != 0 && nj != n-1) { // ATTENTION: j->d >= n (source side) means SPINUP
-		    W.FlipUP(nj-1); // node index : nj ---> spin loc= nj-1
-		    // flip the spin with location: nj-1 to be UP.
-		    // Note that in this case, the initial spins must all be DOWN
-		    // If initially all spins UP, then finnally all spins stay UP
-		    // So pay attention to the initial value of spins. Y.L. 06/12/06
-		    Nup++;                        
-		}
-	    }
-	    W.CalMbyNup(Nup);
-
-	    //cout << "M=" << W.Getm() << endl;//test
-
-	}// end of if H<=0
-	else // this means the GS will have M>0, i.e. Ndn<Nup
-	{
-	    int Ndn=0;  // number of initial DOWN spins
-	    forAllNodes(j){
-		int nj = nNode(j);
-		if (j->d < n && nj != 0 && nj != n-1) {  // ATTENTION: j->d < n (sink side) means SPINDN
-		    W.FlipDN(nj-1); // node index : nj ---> spin loc= nj-1
-		    // flip the spin with location: nj-1 to be DOWN.
-		    // Note that in this case, the initial spins must all be UP
-		    Ndn++;                        
-		}
-	    }
-	    W.CalMbyNdn(Ndn);
-
-	    //cout << "M=" << W.Getm() << endl;//test
-	    
-	}// end of if H>0
-	------------------------------------------------------------------------------------------------------*/
 
       
       int Nup = 0;
       forAllNodes(j){
 	int nj = nNode(j);
 	if(nj != 0 && nj != n-1) {
-	  if (j->d >= n) { // ATTENTION: j->d >= n (source side) means SPINUP
-	    W.SetUP(nj-1); // node index : nj ---> spin loc= nj-1, set the spin with location: nj-1 to be UP.
+	  if (j->d >= n) { 
+	    W.SetUP(nj-1); 
 	    Nup++;                        
 	  }
-	  else { // ATTENTION: j->d < n (sink side) means SPINDN
+	  else { 
 	    W.SetDN(nj-1);
 	  }
 	}
@@ -254,18 +206,18 @@ void Calculate_GS_M(State &W, bool uES, char FZdir)
       W.CalMbyNup(Nup);
       
 
-    }// end of if don't use earlier solution
+    }
 
 #endif  
-///////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
-// free internal memory , added by Yang Liu
+
+
     free(nodes);   nodes   = NULL;
     free(arcs);    arcs    = NULL;
     free(caps);    caps    = NULL;
     free(buckets); buckets = NULL;
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 

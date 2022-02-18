@@ -19,8 +19,6 @@ class Link
 
   Link(int a, int b, int i) {head = a; tail = b; index = i;}
 
-  //Link(const Link&);                                         // copy constructor  
-  //Link& operator=(const Link&);                              //copy assignment    
 
   int  GetHead() const {return head;}
   int  GetTail() const {return tail;}
@@ -38,18 +36,10 @@ class Link
   void AddWeight(double w0) {weight += w0;}
 
 
-  //bool operator<(const Link& e2) const {
-  //return (head < e2.GetHead() && tail < e2.GetTail());
-  //}
-
-  // for directed edge
   bool operator==(const Link& other) const {
     return (head==other.GetHead() && tail==other.GetTail());
   }
 
-  //bool operator() (const Link& e1, const Link& e2) const {
-  //return (e1.GetHead() < e2.GetHead() && e1.GetTail() < e2.GetTail()) ;
-  //}
 
   friend ostream& operator<<(ostream& output, const Link& e) {
     output << "(" <<  e.GetHead() << "," << e.GetTail() <<")";
@@ -57,42 +47,15 @@ class Link
   }
 
  private:
-  int head; // the starting node of the link
-  int tail;   // the ending node of the link
-  int index;  // index of this edge
+  int head; 
+  int tail;   
+  int index;  
   
-  double weight; // weight of this edge
+  double weight; 
 
-  bool color;  // 1 : head activates tail
-  // 0 : head represses tail
+  bool color;  
+  
 };
-
-
-
-
-
-
-/*
-// copy constructor  
-Link::Link(const Link& t)                                // copy constructor
-{
-  head = t.head;
-  tail = t.tail;
-  index = t.index;
-}
-
-
-//copy assignment    
-Link& Link::operator=(const Link& t)                     // copy assignment
-{
-  if (this != &t)  {                                  // beware of self-assignment like t = t;
-    head = t.head;
-    tail = t.tail;
-    index = t.index;
-  }
-  return *this;
-}
-*/
 
 
 typedef vector<Link>::iterator vLinkitr;

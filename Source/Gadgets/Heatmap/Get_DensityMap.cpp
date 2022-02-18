@@ -14,10 +14,10 @@ void GetDensityMap(const vector<double>& X, const vector<double>& Y,
 		   char* fname);
 
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// This universal routine will read two columns from a data file to calculate its densitymap or heatmap
-// 11/12/12
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
 int main(int argc, char** argv)
 {
   if(argc!=8) {
@@ -64,26 +64,26 @@ int main(int argc, char** argv)
   exit(1);
 
 }
-///////////////////////////////////////////////////////////////////////////////////////
+
 
 
 
 class Bin2D
 {
  public:
-    double xbelow;    // the below boundary of this bin
-    double xabove;    // the above boundary
+    double xbelow;    
+    double xabove;    
 
-    double ybelow;    // the below boundary of this bin
-    double yabove;    // the above boundary
+    double ybelow;    
+    double yabove;    
 
-    double count;    // # of data in this bin
-    double normalized_count;       // # of data in this bin/total # of data
+    double count;    
+    double normalized_count;       
 };
 
 
 
-///////////////////////////////////////////////////////////////////////////////////////
+
 void GetDensityMap(const vector<double>& X, const vector<double>& Y, 
 		   int Nbins_x, int Nbins_y, 
 		   double Xmin, double Xmax, double Ymin, double Ymax, 
@@ -92,7 +92,7 @@ void GetDensityMap(const vector<double>& X, const vector<double>& Y,
   int N = X.size();
     
   int Nbins = Nbins_x * Nbins_y; 
-  cout << Nbins_x << "," << Nbins_y << endl; //test
+  cout << Nbins_x << "," << Nbins_y << endl; 
 
   Bin2D** Binarray = new Bin2D* [Nbins_y];
   for(int b_y=0; b_y<Nbins_y; b_y++) {
@@ -102,7 +102,7 @@ void GetDensityMap(const vector<double>& X, const vector<double>& Y,
   double dx = (Xmax-Xmin)/(double)Nbins_x;
   double dy = (Ymax-Ymin)/(double)Nbins_y;
 
-  // initialize these bins
+  
   for(int b_y=0;b_y<Nbins_y;b_y++) {
     for(int b_x=0; b_x<Nbins_x; b_x++){   
     
@@ -117,7 +117,7 @@ void GetDensityMap(const vector<double>& X, const vector<double>& Y,
 
       Binarray[b_y][b_x].count = 0;
     }
-  }// end of initializing these bins
+  }
 
 
   int b_y = 0;
@@ -128,12 +128,12 @@ void GetDensityMap(const vector<double>& X, const vector<double>& Y,
       b_y = (int)floor((Y[i]-Ymin)/dy);
       b_x = (int)floor((X[i]-Xmin)/dx);
 
-      Binarray[b_y][b_x].count++; // for this bin, update it with new data point 
+      Binarray[b_y][b_x].count++; 
     }
   }
 
 
-  // save the distribution to file
+  
   char filename[256];
   sprintf(filename,"%s", fname);
   ofstream fout(filename, ios_base::out);
@@ -147,7 +147,7 @@ void GetDensityMap(const vector<double>& X, const vector<double>& Y,
       fout << Binarray[b_y][b_x].normalized_count << endl;
     }
     fout << endl;
-  }// end of writing data for each bin
+  }
   fout.close();
 
   for(int i=0;i<Nbins_y;i++) 
@@ -156,5 +156,5 @@ void GetDensityMap(const vector<double>& X, const vector<double>& Y,
   delete [] Binarray;
 
 }
-/////////////////////////////////////////////////////////////////////////////////////////////////
+
 

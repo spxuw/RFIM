@@ -1,12 +1,7 @@
 #ifndef _MYNR_H_
 #define _MYNR_H_
 
-/*
-**      File:   nrutil.h
-**      Purpose: Memory allocation routines borrowed from the
-**              book "Numerical Recipes" by Press, Flannery, Teukolsky,
-**              and Vetterling.
-*/
+
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -19,12 +14,12 @@
 #include <deque>
 #include <limits>
 
-//#include <gmpxx.h>
-//#include <gmp.h>
-//#include "mp-zeta.h"
-//#include "mp-polylog.h"
-//#include "mp-binomial.h"
-//#include "mp-complex.h"
+
+
+
+
+
+
 
 #include "Statistics.h"
 #include "ULink.h"
@@ -40,48 +35,48 @@ const double EPS = numeric_limits<double>::epsilon();
 const double SMALL = numeric_limits<double>::min()/numeric_limits<double>::epsilon();
 
 
-typedef list<int> Nbl; // neighbor list
+typedef list<int> Nbl; 
 
 void mynrerror(const string error_text);
 
 
-///////////////////////////////////////////////////////////////////////
+
 int* ivector(int nl, int nh);
 double* dvector(int nl, int nh);
 void free_ivector(int* v, int nl, int nh);
 void free_dvector(double* v, int nl, int nh);
-///////////////////////////////////////////////////////////////////////
 
-///////////////////////////////////////////////////////////////////////
+
+
 int** imatrix(int nrl, int nrh, int ncl, int nch);
 double** dmatrix(int nrl, int nrh, int ncl, int nch);
 void free_imatrix(int** m, int nrl,int nrh, int ncl, int nch);
 void free_dmatrix(double** m, int nrl,int nrh, int ncl, int nch);
-///////////////////////////////////////////////////////////////////////
 
-///////////////////////////////////////////////////////////////////////
+
+
 int*** imatrix(int xi, int xf, int yi, int yf, int zi, int zf);
 double*** dmatrix(int xi, int xf, int yi, int yf, int zi, int zf);
 void free_imatrix(int*** m, int xi, int xf, int yi, int yf, int zi, int zf);
 void free_dmatrix(double*** m, int xi, int xf, int yi, int yf, int zi, int zf);
-///////////////////////////////////////////////////////////////////////
 
-///////////////////////////////////////////////////////////////////////
+
+
 int** imatrix(int M, int* T);
 double** dmatrix(int M, int* T);
 void free_imatrix(int** X, int M);
 void free_dmatrix(double** X, int M);
-///////////////////////////////////////////////////////////////////////
 
-///////////////////////////////////////////////////////////////////////
+
+
 int*** imatrix(int M, int* T, int d);
 double*** dmatrix(int M, int* T, int N);
 void free_imatrix(int*** X, int M, int* T);
 void free_dmatrix(double*** X, int M, int* T);
-///////////////////////////////////////////////////////////////////////
 
 
-////////////////////////////////////////////////////////////////////////////////////////
+
+
 void GenerateCovarianceMatrix(double**& C, int d, int seed);
 void CholeskyDecomposition(double**& C, double**& L, int d);
 
@@ -138,12 +133,12 @@ double getnodeinlist(list<double>& X, int index);
 int getnodeinlist(list<int>& X, int index);
 
 
-//bool find(list<Set>& Slist, Set S);
-//void printSet(Set& S);
-//bool member(Set& S, int x);
+
+
+
 
 template <typename Iter> 
-void getNbl(Iter begin, Iter end); //, Nbl& nbl) 
+void getNbl(Iter begin, Iter end); 
 
 void GetNumberFromaString(string str, int& x); 
 
@@ -161,10 +156,10 @@ void zbrak_rrg(double fx(const int r, const double x), const int r, const double
 double rtbis_rrg(DP func(const int, const DP), const int r, const DP x1, const DP x2, const DP xacc);
 int FindRoots_RRG(double frx(const int, const double), const int r, double X1, double X2, vector<double>& roots);
 
-// Now fx could have another variable a
+
 int FindRoots(double fx(const double, const double), const double a, double X1, double X2, double& rootmin, double& rootmax, vector<double>& roots);
 
-// Now fx could have two other variables a and b
+
 int FindRoots(double fx(const double, const double, const double), const double a, const double b, double X1, double X2, double& rootmin, double& rootmax, vector<double>& roots);
 
 
@@ -175,13 +170,13 @@ double binom(int m, int k);
 int print(Nbl& nbl);
 
 
-// modified from NR
-// unnormalized incomplete Gamma Function
-// Gamma(a,x) = \int_x^\infty dt t^{a-1} \exp(-t) for a real and x >= 0. 
+
+
+
 double NR_gammq(const double a, const double x);
 
-// Note that in NR, gammq calculate the normalized incomplete Gamma Function
-// Q(a,x) = 1/\Gamma(a) \int_x^\infty dt t^{a-1} \exp(-t) for a > 0, x >= 0. 
+
+
 
 
 double GetPoisson(double lambda, int k);
@@ -236,17 +231,17 @@ bool Transform_to_MatrixFormIII(int**& Q, int n, int m, int**& rowindex, int**& 
 
 
 
-// vector
+
 double Norm(vector<double>& V);
 double Sum(vector<double>& V);
 double Error(vector<double>& V1, vector<double>& V2);
 
 
-// set<int>
+
 int GetOverlap(set<int>& S1, set<int>& S2);
 
 void Char2String(char& c, string& s);
 string Int2String(int i);
 
 
-#endif /* _NR_H_ */
+#endif

@@ -2,7 +2,7 @@
 
 using namespace std;
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////
+
 void Cal_Avalanche(State &A, State &B, list<int> &avalanche)
 {
     avalanche.clear();
@@ -14,12 +14,12 @@ void Cal_Avalanche(State &A, State &B, list<int> &avalanche)
 	    avalanche.push_back(i);
     }
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 void Show_Avalanche(State& A, State& B)
 {
     list<int> avalanche;
@@ -53,12 +53,12 @@ void Show_Avalanche(State& A, State& B)
     }
     
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 void State::Show_State()
 {
     cout << "\n\n";
@@ -89,13 +89,13 @@ void State::Show_State()
     cout << "\n\n";
 
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////
-// save the spin configuration to a file with name k in the tmp directory
+
+
+
 void State::Save_State(int k)
 {
     char fname[256]; 
@@ -112,23 +112,23 @@ void State::Save_State(int k)
 	exit(2);
     }
     
-    //outfile << M << endl; // M must be written into the file to calculate the number of free sites (Nfs)
+    
     outfile.write(reinterpret_cast<char *>(&M),sizeof(int));
 
-    //for (int i=0; i<N; i++)
-    //outfile << spin[i] << ' ';
+    
+    
     outfile.write(spin, N*sizeof(char));
 	
     
     outfile.close();
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////
-// save the spin configuration to a file with name k in the tmp directory
+
+
+
 void State::Save_State(string file, int k)
 {
     char fname[256]; 
@@ -141,26 +141,26 @@ void State::Save_State(string file, int k)
 	exit(2);
     }
     
-    //outfile << M << endl; // M must be written into the file to calculate the number of free sites (Nfs)
+    
     outfile.write(reinterpret_cast<char *>(&M),sizeof(int));
 
-    //for (int i=0; i<N; i++)
-    //outfile << spin[i] << ' ';
+    
+    
     outfile.write(spin, N*sizeof(char));
 	
     
     outfile.close();
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 	    
 
 void State::getRGBcolor(int avalancheindex, double& r,double& g,double& b)
 {
-    // number of levels: 216 = 6*6*6
-    // i.e. r,g,b = 0, 0.2, 0.4, 0.6, 0.8, 1
+    
+    
 
-    int Color = (avalancheindex%216); //color must be in [0,215]
+    int Color = (avalancheindex%216); 
 
     int remainder = Color%36;
     int R = Color/36;
@@ -174,11 +174,11 @@ void State::getRGBcolor(int avalancheindex, double& r,double& g,double& b)
     g = G/5.0;
     b = B/5.0;
 }
-///////////////////////////////////////////////////////////////////////////
 
 
 
-///////////////////////////////////////////////////////////////////////////
+
+
 void State::DrawOneAvalanche(int index, list<int> & avalanche)
 {
     list<int>::iterator itr; 
@@ -188,11 +188,11 @@ void State::DrawOneAvalanche(int index, list<int> & avalanche)
 	avalancheindex[curLoc] = index;
     }
 }
-///////////////////////////////////////////////////////////////////////////
 
 
 
-///////////////////////////////////////////////////////////////////////////
+
+
 void State::DrawAllAvalanches(char* fname)
 {
     char epsfile[256];
@@ -205,14 +205,14 @@ void State::DrawAllAvalanches(char* fname)
     fout << "/square {newpath moveto 1 0 rlineto 0 1 rlineto -1 0 rlineto closepath fill} def\n";
     fout << "10 10 translate\n";
 
-    /* k = 0 layer. */
+   
     int spincount = 0;
     double r,g,b;
 
-    //for (int j = 0; j< L; j++) {
+    
     for (int j = L-1; j>=0; j--) {
 	for (int i = 0; i < L; i++) {
-	    //spincount = j*L + i;
+	    
 	    getRGBcolor(avalancheindex[spincount],r,g,b);
 	    fout << i << " " << j << " square " << r << ' ' << g << ' ' << b << " setrgbcolor\n";
 	    spincount++;
@@ -221,5 +221,5 @@ void State::DrawAllAvalanches(char* fname)
     
     fout.close();
 }
-///////////////////////////////////////////////////////////////////////////
+
 

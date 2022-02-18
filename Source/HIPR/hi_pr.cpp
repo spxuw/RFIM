@@ -1,75 +1,63 @@
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// This file is added by Yang Liu 06/02/06
-// Goal: get the ground state of the RFIM from the min-cut of the corresponding network 
-// using the HIPR algorithm 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#include "hi_pr.h"                      // subroutines used in hi_pr.c, Yang Liu 05/24/06 
-#include "parser.cpp"                   // parser 
+#include "hi_pr.h"                      
+#include "parser.cpp"                   
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/* global variables */
-long   n;                    /* number of nodes */
-long   m;                    /* number of arcs */
-long   nm;                   /* n + ALPHA * m */
-long   dMax;                 /* maximum label */
-long   aMax;                 /* maximum actie node label */
-long   aMin;                 /* minimum active node label */
-double flow;                 /* flow value */
-long pushCnt   = 0;          /* number of pushes */
-long relabelCnt= 0;          /* number of relabels */
-long updateCnt = 0;          /* number of updates */
-long gapCnt    = 0;          /* number of gaps */
-long gNodeCnt  = 0;          /* number of nodes after gap */  
-long workSinceUpdate=0;      /* the number of arc scans since last update */
-float globUpdtFreq;          /* global update frequency */
+
+long   n;                    
+long   m;                    
+long   nm;                   
+long   dMax;                 
+long   aMax;                 
+long   aMin;                 
+double flow;                 
+long pushCnt   = 0;          
+long relabelCnt= 0;          
+long updateCnt = 0;          
+long gapCnt    = 0;          
+long gNodeCnt  = 0;           
+long workSinceUpdate=0;      
+float globUpdtFreq;          
 long i_dist;
 
-node   *nodes;        /* array of nodes */
-arc    *arcs;        /* array of arcs */
-cType  *caps;        /* array of capacities */
-bucket *buckets;        /* array of buckets */
+node   *nodes;        
+arc    *arcs;        
+cType  *caps;       
+bucket *buckets;        
 
-node   *source;        /* source node pointer */
-node   *sink;        /* sink node pointer */
-node   *sentinelNode;   /* end of the node list marker */
-arc    *stopA;        /* used in forAllArcs */
+node   *source;        
+node   *sink;       
+node   *sentinelNode;   
+arc    *stopA;        
 node   *i_next;
 node   *i_prev;
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void initilize_pointer() // added by Yang Liu 06/15/06
+
+
+void initilize_pointer() 
 {
-    nodes        = NULL;        /* array of nodes */
-    arcs         = NULL;        /* array of arcs */
-    caps         = NULL;        /* array of capacities */
-    buckets      = NULL;        /* array of buckets */
+    nodes        = NULL;        
+    arcs         = NULL;        
+    caps         = NULL;        
+    buckets      = NULL;        
 
-    source       = NULL;        /* source node pointer */
-    sink         = NULL;        /* sink node pointer */
-    sentinelNode = NULL;   /* end of the node list marker */
-    stopA        = NULL;        /* used in forAllArcs */
+    source       = NULL;        
+    sink         = NULL;        
+    sentinelNode = NULL;   
+    stopA        = NULL;        
     i_next       = NULL;
     i_prev       = NULL;
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/* allocate datastructures, initialize related variables */
+
+
 int allocDS()
 {
 
     nm = ALPHA * n + m;
-    /*
-      queue = (node**) calloc ( n, sizeof (node*) );
-      if ( queue == NULL ) return ( 1 );
-      qLast = queue + n - 1;
-      qInit();
-    */
+
     buckets = (bucket*) calloc (n+2, sizeof(bucket) );
     if ( buckets == NULL ) return (1);
 
@@ -78,20 +66,20 @@ int allocDS()
 
     return  (0);
 
-} /* end of allocate */
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+} 
 
 
 
 
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 void init()
 {
     int overflowDetected;
 
     arc    *a = NULL;
-    node   *i = NULL;        /* current node */
+    node   *i = NULL;        
     bucket *l = NULL;
 
 
@@ -100,11 +88,11 @@ void init()
 #endif
 
 #ifndef OLD_INIT
-    //unsigned long delta;
-    unsigned long long delta; // Yang Liu 06/19/06
+    
+    unsigned long long delta; 
 #endif
 
-    // initialize excesses
+    
 
     forAllNodes(i) 
 	{
@@ -157,7 +145,6 @@ void init()
 	}
     }
 
-    /*  setup labels and buckets */
     l = buckets + 1;
     
     aMax = 0;
@@ -175,11 +162,9 @@ void init()
 	else
 	    i->d = 1;
 	if (i->excess > 0) {
-	    /* put into active list */
 	    aAdd(l,i);
 	}
-	else { /* i -> excess == 0 */
-	    /* put into inactive list */
+	else { 
 	    if (i->d < n)
 		iAdd(l,i);
 	}
@@ -187,17 +172,15 @@ void init()
     dMax = 1;
 #endif
 
-    //  dMax = n-1;
-    //  flow = 0.0;
+    
+    
 
-} /* end of init */
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+} 
 
 
 
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 void checkMax()
 {
     bucket *l = NULL;
@@ -207,30 +190,28 @@ void checkMax()
 	assert(l->firstInactive == sentinelNode);
     }
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
 
 
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/* global update via backward breadth first search from the sink */
+
+
 void globalUpdate()
 {
 
     node   *i = NULL;
-    node   *j = NULL;        /* node pointers */
-    arc    *a = NULL;        /* current arc pointers  */
+    node   *j = NULL;       
+    arc    *a = NULL;        
     bucket *l = NULL;
-    bucket *jL= NULL;        /* bucket */
+    bucket *jL= NULL;       
 
     long curDist, jD;
     long state;
 
     updateCnt ++;
 
-    /* initialization */
 
     forAllNodes(i)
 	i -> d = n;
@@ -244,9 +225,8 @@ void globalUpdate()
     dMax = aMax = 0;
     aMin = n;
 
-    /* breadth first search */
 
-    // add sink to bucket zero
+    
 
     iAdd(buckets, sink);
     for (curDist = 0; 1; curDist++) {
@@ -255,10 +235,7 @@ void globalUpdate()
 	l = buckets + curDist;
 	jD = curDist + 1;
 	jL = l + 1;
-	/*
-	  jL -> firstActive   = sentinelNode;
-	  jL -> firstInactive  = sentinelNode;
-	*/
+
 
 	if ((l->firstActive == sentinelNode) && 
 	    (l->firstInactive == sentinelNode))
@@ -297,7 +274,6 @@ void globalUpdate()
 		}
 	    }
 
-	    /* scanning arcs incident to node i */
 	    forAllArcs(i,a) {
 		if (a->rev->resCap > 0 ) {
 		    j = a->head;
@@ -307,48 +283,31 @@ void globalUpdate()
 			if (jD > dMax) dMax = jD;
 	    
 			if (j->excess > 0) {
-			    /* put into active list */
 			    aAdd(jL,j);
 			}
 			else {
-			    /* put into inactive list */
 			    iAdd(jL,j);
 			}
 		    }
 		}
-	    } /* node i is scanned */ 
+	    } 
 	}
     }
 
-} /* end of global update */
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+} 
 
 
 
 
 
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/* second stage -- preflow to flow */
 void stageTwo()
-/*
-  do dsf in the reverse flow graph from nodes with excess
-  cancel cycles if found
-  return excess flow in topological order
-*/
 
-/*
-  i->d is used for dfs labels 
-  i->bNext is used for topological order list
-  buckets[i-nodes]->firstActive is used for DSF tree
-*/
 
 {
     node *i, *j, *tos, *bos, *restart, *r;
     arc *a;
     cType delta;
 
-    /* deal with self-loops */
     forAllNodes(i) {
 	forAllArcs(i,a)
 	    if ( a -> head == i ) {
@@ -356,16 +315,14 @@ void stageTwo()
 	    }
     }
 
-    /* initialize */
     tos = bos = NULL;
     forAllNodes(i) {
 	i -> d = WHITE;
-	//    buckets[i-nodes].firstActive = NULL;
+	
 	buckets[i-nodes].firstActive = sentinelNode;
 	i -> current = i -> first;
     }
 
-    /* eliminate flow cycles, topologicaly order vertices */
     forAllNodes(i)
 	if (( i -> d == WHITE ) && ( i -> excess > 0 ) &&
 	    ( i != source ) && ( i != sink )) {
@@ -377,7 +334,6 @@ void stageTwo()
 		    if (( caps[a - arcs] == 0 ) && ( a -> resCap > 0 )) { 
 			j = a -> head;
 			if ( j -> d == WHITE ) {
-			    /* start scanning j */
 			    j -> d = GREY;
 			    buckets[j-nodes].firstActive = i;
 			    i = j;
@@ -385,7 +341,6 @@ void stageTwo()
 			}
 			else
 			    if ( j -> d == GREY ) {
-				/* find minimum flow on the cycle */
 				delta = a -> resCap;
 				while ( 1 ) {
 				    delta = min ( delta, j -> current -> resCap );
@@ -395,7 +350,6 @@ void stageTwo()
 					j = j -> current -> head;
 				}
 
-				/* remove delta flow units */
 				j = i;
 				while ( 1 ) {
 				    a = j -> current;
@@ -406,7 +360,6 @@ void stageTwo()
 					break;
 				}
 	  
-				/* backup DFS to the first saturated arc */
 				restart = i;
 				for ( j = i -> current -> head; j != i; j = a -> head ) {
 				    a = j -> current;
@@ -427,7 +380,6 @@ void stageTwo()
 		}
 
 		if (i->current == (i+1)->first) {
-		    /* scan of i complete */
 		    i -> d = BLACK;
 		    if ( i != source ) {
 			if ( bos == NULL ) {
@@ -451,8 +403,6 @@ void stageTwo()
 	}
 
 
-    /* return excesses */
-    /* note that sink is not on the stack */
     if ( bos != NULL ) {
 	for ( i = tos; i != bos; i = i -> bNext ) {
 	    a = i -> first;
@@ -470,7 +420,6 @@ void stageTwo()
 		a++;
 	    }
 	}
-	/* now do the bottom */
 	i = bos;
 	a = i -> first;
 	while ( i -> excess > 0 ) {
@@ -488,35 +437,26 @@ void stageTwo()
 	}
     }
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
 
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/* gap relabeling */
+
+
 int gap(bucket* emptyB)
 {
 
     bucket *l;
     node  *i; 
-    long  r;           /* index of the bucket before l  */
-    int   cc;          /* cc = 1 if no nodes with positive excess before
-			  the gap */
+    long  r;           
+    int   cc;          
 
     gapCnt ++;
     r = ( emptyB - buckets ) - 1;
 
-    /* set labels of nodes beyond the gap to "infinity" */
     for ( l = emptyB + 1; l <= buckets + dMax; l ++ ) {
-	/* this does nothing for high level selection 
-	   for (i = l -> firstActive; i != sentinelNode; i = i -> bNext) {
-	   i -> d = n;
-	   gNodeCnt++;
-	   }
-	   l -> firstActive = sentinelNode;
-	*/
+
 
 	for ( i = l -> firstInactive; i != sentinelNode; i = i -> bNext ) {
 	    i -> d = n;
@@ -534,7 +474,6 @@ int gap(bucket* emptyB)
     return ( cc );
 
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
@@ -542,14 +481,14 @@ int gap(bucket* emptyB)
 
 
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/*--- relabelling node i */
-long relabel (node* i)  //node *i;   /* node to relabel */
+
+
+long relabel (node* i)  
 {
 
     node  *j;
-    long  minD;     /* minimum d of a node reachable from i */
-    arc   *minA;    /* an arc which leads to the node with minimal d */
+    long  minD;     
+    arc   *minA;    
     arc   *a;
 
     assert(i->excess > 0);
@@ -560,7 +499,6 @@ long relabel (node* i)  //node *i;   /* node to relabel */
     i->d = minD = n;
     minA = NULL;
 
-    /* find the minimum */
     forAllArcs(i,a) {
 	workSinceUpdate++;
 	if (a -> resCap > 0) {
@@ -581,27 +519,23 @@ long relabel (node* i)  //node *i;   /* node to relabel */
 
 	if (dMax < minD) dMax = minD;
 
-    } /* end of minD < n */
+    } 
       
     return ( minD );
 
-} /* end of relabel */
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+} 
 
 
 
 
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/* discharge: push flow out of i until i becomes inactive */
-void discharge (node* i) //node  *i;
+void discharge (node* i) 
 {
 
-    node  *j;                 /* sucsessor of i */
-    long  jD;                 /* d of the next bucket */
-    bucket *lj;               /* j's bucket */
-    bucket *l;                /* i's bucket */
-    arc   *a;                 /* current arc (i,j) */
+    node  *j;                
+    long  jD;                
+    bucket *lj;              
+    bucket *l;               
+    arc   *a;                
     cType  delta;
     arc *stopA;
 
@@ -612,7 +546,6 @@ void discharge (node* i) //node  *i;
 	jD = i->d - 1;
 	l = buckets + i->d;
 
-	/* scanning arcs outgoing from  i  */
 	for (a = i->current, stopA = (i+1)->first; a != stopA; a++) {
 	    if (a -> resCap > 0) {
 		j = a -> head;
@@ -631,9 +564,7 @@ void discharge (node* i) //node  *i;
 			lj = buckets + jD;
 
 			if (j->excess == 0) {
-			    /* remove j from inactive list */
 			    iDelete(lj,j);
-			    /* add j to active list */
 			    aAdd(lj,j);
 			}
 		    }
@@ -643,12 +574,11 @@ void discharge (node* i) //node  *i;
 	  
 		    if (i->excess == 0) break;
 
-		} /* j belongs to the next bucket */
-	    } /* a  is not saturated */
-	} /* end of scanning arcs from  i */
+		} 
+	    } 
+	} 
 
 	if (a == stopA) {
-	    /* i must be relabeled */
 	    relabel (i);
 
 	    if (i->d == n) break;
@@ -660,23 +590,21 @@ void discharge (node* i) //node  *i;
 	    if (i->d == n) break;
 	}
 	else {
-	    /* i no longer active */
 	    i->current = a;
-	    /* put i on inactive list */
 	    iAdd(l,i);
 	    break;
 	}
     } while (1);
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
 
 
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// go from higher to lower buckets, push flow
+
+
+
 void wave() 
 {
     node   *i;
@@ -692,7 +620,6 @@ void wave()
 	}
     }
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
@@ -701,12 +628,12 @@ void wave()
 
 
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/* first stage  -- maximum preflow*/
+
+
 void stageOne()
 {
     node   *i;
-    bucket  *l;             /* current bucket */
+    bucket  *l;             
 
 
 #if defined(INIT_UPDATE) || defined(OLD_INIT) || defined(WAVE_INIT)
@@ -719,7 +646,6 @@ void stageOne()
     wave();
 #endif  
 
-    /* main loop */
     while ( aMax >= aMin ) {
 	l = buckets + aMax;
 	i = l->firstActive;
@@ -735,7 +661,6 @@ void stageOne()
 	    if (aMax < aMin)
 		break;
 
-	    /* is it time for global update? */
 	    if (workSinceUpdate * globUpdtFreq > nm) {
 		globalUpdate ();
 		workSinceUpdate = 0;
@@ -743,20 +668,20 @@ void stageOne()
 
 	}
     
-    } /* end of the main loop */
+    } 
     
     flow = sink -> excess;
 
 } 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
 
 
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// added by Yang Liu 06/26/06
+
+
+
 void DeleTempfiles(int D, int L, double R, int seed)
 {
     struct stat s;
@@ -772,11 +697,11 @@ void DeleTempfiles(int D, int L, double R, int seed)
 	    cout << "Failed to delete dir" << jobtmp << endl;
     }
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// added by Yang Liu 04/17/2014
+
+
+
 void DeleTempfiles(int N, double c, double R, int seed)
 {
     struct stat s;
@@ -792,12 +717,12 @@ void DeleTempfiles(int N, double c, double R, int seed)
 	    cout << "Failed to delete dir" << jobtmp << endl;
     }
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// added by Yang Liu 04/18/2014
+
+
+
 void DeleTempfiles(string file)
 {
     struct stat s;
@@ -813,10 +738,10 @@ void DeleTempfiles(string file)
 	    cout << "Failed to delete dir" << jobtmp << endl;
     }
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 float timer ()
 {
   struct rusage r;
@@ -824,5 +749,5 @@ float timer ()
   getrusage(0, &r);
   return (float)(r.ru_utime.tv_sec+r.ru_utime.tv_usec/(float)1000000);
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 

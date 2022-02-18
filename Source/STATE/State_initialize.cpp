@@ -2,8 +2,8 @@
 
 using namespace std;
 
-////////////////////////////////////////////////////////////////////////////////////////////////////// 
-// initialize the lattice (State) with all spins = dir
+
+
 void State::Initialize_withdir(char dir)  
 {
     if(dir==1)
@@ -21,12 +21,12 @@ void State::Initialize_withdir(char dir)
 	m = -1.0;
     }
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
-////////////////////////////////////////////////////////////////////////////////////////////////////// 
-// initialize the lattice (State) with spins UP if H>0 
+
+
+
 void State::Initialize_fromfield(double H)  
 {
     if(H<=0.0)
@@ -45,12 +45,12 @@ void State::Initialize_fromfield(double H)
     }
 
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
-////////////////////////////////////////////////////////////////////////////////////////////////////// 
-// initialize State from the GS file: ./data/GS-jobID/k
+
+
+
 void State::Initialize_fromfile(int k)  
 {
     char fname[256]; 
@@ -67,25 +67,25 @@ void State::Initialize_fromfile(int k)
 	exit(2);
     }
     
-    //infile >> M;          // M must be known to calculate the number of free sites (Nfs)
+    
     infile.read(reinterpret_cast<char *>(&M),sizeof(int));
 
     m = M/(double)N;
 
-    //for(int i=0;i<N;i++)
-    //infile >> spin[i];
+    
+    
     infile.read(spin,N*sizeof(char));
     
     
     infile.close();
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
 
-////////////////////////////////////////////////////////////////////////////////////////////////////// 
-// initialize State from the GS file: ./data/GS-jobID/k
+
+
+
 void State::Initialize_fromfile(string file, int k)  
 {
     char fname[256]; 
@@ -98,28 +98,28 @@ void State::Initialize_fromfile(string file, int k)
 	exit(2);
     }
     
-    //infile >> M;          // M must be known to calculate the number of free sites (Nfs)
+    
     infile.read(reinterpret_cast<char *>(&M),sizeof(int));
 
-    //cout << "\nM= " << M << endl; //debug 
+    
 
     m = M/(double)N;
 
-    //for(int i=0;i<N;i++)
-    //infile >> spin[i];
+    
+    
     infile.read(spin,N*sizeof(char));
     
     
     infile.close();
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-////////////////////////////////////////////////////////////////////////////////////////////////////// 
-// Reset for the calculation of ground state at different external field
+
+
+
 void State::Reset()
 {
     mapping = false; 
     ArcList.clear();
 }
-////////////////////////////////////////////////////////////////////////////////////////////////////// 
+

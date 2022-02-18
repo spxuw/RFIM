@@ -24,11 +24,11 @@ int main(int argc, char** argv)
   char elistfile[256];
   sprintf(elistfile, "%s/%s", path.c_str(), file.c_str());
   
-  Parser_s2n(elistfile); //the file may contain arbitrary string, e.g. RegulonDB data set
+  Parser_s2n(elistfile); 
   
   cout << "In total it takes " << time << " s.\n\n";
 
   exit(1);
 }
-///////////////////////////////////////////////////////////////////////////////////////
+
 

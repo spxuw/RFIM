@@ -9,11 +9,8 @@
 #include <set>
 #include <limits>
 #include <algorithm>
-//#include <random>
 
 #include <gsl/gsl_sf_zeta.h>
-//#include "mynrutil.h"
-//#include "nr.h"
 
 using namespace std;
 
@@ -24,7 +21,7 @@ const int BIGPRIME = 899999963;
 const double PI    = 3.1415926535897932384626433832795028841971693993751;
 
 typedef double (*FUNC)(const double, const double, const double);
-inline double fx(const double htilde, const double y, const double u) // here htilde=x is the argument of the function
+inline double fx(const double htilde, const double y, const double u) 
 {
   return (pow(htilde,y+1) - (y+1)*htilde + fabs(2*u-1)*y);
 }    
@@ -41,37 +38,19 @@ inline int Getnode(list<int>& X, int index)
   return -1;
 }
 
-/*
-inline double gammln(const double xx)
-{
-  int j;
-  double x,y,tmp,ser;
-  static const double cof[6]={76.18009172947146,-86.50532032941677,
-			      24.01409824083091,-1.231739572450155,0.1208650973866179e-2,
-			      -0.5395239384953e-5};
-
-  y=x=xx;
-  tmp=x+5.5;
-  tmp -= (x+0.5)*log(tmp);
-  ser=1.000000000190015;
-  for (j=0;j<6;j++) ser += cof[j]/++y;
-  return -tmp+log(2.5066282746310005*ser/x);
-}
-*/
-
 class Rand {
   double c,cd,cm,u[97];
   int i97,j97 ;
   bool outputReady;
   double output;
 
-  int idum; // used in ran1()
+  int idum; 
 
  public:
   Rand(int seed) {
     ranmarin(fabs(seed%BIGPRIME));
     outputReady=false;
-    idum=-1*seed; // very important , cannot just set to be -1, must depend on seed
+    idum=-1*seed; 
 
     flag_setFvector = false;
     flag_setPvector = false;
@@ -89,14 +68,13 @@ class Rand {
   void seed(int seed) {
     ranmarin(fabs(seed%BIGPRIME));
     outputReady=false;
-    idum=-1*seed; // very important  , cannot just set to be -1, must depend on seed
+    idum=-1*seed; 
 
     flag_setFvector = false;
     flag_setPvector = false;
   }
 
 
-  // the worst uniform RNG
   double ran() { return rand()/(double)RAND_MAX;}
     
   double uniform()
@@ -115,8 +93,6 @@ class Rand {
     return(uni);
   }
 
-  // "Minimal" random number generator of Park and Miller with Bays-Durham shuffle and added safeguards.
-  // adopted from NR. YL 10/05/08
   double ran1()
   {
     const int IA=16807,IM=2147483647,IQ=127773,IR=2836,NTAB=32;
@@ -150,18 +126,13 @@ class Rand {
 
 
 
-  // Gives all numbers weighted equally, min and max inclusive
   int discrete(int min, int max)
   {
-    //int ret= (int)(floor(uniform()*(max+1-min)+min));
     int ret= (int)(floor(ran1()*(max+1-min)+min));
-    //		assert(ret<=max && ret>=min);
     return ret;
   }
 
 
-  // Gives all numbers weighted equally, min and max inclusive
-  // generate two different random intergers
   void discrete(int min, int max, int& a, int& b)
   {
     a = (int)(floor(ran1()*(max+1-min)+min));
@@ -172,8 +143,7 @@ class Rand {
     
   }
 
-  // Gives all numbers weighted equally, min and max inclusive
-  // generate three different random intergers
+
   void discrete(int min, int max, int& a, int& b, int& c)
   {
     a = (int)(floor(ran1()*(max+1-min)+min));
@@ -188,8 +158,7 @@ class Rand {
     
   }
 
-  // Gives all numbers weighted equally, min and max inclusive
-  // generate 4 different random intergers
+
   void discrete(int min, int max, int& a, int& b, int& c, int& d)
   {
     a = (int)(floor(ran1()*(max+1-min)+min));
@@ -209,10 +178,6 @@ class Rand {
   }
 
 
-
-
-  // Gives all numbers weighted equally, min and max inclusive
-  // generate n different random intergers
   void discrete(int min, int max, int n, set<int>& Set)
   {
     Set.clear();
@@ -226,9 +191,6 @@ class Rand {
   }
 
 
-
-  // Gives all numbers weighted equally, min and max inclusive
-  // generate n different random intergers
   void discrete(int min, int max, int n, vector<int>& Vec)
   {
     set<int> Set;
@@ -246,7 +208,6 @@ class Rand {
 
 
 
-  // min and max inclusive, gives all numbers in log-bin equally : [1,2), [2,4), [4,8), .... 
   int discrete_logbin(int xmin, int xmax)
   {
     double ratio = 1.15;
@@ -254,7 +215,6 @@ class Rand {
       xmin=1;
 
     int Nbins = (int)(floor(log(xmax/xmin)/log(ratio))) + 1; 
-    // choose a bin uniformly
     int i = discrete(0, Nbins-1);
     int a = xmin * pow(ratio, (double)i);
     int b = a*ratio;
@@ -267,7 +227,6 @@ class Rand {
 
 
 
-  ///////////////////////////////////////////////////////////////////////////////
   void randomsubset(int N, int Nc, vector<int>& S)
   {
     list<int> Lbig;
@@ -281,7 +240,7 @@ class Rand {
     list<int> Lsmall;
     for(int i=0; i<M; i++) {
       int index = discrete(0, N-1);
-      //cout << index << endl; //test
+      
       int j = Getnode(Lbig, index);
       Lsmall.push_back(j);
       Lbig.remove(j);
@@ -297,23 +256,14 @@ class Rand {
       copy(Lsmall.begin(), Lsmall.end(), S.begin());
 
   }
-  ///////////////////////////////////////////////////////////////////////////////
 
-
-  ///////////////////////////////////////////////////////////////////////////////
-  // http://stackoverflow.com/questions/136474/best-way-to-pick-a-random-subset-from-a-collection/2564196#2564196
-  // This is much faster!
   void randomsubset_knuth(int n, int m, vector<int>& S)
   {    
-    //cout << m << ':';
     for (int i = 0; i < n; i++)
-      /* select m of remaining n-i */
       if ((discrete(1,n) % (n-i)) < m) {
-	//cout << i << ",";
 	S.push_back(i);
 	m--;
       }
-    //cout << endl;
   }
 
 
@@ -333,12 +283,7 @@ class Rand {
     for (i = 0; i< m; i++)
       S.push_back(x[i]);
   }
-  ///////////////////////////////////////////////////////////////////////////////
 
-
-
-  ///////////////////////////////////////////////////////////////////////////////
-  // complete re-shuffle each time when we call the function
   void randomsubset_shuffle(int n, int m, vector<int>& S)
   {   
     vector<int> x(n);
@@ -350,76 +295,7 @@ class Rand {
     for (int i=0; i<m; i++) 
       S.push_back(x[i]);
   }
-  ///////////////////////////////////////////////////////////////////////////////
-
-
-
-  ///////////////////////////////////////////////////////////////////////////////
-  // complete re-shuffle each time when we call the function		
-  // the shuffled indices will be used for next reshuffle
-  // Note that this is extremely slow!!!
-  /*void randomsubset_rolling(vector<int>& x, int n, int m, vector<int>& S)
-  {   
-    random_shuffle(x.begin(), x.end());
-
-    int j=discrete(0,n-1);
-    for (int i=0; i<m; i++) 
-      S.push_back(x[(j+i)%n]);
-  }
-  */
-
-  /* Not very good!
-  void randomsubset_rolling(int n, int m, vector<int>& S)
-  {   
-    int j=discrete(0,n-1);
-    for (int i=0; i<m; i++) 
-      S.push_back((j+i)%n);
-  }
-  */
-  ///////////////////////////////////////////////////////////////////////////////
-
-
-
-
- 
-  /*
-  // Poisson distribution
-  int poisson(double xm)
-  {
-    static double sq,alxm,g,oldm=(-1.0);
-    double em,t,y;
-
-    if (xm < 12.0) {
-      if (xm != oldm) {
-	oldm=xm;
-	g=exp(-xm);
-      }
-      em = -1;
-      t=1.0;
-      do {
-	++em;
-	t *= ran1();
-      } while (t > g);
-    } else {
-      if (xm != oldm) {
-	oldm=xm;
-	sq=sqrt(2.0*xm);
-	alxm=log(xm);
-	g=xm*alxm-gammln(xm+1.0);
-      }
-      do {
-	do {
-	  y=tan(PI*ran1());
-	  em=sq*y+xm;
-	} while (em < 0.0);
-	em=floor(em);
-	t=0.9*(1.0+y*y)*exp(em*alxm-gammln(em+1.0)-g);
-      } while (ran1() > t);
-    }
-    return (int)em;
-  }
-  */
-
+  
 
   double gaussian(double sd)
   {
@@ -432,8 +308,7 @@ class Rand {
 
     do
       {
-	//v1=(ran1()*2.0)-1.0; 
-	//v2=(ran1()*2.0)-1.0; 
+
 
 	v1=(uniform()*2.0)-1.0;
 	v2=(uniform()*2.0)-1.0;
@@ -447,45 +322,28 @@ class Rand {
     return v2*z*sd;
   }
 
-  /* John Carpenter added */
   double lorentzian(double sd) 
   {
     double v1,v2,z;
     do {
       v2 = uniform();
       v1 = 2.0 * uniform() - 1.0;
-      //v2 = ran1();            
-      //v1 = 2.0 * ran1() - 1.0;
     } while ((v1*v1+v2*v2)>1.0);
     z = v2/v1;
-    return sd*z/2.0; // in this way, sd=w=2 gamga = width
-    //return sd*z;//Yang Liu, in this way, sd = gama, i.e. the half-width at half-maximum
+    return sd*z/2.0;
   }
 
-
-  /* Yang Liu added */
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  //////////////////////////   power-law distribution //////////////////////////////////////////////
-  // continuous distribution
   double powerlaw_continuous(double alpha, double xmin)
   {
     return ( xmin*pow(1-ran1(), 1./(1-alpha) ) );
   }
 
-  // continuous powerlaw distribution within an interval (a, 1]
-  // p(theta) \sim theta^{-beta}  for  theta \in (a, 1]
-  //               0                    otherwise
-  // here a = alpha/n
   double powerlaw_continuous_interval(double a, double beta)
   {
     return pow( (1- (1-ran1())*(1-pow(a, 1-beta))), 1/(1-beta) );
   }
 
 
-
-  // discrete distribution approximated from the continuous disitribution
-  // The approximation involved in this approach is largest
-  // for the smallest value of x, which is by definition xmin.
   int powerlaw_discrete_approximate(double alpha, double xmin)
   {
     double r = ran1();
@@ -496,86 +354,40 @@ class Rand {
     }
     return k;
 
-    //return (int)( (xmin-0.5)*pow(1-ran1(), 1./(1-alpha) ) + 0.5 );
   }
 
 
-  // discrete distribution obtained by ``doubling up" and binary search
   int powerlaw_discrete(double alpha, int xmin)
   {
-    // Set up the look-up-table for P(x)=Pr(X>=x)
     if(!flag_setPvector)
       SetPvector(alpha,xmin);
 
     double r = ran1();
-
-    /*
-    // For a given random number r, we first bracket a solution x to the equation
-    // Pr(X>=x) = zeta(alpha,x)/zeta(alpha,xmin) = 1-r
-    int x1,x2;
-    x2 = xmin;
-    do {
-      x1 = x2;
-      x2 = 2*x1;
-    } while(P[x2]>1-r); // this will cause trouble when r=1. endless loop!
-    // Actually this ``doubling up" is not necessary at all. Since we will do the binary search
-    // any way.
-    */
-
-
-    // Then we pinpoint the solution within the range x1 to x2
-    // by binary search. We need only continue the binary
-    // search until the value of x is narrowed down to j ≤ x <
-    // j+1 for some integer j: then we discard the integer part
-    // and the result is a power-law distributed random integer.
     int j = Findj(P, 1-r);
     return j;
 
   }
-  //////////////////////////////////////////////////////////////////////////////////////////////////
+  
 
 
 
 
 
-  // discrete distribution obtained by ``doubling up" and binary search
   int powerlaw_exponentialcutoff_discrete(double gamma, double kappa)
   {
-    // Set up the look-up-table for P(x)=Pr(X>=x)
     if(!flag_setPvector)
       SetPvector_SFEC(gamma, kappa);
 
     double r = ran1();
 
-
-    // Then we pinpoint the solution within the range x1 to x2
-    // by binary search. We need only continue the binary
-    // search until the value of x is narrowed down to j ≤ x <
-    // j+1 for some integer j: then we discard the integer part
-    // and the result is a power-law distributed random integer.
     int j = Findj(P, 1-r);
     return j;
 
   }
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-
-  ////////////////////     For arbitrary discrete distribution with given cumulative distribution function (CDF) /////
-  //int arbitrary_discrete(vector<double>& CDF, int kmin)
-  //{
-  //double r = ran1();
-  //int j = Findj(CDF, r);
-  //return j+1+kmin;
-  //}
+  
   int arbitrary_discrete(vector<double>& CDF)
   {
     double r = ran1();
-    // Given a monotonic array xx[0...n-1] and given a value x, returns a value j such that 
-    // xx[j] < x < xx[j+1]. 
     int j = Findj(CDF, r);
     return j+1;
   }
@@ -583,16 +395,12 @@ class Rand {
   int arbitrary_discrete(vector<long double>& CDF)
   {
     double r = ran1();
-    // Given a monotonic array xx[0...n-1] and given a value x, returns a value j such that 
-    // xx[j] < x < xx[j+1]. 
     int j = Findj(CDF, r);
     return j+1;
   }
 
-  //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-  /* Yang Liu added */
   double lognormal(double sd) 
   {
     double v1,v2,Rsq,z;
@@ -604,8 +412,8 @@ class Rand {
 
     do
       {
-	v1=(ran1()*2.0)-1.0; //v1=(uniform()*2.0)-1.0;
-	v2=(ran1()*2.0)-1.0; //v2=(uniform()*2.0)-1.0;
+	v1=(ran1()*2.0)-1.0; 
+	v2=(ran1()*2.0)-1.0; 
 	Rsq=v1*v1+v2*v2;
       } while (Rsq>=1.0);
 
@@ -616,37 +424,37 @@ class Rand {
   }
 
 
-  /* Yang Liu added */
+ 
   double bimodal(double R)
   {
-    //return (uniform()>0.5) ? (R) : (-R);
+    
     return (ran1()>0.5) ? (R) : (-R);
   }
 
-  /* Yang Liu added */
+ 
   double rectangular(double R)
   {
-    //return ((uniform()*2-1)*R); // Bad ! Period is short!
+    
     return ((ran1()*2-1)*R); 
   }
 
 
-  /* Yang Liu added */
-  // This parabolic distribution is obtained by using the transformation method. See NR:Ch7.2, Pg.291.
-  // normalized parabolic distribution:  P(h) = (R^2-h^2)/(4R^3/3) with h \in [-R,R]
-  // F(h) = \int_(-R)^h p(h) dh = 1/2 - h^3/(4R^3) + 3h/(4R)
-  // given x \in [0,1), we want to find the root(s) of F(h) = x, i.e. 
-  //              h^3 - 3R^2 h + 4 R^3(x-1/2) == 0
+ 
+  
+  
+  
+  
+  
 
-  // Basically we are sovling a cubic equation.
-  // Note that here the Discriminant (Disc) for this simple cubic equation is negative (crucially due to x\in[0,1))
-  // which means there are three real roots.
-  // Now it is tricky to apply the analytic formula, e.g see http://en.wikipedia.org/wiki/Cubic_equation
-  // Because Discriminant is negative, we have to explicitly write the three real roots rather than 
-  // directly applying those formulas. Note that the C++ cannot handle sqrt(negative number). It will give you "nan"
+  
+  
+  
+  
+  
+  
   double parabolic(double R)
   {
-    //double x = uniform();
+    
     double x = ran1();
 
     int sign =  (x>0.5) ? (-1) : (+1);
@@ -657,7 +465,7 @@ class Rand {
     double q     = 4*R3*(x-0.5);
     double p     = -3*R2;
     double Disc  = q*q/4. + p*p*p/27.;
-    double r     = R3;//sqrt(q*q/4. - Disc);
+    double r     = R3;
     double theta = atan(sqrt(-Disc)/(-q/2.));
     double ronethird = pow(r,1/3.);
 	  
@@ -675,24 +483,24 @@ class Rand {
     else
       cout << "range is wrong!";
 	
-    //cout << x << ' ' << h1 << ' ' << h2 << ' ' << h3 << ' ' << y << endl;
+    
 
     return y;
   }
 
 
 
-  // This anti-parabolic distribution is obtained by using the transformation method. See NR:Ch7.2, Pg.291.
-  // normalized parabolic distribution:  P(h) = h^2/(2R^3/3) with h \in [-R,R]
-  // F(h) = \int_(-R)^h p(h) dh = h^3/(2R^3) + 1/2
-  // given x \in [0,1), we want to find the root(s) of F(h) = x, i.e. 
-  //              h^3 = (2x-1) R^3
-  // This is easy: if x>0.5, then h =   (2x-1)^(1/3) * R
-  //                    else      h = - (1-2x)^(1/3) * R
+  
+  
+  
+  
+  
+  
+  
 
   double antiparabolic(double R)
   {
-    //double x = uniform();
+    
     double x = ran1();
 
     int sign =  (x>0.5) ? (+1) : (-1);
@@ -704,22 +512,22 @@ class Rand {
 
 
 
-  // Duxbury-Meinke type-I distribution:
-  //
-  //          y+1        
-  // P(h) =  ----- [1 - (|h|/R)^y]    for -R <= h <= R
-  //          2yR       
-  // 
-  // This can also be obtained by using the transformation method. See NR:Ch7.2, Pg.291.
+  
+  
+  
+  
+  
+  
+  
 
-  // Method 1: we can directly use a look-up-table. The idea follows:
-  // We integrate 
-  // F(h) = \int_(-R)^h p(h) dh  for a set of h values: h = -R, -R+dh, -R+2dh, ......, +R
-  // and store those F(h) values in an array.
-  // Then for given x \in [0,1), we just look up the F(h)-vector, the index of the array element with F(h)=x will
-  // give the random variable h.
+  
+  
+  
+  
+  
+  
   double DMI_lookuptable(double y, double R)
-  //double DMI(double y, double R)
+  
   {
     if(!flag_setFvector)
       SetFvector(y,R);
@@ -732,17 +540,17 @@ class Rand {
   }
 
 
-  // Method 2: we can also numerically solve the equation: F(h) == x to get h for a given x
-  //double DMI_findroot(double y, double R)
+  
+  
   double DMI(double y, double R)
   {
     double u = ran1();
     int sign =  (u>0.5) ? (+1) : (-1);
 
-    // Depending on u>0.5 or not, there are two cases (h>0 or h<0).
-    // we need to find the root of the equation F(h) == u for a given u. 
-    // It can be derived as: ~h^(y+1) - (y+1)*~h + sign* (2y*u - y) == 0 
-    // with ~h := sign*h/R. 
+    
+    
+    
+    
 
     const double hacc = 1e-12;
     double htilde = rtbis(&fx, y, u, 0, 1, hacc);
@@ -752,42 +560,35 @@ class Rand {
     
 
 
-  ////////// for discrete exponential distribution 
-  // P(k) = [1-e^(-1/kappa)] e^(-k/kappa)
-  // one can solve for the cumulative distribution function exactly:
-  // CDF(K) = sum_{0}^K P(k)  = 1-e^(-(K+1)/kappa) = u with u in [0,1]
-  // Inverse the CDF(K)=u we get
-  // K(u) = -kappa log(1-u) - 1
+  
+  
+  
+  
+  
+  
   int exponential(double kappa)
   {
     double u = ran1();
-    //int k = -kappa * log(1-u) -1;    // (1) this is not very good. But why?
-    int k = -kappa * log(1-u);  // (2) this is better in the sense that the calculated nD match the analytical value
+    
+    int k = -kappa * log(1-u);  
     return k;
   }
   
-  /*
-    (1) is obtained by inversing the CDF(K) = sum_{k=0}^K p(k)
-    (2) is obtained by inversing the CCDF(K)= sum_{k=K}^\infty p(k), i.e. the
-    complimentary cumulative distribution.
-    See Clasuset's paper "Power-law distribution in empirical data", p39. Eq.D5.
-    
-    But why (2) is better?
-  */
+ 
 
 
 
  private:
 
-  /////////////////////////////////////////////////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////////////////////////////////////////
+  
+  
 
 
-  ////////////////////     For DMI, method 1   ////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////////////////////////////////////////
-  // For DMI-distribution, we use the look-up-table.
-  // Integrate F(h) = \int_(-R)^h p(h) dh  for a set of h values: h = -R, -R+dh, -R+2dh, ......, +R
-  // and store those F(h) values in Fvector.
+  
+  
+  
+  
+  
 
   bool flag_setFvector;
   vector<double> F;
@@ -805,7 +606,7 @@ class Rand {
     dh = R/(double)(N-1);
     F.resize(2*N-1,0);
 	    
-    //cout << dh << endl; // debug
+    
 
     F[0]     = 0;
     F[2*N-2] = 1 - F[0];
@@ -814,7 +615,7 @@ class Rand {
 	double h1 = -R + i*dh;
 	double h2 = h1 + dh;
 		
-	// use the trapezoidal rule to do the integration
+	
 	F[i]       = F[i-1] + 0.5* (P_DMI(h1,y,R)+P_DMI(h2,y,R))*dh;
 	F[2*N-2-i] = 1- F[i];
       }
@@ -822,24 +623,24 @@ class Rand {
     flag_setFvector = true;
   }
 
-  // use bisection-method to find the corresponding h with F[h]=x
-  // based on NR:locate(Vec_I_DP& xx, const DP x, int& j)
-  // Given an array xx[0...n-1] and given a value x, returns a value j such that x is between
-  // xx[j] and xx[j+1]. xx must be monotonic, either increasing or decreasing.
-  // j=-1 or j=n-1 is returned to indicate that x is out of range
+  
+  
+  
+  
+  
   int Findj(vector<double>& xx, const double x)
   {
     int j,jl,jm,ju;
     int n=xx.size();
 
-    jl=-1; ju=n;  // initialize lower and upper limits
+    jl=-1; ju=n;  
 
-    bool ascnd = (xx[n-1] >= xx[0]);   // true if ascending order of table, false otherwise
+    bool ascnd = (xx[n-1] >= xx[0]);   
     while (ju-jl > 1) 
       {
-	jm=(ju+jl) >> 1;  // compute a midpoint
-	if ((x >= xx[jm]) == ascnd) jl=jm; // replace either the lower limit
-	else    	          ju=jm; // or the upper limit, as appropriate       
+	jm=(ju+jl) >> 1;  
+	if ((x >= xx[jm]) == ascnd) jl=jm; 
+	else    	          ju=jm; 
       }
 	    
     if (x == xx[0]) j=0;
@@ -854,14 +655,14 @@ class Rand {
     int j,jl,jm,ju;
     int n=xx.size();
 
-    jl=-1; ju=n;  // initialize lower and upper limits
+    jl=-1; ju=n;  
 
-    bool ascnd = (xx[n-1] >= xx[0]);   // true if ascending order of table, false otherwise
+    bool ascnd = (xx[n-1] >= xx[0]);   
     while (ju-jl > 1) 
       {
-	jm=(ju+jl) >> 1;  // compute a midpoint
-	if ((x >= xx[jm]) == ascnd) jl=jm; // replace either the lower limit
-	else    	          ju=jm; // or the upper limit, as appropriate       
+	jm=(ju+jl) >> 1;  
+	if ((x >= xx[jm]) == ascnd) jl=jm; 
+	else    	          ju=jm; 
       }
 	    
     if (x == xx[0]) j=0;
@@ -871,20 +672,20 @@ class Rand {
     return j;
   }
 
-  /////////////////////////////////////////////////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////////////////////////////////////////
+  
+  
 
 
-  /////////////////////////////////////////////////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////////////////////////////////////////
-  ////////////////////     For DMI, method 2   ////////////////////////////////////////////////////////
+  
+  
+  
 
 
-  // Using bisection, find the root of a function func known to lie between x1 and x2. The root, returned as
-  // rtb, will be refined until its accuracy is +/- xacc
+  
+  
   double rtbis(FUNC func, const double y, const double u, const double x1, const double x2, const double xacc)
   {
-    const int JMAX=40; // maximum allowed number of bisections.
+    const int JMAX=40; 
     int j;
     double dx,f,fmid,xmid,rtb;
 	    
@@ -903,11 +704,11 @@ class Rand {
     return 0.0;
   }
 
-  /////////////////////////////////////////////////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////////////////////////////////////////
+  
+  
+  
+  
+  
 
 
     
@@ -948,14 +749,14 @@ class Rand {
 	
 
 
-  ////////////////////     For powerlaw_discrete   ////////////////////////////////////////////////////////
-  // The look-up-table of P(x)=Pr(X>=x) = zeta(alpha,x)/zeta(alpha,xmin) 
-  // Store those P(x) values in Pvector.
+  
+  
+  
   bool flag_setPvector;
   vector<double> P;
 
-  //Hurwitz zeta function (brute-forcely)
-  // But this convergence is extremely slow, especially for small s.
+  
+  
   double Hzeta(double s, double q)
   {
     double sum = 0;
@@ -969,51 +770,39 @@ class Rand {
 	if(fabs(nterm/sum) < TOLERANCE)
 	  break;
       }
-    cout << "nmax= " << n << endl; //test
+    cout << "nmax= " << n << endl; 
     return sum;
   }
 
   void SetPvector(double alpha, int xmin)
   {
-    // calculate Hzeta(alpha,xmin) first
-    double a = gsl_sf_hzeta(alpha, xmin);//Hzeta(alpha, xmin);
-    //cout << "a= " << a << endl;//test
+    
+    double a = gsl_sf_hzeta(alpha, xmin);
+    
 
     int N = 10000000+xmin; 
 
     P.resize(N,2);
-    // Here we'd better set all P(x)=2 (which is unphysical) for x<xmin
-    // becauce in performing binary search we would like P[] to be monotonic
-    // if we set all P(x)=0 for x<xmin, since P(xmin)=1, then P(x)<1 for x>xmin
-    // then P[] is not monotonic
+    
+    
+    
+    
 
     P[xmin] = 1;  
     for(int i=xmin;i<N-1;i++)
       {
-	// P(x+1) = P(x) - 1/(x^alpha * zeta(alpha,xmin))
+	
 	P[i+1] = P[i] - 1/(pow((double)i,alpha)*a);  
       }
 	    
-    //for(int i=0;i<100;i++)
-    //cout << P[i] << ',';
+    
+    
 
 
     flag_setPvector = true;
   }
 
 
-
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////
-/**
- * cpx_polylog_sum -- compute the polylogarithm by direct summation
- *
- * Li_s(z) = sum_{n=1}^infty z^n/ n^s
- * 
- * The magnitude of z must be less than one in order for the 
- * summation to be carried out.
- */
 double polylog(double s, double z)
 {
   double sum = 0;
@@ -1028,14 +817,14 @@ double polylog(double s, double z)
       break;
     }
   }
-  //cout << "n= " << nmax << endl; //test
+  
 
   return sum;
 }
-/////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-  // for   int powerlaw_exponentialcutoff_discrete(double kappa)
+
+  
   void SetPvector_SFEC(double gamma, double kappa)
   {
     double enkappa= exp(-1/kappa);
@@ -1044,10 +833,10 @@ double polylog(double s, double z)
     int N = 10000000; 
 
     P.resize(N,2);
-    // Here we'd better set all P(x)=2 (which is unphysical) for x<xmin
-    // becauce in performing binary search we would like P[] to be monotonic
-    // if we set all P(x)=0 for x<xmin, since P(xmin)=1, then P(x)<1 for x>xmin
-    // then P[] is not monotonic
+    
+    
+    
+    
 
     P[1] = 1;  
     double a = enkappa;

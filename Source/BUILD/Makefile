@@ -3,7 +3,6 @@
 ############################################################
 # home directory
 #BASEBGL= /Users/xu-wenwang/Dropbox/Github/RFIM/RFIM/Source/boost_1_33_1
-#BASENR = /Users/xu-wenwang/Dropbox/Github/RFIM/RFIM/Source/NR/cpp
 BASE   = ../
 LIBRARY = /Users/xu-wenwang/Dropbox/Github/RFIM/RFIM/Source/Gadgets/
 
@@ -11,7 +10,6 @@ INCLALL   =  -I$(LIBRARY)/Random \
              -I$(LIBRARY)/Timer \
              -I$(LIBRARY)/Splitter \
 	     -I$(LIBRARY)/SpecialFunctions \
-	     -I$(LIBRARY)/NR/cpp/other \
              -I$(LIBRARY)/Find \
              -I$(LIBRARY)/Color \
              -I$(LIBRARY)/Statistics/Histogram \
@@ -31,9 +29,6 @@ OBJMAIN0 = main_preprocess.o
 MAIN4 = $(BASE)/MAIN/main_Network_Real.cpp 
 OBJMAIN4 = main_Network_Real.o 
 
-MAIN5 = $(BASE)/MAIN/main_GenerateSyntheticData.cpp 
-OBJMAIN5 = main_GenerateSyntheticData.o 
-
 MAIN6 = $(BASE)/MAIN/main_permute.cpp 
 OBJMAIN6 = main_permute.o 
 
@@ -43,8 +38,8 @@ SOLVER = $(BASE)/HIPR/calculate_GS.cpp
 OBJSOLVER = calculate_GS.o
 
 # class file 1
-CLASS1 = $(BASE)/WINDOW/DropletAnalyse.cpp  
-OBJCLASS1 = DropletAnalyse.o 
+#CLASS1 = $(BASE)/WINDOW/DropletAnalyse.cpp  
+#OBJCLASS1 = DropletAnalyse.o 
 
 # class file 2
 CLASS2 = $(BASE)/STATE/State.cpp  
@@ -121,13 +116,6 @@ OBJTOOL5 = MakeDirectory.o
 OBJTOOLS = $(OBJTOOL0) $(OBJTOOL1) $(OBJTOOL2) $(OBJTOOL3) $(OBJTOOL4) $(OBJTOOL5)
 
 
-# numerical recipe file 1 
-RECIPE1 = $(LIBRARY)/NR/cpp/recipes/jacobi.cpp  
-OBJRECIPE1 = jacobi.o 
-# numerical recipe file 2
-RECIPE2 = $(LIBRARY)/NR/cpp/recipes/eigsrt.cpp  
-OBJRECIPE2 = eigsrt.o 
-
 
 OBJRECIPES = $(OBJRECIPE1)  $(OBJRECIPE2) 
 
@@ -148,11 +136,10 @@ OBJS = $(OBJMAIN0) $(OBJMAIN1) $(OBJMAIN2) $(OBJMAIN3) $(OBJMAIN4) $(OBJMAIN5) $
 # executable file
 EXE0 = HMS_PreProcess
 EXE4 = HMS_Network_Real
-EXE5 = HMS_GenerateSyntheticData
 EXE6 = HMS_Permute
 
-EXES = $(EXE0) $(EXE1) $(EXE2) $(EXE3) $(EXE4) $(EXE5) $(EXE6)   
-all : HMS_PreProcess HMS_Network_Real HMS_GenerateSyntheticData HMS_Permute
+EXES = $(EXE0) $(EXE1) $(EXE2) $(EXE3) $(EXE4) $(EXE6)   
+all : HMS_PreProcess HMS_Network_Real HMS_Permute
 
 
 # macro for name of my compiler: 

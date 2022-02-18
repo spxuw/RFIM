@@ -1,46 +1,6 @@
 #include "Parser.h"
 #include "Find.h"
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//           The following functions are parsers, which convert different format files into
-//           standard elist file, where node index starts from 0, and the first two numbers 
-//           represent N=n and E=m, i.e. 
-//            N    E
-//            i -> j
-//            p -> q
-//            ......
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-/////////////////////////////////////////////////////////////////////////////////////////////////
-// Parser 1: convert Elist (2-col, in String format) to Elist (2-col, in Number format)
-//
-// we have to determine how many unique nodes we have from the Elist string data 
-// Here, the input Elist data could contain arbitary string, e.g. gene's name, eprint's ID, etc.
-// the output Elist data would be the standard elist format: i --> j
-// with i, j are numbers which are the starting and ending nodes' indices of the arc i-->j
-// the output Elist Number data is saved in both .txt and .bin formats
-//
-// Suppose we have a two-column data
-// e.g. 
-// acrR  acrA 
-// acrR  acrB 
-// acrR  acrR 
-// acrR  micF 
-// for this network, we just have 5 nodes and 4 edges
-// we have the mapping 
-// acrR  -- 0
-// acrA  -- 1
-// acrB  -- 2
-// micF  -- 3
-// the standard elist output would be
-// 0  1
-// 0  2
-// 0  0 
-// 0  3
-// 
-// Note that sometimes we have more columns in the string format, 
-// in this case we have to prepare a two-column data!!!!!!! This is very important.
-
 void Parser_s2n(char* fname1)
 {
   ifstream fin(fname1, ios_base::in);
@@ -60,8 +20,8 @@ void Parser_s2n(char* fname1)
   ofstream bout(fname, ios_base::out|ios::binary);
   if(!bout) {cout << "Cannot open " << fname << " for write."; exit(0);}
 
-  // do the index mapping first
-  vector<string> nodenamelist; //  name is a string (could be words, not just number)
+  
+  vector<string> nodenamelist; 
   string source; 
   string target;
   while (fin >> source >> target) {
@@ -74,15 +34,15 @@ void Parser_s2n(char* fname1)
   }
   fin.close();
 
-  // save the nodemap file
+  
   int n = nodenamelist.size();
-  map<string,int> MAP; // save the map between nodename and the index
+  map<string,int> MAP; 
   for(int i=0; i<n; i++) {
     fout << i << ' ' << nodenamelist[i] << endl;
     MAP[nodenamelist[i]] = i;
   }
 
-  // read the data again
+  
   ifstream fin2(fname1, ios_base::in);
   if(!fin2) {cout << "Cannot open " << fname1 << " for read."; exit(0);}
 
@@ -90,7 +50,7 @@ void Parser_s2n(char* fname1)
   while (fin2 >> source >> target) {
     int i = MAP[source];
     int j = MAP[target];
-    aoutlist[i].insert(j); // using set<int> will avoid getting repeated links
+    aoutlist[i].insert(j); 
   }
   fin2.close();
   
@@ -100,8 +60,8 @@ void Parser_s2n(char* fname1)
   }
   
 
-  // save the standard edgelist file
-  // Note that the first two lines store the information of N and E !!
+  
+  
   cout << fname1 << "\n# N= " << n << ", E= " << m << endl;
   tout << "#N= " << n << endl;
   tout << "#E= " << m << endl;
@@ -128,14 +88,14 @@ void Parser_s2n(char* fname1)
   tout.close();
   bout.close();
 }
-/////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
 
 
-/////////////////////////////////////////////////////////////////////////////////////////////////
-// same as above, just output the nodename map
+
+
+
 void Parser_s2n(char* fname1, map<string,int>& MAP)
 {
   ifstream fin(fname1, ios_base::in);
@@ -155,8 +115,8 @@ void Parser_s2n(char* fname1, map<string,int>& MAP)
   ofstream bout(fname, ios_base::out|ios::binary);
   if(!bout) {cout << "Cannot open " << fname << " for write."; exit(0);}
 
-  // do the index mapping first
-  vector<string> nodenamelist; //  name is a string (could be words, not just number)
+  
+  vector<string> nodenamelist; 
   string source; 
   string target;
   while (fin >> source >> target) {
@@ -169,15 +129,15 @@ void Parser_s2n(char* fname1, map<string,int>& MAP)
   }
   fin.close();
 
-  // save the nodemap file
+  
   int n = nodenamelist.size();
-  //map<string,int> MAP; // save the map between nodename and the index
+  
   for(int i=0; i<n; i++) {
     fout << i << ' ' << nodenamelist[i] << endl;
     MAP[nodenamelist[i]] = i;
   }
 
-  // read the data again
+  
   ifstream fin2(fname1, ios_base::in);
   if(!fin2) {cout << "Cannot open " << fname1 << " for read."; exit(0);}
 
@@ -185,7 +145,7 @@ void Parser_s2n(char* fname1, map<string,int>& MAP)
   while (fin2 >> source >> target) {
     int i = MAP[source];
     int j = MAP[target];
-    aoutlist[i].insert(j); // using set<int> will avoid getting repeated links
+    aoutlist[i].insert(j); 
   }
   fin2.close();
   
@@ -195,8 +155,8 @@ void Parser_s2n(char* fname1, map<string,int>& MAP)
   }
   
 
-  // save the standard edgelist file
-  // Note that the first two lines store the information of N and E !!
+  
+  
   cout << fname1 << "\n# N= " << n << ", E= " << m << endl;
   tout << "#N= " << n << endl;
   tout << "#E= " << m << endl;
@@ -224,15 +184,15 @@ void Parser_s2n(char* fname1, map<string,int>& MAP)
   tout.close();
   bout.close();
 }
-/////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
 
 
-/////////////////////////////////////////////////////////////////////////////////////////////////
-// deal with the three-column interbank data: 
-//e.g.  source     target     money-loan
+
+
+
+
 void Parser_s2n_Weighted(char* fname1)
 {
   ifstream fin(fname1, ios_base::in);
@@ -252,9 +212,9 @@ void Parser_s2n_Weighted(char* fname1)
   ofstream bout(fname, ios_base::out|ios::binary);
   if(!bout) {cout << "Cannot open " << fname << " for write."; exit(0);}
 
-  // do the index mapping first
+  
   cout << "Do the index mapping first.\n";
-  vector<string> nodenamelist; //  name is a string (could be words, not just number)
+  vector<string> nodenamelist; 
   string source; 
   string target;
   double weight;    
@@ -268,17 +228,17 @@ void Parser_s2n_Weighted(char* fname1)
   }
   fin.close();
 
-  // save the nodemap file
+  
   cout << "Save the nodemap file.\n";
   int n = nodenamelist.size();
-  map<string,int> MAP; // save the map between nodename and the index
+  map<string,int> MAP; 
   for(int i=0; i<n; i++) {
     fout << i << ' ' << nodenamelist[i] << endl;
     MAP[nodenamelist[i]] = i;
   }
 
 
-  // read the data again
+  
   cout << "Read the data again.\n";
   ifstream fin2(fname1, ios_base::in);
   if(!fin2) {cout << "Cannot open " << fname1 << " for read."; exit(0);}
@@ -294,7 +254,7 @@ void Parser_s2n_Weighted(char* fname1)
   while (fin2 >> source >> target >> weight) {
     int i = MAP[source];
     int j = MAP[target];
-    aoutlist[i].insert(j); // using set<int> will avoid getting repeated links
+    aoutlist[i].insert(j); 
 
     W[i][j] = weight;
   }
@@ -306,9 +266,9 @@ void Parser_s2n_Weighted(char* fname1)
   }
   
 
-  // save the standard edgelist file
+  
   cout << "Save the standard edgelist file.\n";
-  // Note that the first two lines store the information of N and E !!
+  
   cout << fname1 << "\n# N= " << n << ", E= " << m << endl;
   tout << "#N= " << n << endl;
   tout << "#E= " << m << endl;
@@ -318,7 +278,7 @@ void Parser_s2n_Weighted(char* fname1)
   bout.write(reinterpret_cast<char *>(nm), 2*sizeof(int));
   delete [] nm;
 
-  //int* endpoints = new int [2*m];
+  
   double* endpoints = new double [3*m];
   int e=0;
   for(int i=0; i<n; i++) {
@@ -339,20 +299,15 @@ void Parser_s2n_Weighted(char* fname1)
   tout.close();
   bout.close();
 }
-/////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
 
-/////////////////////////////////////////////////////////////////////////////////////////////////
-// deal with the three-column flux-coupling data: 
-//e.g.  source-reaction (vi)     target-reation (vj)     edge-type
-/*
-The edge type corresponds to the type of coupling: 
-1 = fully coupled:     vi is proportional to vj and vice versa:   vi <===> vj
-2 = partially coupled: if vi=0 then vj=0 and vice versa:          vi <---> vj 
-4 = directionally coupled: if vi=0, then vj=0                     vi  ---> vj       
-*/
+
+
+
+
+
 
 void Parser_s2n_FC(char* fname1)
 {
@@ -373,9 +328,9 @@ void Parser_s2n_FC(char* fname1)
   ofstream bout(fname, ios_base::out|ios::binary);
   if(!bout) {cout << "Cannot open " << fname << " for write."; exit(0);}
 
-  // do the index mapping first
+  
   cout << "Do the index mapping first.\n";
-  vector<string> nodenamelist; //  name is a string (could be words, not just number)
+  vector<string> nodenamelist; 
   string source; 
   string target;
   int edgetype;    
@@ -389,17 +344,17 @@ void Parser_s2n_FC(char* fname1)
   }
   fin.close();
 
-  // save the nodemap file
+  
   cout << "Save the nodemap file.\n";
   int n = nodenamelist.size();
-  map<string,int> MAP; // save the map between nodename and the index
+  map<string,int> MAP; 
   for(int i=0; i<n; i++) {
     fout << i << ' ' << nodenamelist[i] << endl;
     MAP[nodenamelist[i]] = i;
   }
 
 
-  // read the data again
+  
   cout << "Read the data again.\n";
   ifstream fin2(fname1, ios_base::in);
   if(!fin2) {cout << "Cannot open " << fname1 << " for read."; exit(0);}
@@ -411,7 +366,7 @@ void Parser_s2n_FC(char* fname1)
   }
 
 
-  vector< set<int> > aoutlist(n);// using set<int> will avoid getting repeated links   
+  vector< set<int> > aoutlist(n);
   while (fin2 >> source >> target >> edgetype) {
     int i = MAP[source];
     int j = MAP[target];
@@ -440,9 +395,9 @@ void Parser_s2n_FC(char* fname1)
   }
   
 
-  // save the standard edgelist file
+  
   cout << "Save the standard edgelist file.\n";
-  // Note that the first two lines store the information of N and E !!
+  
   cout << fname1 << "\n# N= " << n << ", E= " << m << endl;
   tout << "#N= " << n << endl;
   tout << "#E= " << m << endl;
@@ -452,7 +407,7 @@ void Parser_s2n_FC(char* fname1)
   bout.write(reinterpret_cast<char *>(nm), 2*sizeof(int));
   delete [] nm;
 
-  //int* endpoints = new int [2*m];
+  
   int* endpoints = new int [3*m];
   int e=0;
   for(int i=0; i<n; i++) {
@@ -473,18 +428,18 @@ void Parser_s2n_FC(char* fname1)
   tout.close();
   bout.close();
 }
-/////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
 
 
-/////////////////////////////////////////////////////////////////////////////////////////////////
-// deal with the three-column weighted data: 
-//      inventor1  inventor2  # of collaborations
-// In case the network is too big, but the nodes are already represented by positive integers
-// with some gaps in the indices, we may wanna skip the mapping procedure, which is quite time consuming.
-// We just use the original index, and respect the gaps, which will be understood as isoated nodes.
+
+
+
+
+
+
+
 void Parser_n2n_Undirected_Weighted(char* fname1)
 {
   ifstream fin(fname1, ios_base::in);
@@ -504,7 +459,7 @@ void Parser_n2n_Undirected_Weighted(char* fname1)
   ofstream bout(fname, ios_base::out|ios::binary);
   if(!bout) {cout << "Cannot open " << fname << " for write."; exit(0);}
 
-  // find the min and max of indices first 
+  
   cout << "Find the min and max of the indices first.\n";
   int source; 
   int target;
@@ -524,21 +479,21 @@ void Parser_n2n_Undirected_Weighted(char* fname1)
        
   int n = max+1;
 
-  // read the data again
+  
   cout << "Read the data again to calculate the degree and weight for each node.\n";
   ifstream fin2(fname1, ios_base::in);
   if(!fin2) {cout << "Cannot open " << fname1 << " for read."; exit(0);}
 
-  // weight of each node
+  
   vector<double> W(n,0);
-  // degree of each node
+  
   vector<double> K(n,0);
   vector< set<int> > aoutlist(n);
   int E=0;
   while (fin2 >> source >> target >> weight) {
     int i = source;
     int j = target;
-    aoutlist[i].insert(j); // using set<int> will avoid getting repeated links
+    aoutlist[i].insert(j); 
 
     W[i] += weight;
     W[j] += weight;
@@ -598,9 +553,9 @@ void Parser_n2n_Undirected_Weighted(char* fname1)
 
 
 
-  // save the node weight file
+  
   cout << "Save the node-degree-weight file.\n";
-  int Nni = 0; // # of non-isolated nodes 
+  int Nni = 0; 
   int m = 0;
 
   double Kmean_ni = 0;
@@ -624,9 +579,9 @@ void Parser_n2n_Undirected_Weighted(char* fname1)
   cout << "mean weight = " << Wmean_ni << endl;
   cout << "--------------------------------------------------------\n";
   
-  // save the standard edgelist file
+  
   cout << "Save the standard edgelist file.\n";
-  // Note that the first two lines store the information of N and E !!
+  
   cout << fname1 << "\n# N= " << n << ", E= " << m << endl;
   tout << "#N= " << n << endl;
   tout << "#E= " << m << endl;
@@ -655,7 +610,6 @@ void Parser_n2n_Undirected_Weighted(char* fname1)
   bout.close();
        
 }
-/////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
@@ -664,31 +618,19 @@ void Parser_n2n_Undirected_Weighted(char* fname1)
 
 
 
-/////////////////////////////////////////////////////////////////////////////////////////////////
-// Parser 2: convert gml to Elist (in Number format)
-/*
- edge
-  [
-    source 0
-    target 1
-    value 1
-  ]
-  edge
-  [
-    source 0
-    target 2
-    value 2
-  ]
-*/
 
 
-/////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
 const string numbers="0123456789";
-// get the number from a string
+
 void GetNumberFromaString(string str, int& x) 
 {
-  // x = atoi((str.substr(11)).c_str()); // this just works if we know exactly the posisition of the first number
-  // in general, we have to do the following:
+  
+  
   int first = str.find_first_of(numbers);
   if(first == string::npos) 
     cout<<"find no numbers"<<endl;
@@ -697,13 +639,13 @@ void GetNumberFromaString(string str, int& x)
   if(last == string::npos) 
     cout<<"find no numbers"<<endl;
 
-  // the following statements have the same function: convert string to int
-  // x = atoi((str.substr(first, last-first+1)).c_str());
+  
+  
   istringstream buffer(str.substr(first, last-first+1)); 
   buffer >> x;
   
 }
-/////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 
 void Parser_gml(char* fname1)
@@ -726,9 +668,9 @@ void Parser_gml(char* fname1)
   if(!bout) {cout << "Cannot open " << fname << " for write."; exit(0);}
 
 
-  //vector<string> nodenamelist; //  name is a string 
-  //vector < vector<string> > edgelist;
-  vector<int> nodelabellist; //  label is a number 
+  
+  
+  vector<int> nodelabellist; 
   vector < vector<int> > edgelist;
 
   int source; 
@@ -750,7 +692,7 @@ void Parser_gml(char* fname1)
 	pos = str.find("target");
 	if(pos!=string::npos) { 
 	  GetNumberFromaString(str, target);
-	  //cout << source << "--->" << target << endl;
+	  
 
 	  vector<int> edge(2);
 	  edge[0]=source;
@@ -768,8 +710,8 @@ void Parser_gml(char* fname1)
 	  break;
 	}
       } 
-    } // end of if finding a line containing "source"
-  }// end of reading
+    } 
+  }
   fin.close();
   
   int n = nodelabellist.size();
@@ -778,8 +720,8 @@ void Parser_gml(char* fname1)
   }
 
 
-  // save the standard edgelist file
-  // Note that the first two lines stores the information of N and E !!
+  
+  
   cout << fname1 << "\n# N= " << n << ", E= " << m << endl;
   tout << "#N= " << n << endl;
   tout << "#E= " << m << endl;
@@ -791,8 +733,8 @@ void Parser_gml(char* fname1)
 
   int* endpoints = new int [2*m];
   for(int e=0;e<m;e++) {
-    int i= findpos(nodelabellist, edgelist[e][0]); // source
-    int j= findpos(nodelabellist, edgelist[e][1]); // target
+    int i= findpos(nodelabellist, edgelist[e][0]); 
+    int j= findpos(nodelabellist, edgelist[e][1]); 
     endpoints[e*2+0]=i;
     endpoints[e*2+1]=j;
     tout << i << ' ' << j << endl;
@@ -804,27 +746,16 @@ void Parser_gml(char* fname1)
   tout.close();
   bout.close();
 }
-/////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
 
-/////////////////////////////////////////////////////////////////////////////////////////////////
-// Parser 3: convert paj to Elist (in Number format)
-// Note that in .paj file: 1. the node index starts from 1
-//                         2. the node map has already be built 
-/*
-  ......
-  20 "Suspended POC"
-  21 "Sedimented POC"
-  22 "Input"
-  23 "Output"
-  24 "Respiration"
-*arcs
-  22   1 552615.0
-  22   2 552615.0
-  ...... 
-*/
+
+
+
+
+
+
 
 void Parser_paj(char* fname1)
 {
@@ -862,40 +793,40 @@ void Parser_paj(char* fname1)
     }
 
     if(pos!=string::npos) { 
-      //cout << str << endl;
+      
       findarc = true;
 
       while (!fin.eof()) {
 	getline(fin, str);     
-	//cout << str.length() << endl; // debug
-	if(str.length()>2) { // we find empty line sometime will str.length()==1, why?
+	
+	if(str.length()>2) { 
 	  m++;
-	  //cout << str << endl;
+	  
 	  fout << str << endl;
 	}
 	else {
 	  break;
 	}
       }
-    } // end of if find arcs
-  }// end of reading
+    } 
+  }
 
   fin.close();
   fout.close();
 
   
-  // get the standard Elist file (.txt)
-  // Note that the first two lines store the information of N and E !!
+  
+  
   cout << fname1 << "\n# N= " << n << ", E= " << m << endl;
   tout << "#N= " << n << endl;
   tout << "#E= " << m << endl;
   char cmd [256];
   sprintf(cmd, "awk '{print $1-1, $2-1}' %s >> %s.elist.t", fname2,fname1);
-  // here, note that "$1-1, $2-1" is due to that in .paj file, node index starts from 1
+  
   system(cmd);
   tout.close();
 
-  // get the standard Elist file (.bin) from the .txt file
+  
   sprintf(fname, "%s.elist.t", fname1);
   ifstream tin(fname, ios_base::in);
   if(!tin) {cout << "Cannot open " << fname << " for read."; exit(0);}
@@ -923,16 +854,16 @@ void Parser_paj(char* fname1)
 
   bout.close();
 }
-/////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
 
-/////////////////////////////////////////////////////////////////////////////////////////////////
-// Parser 4: convert Elist.t to Elist.b
+
+
+
 void Parser_t2b(char* fname1)
 {
-  // get the standard Elist file (.bin) from the .txt file
+  
   char fname[256];
   sprintf(fname, "%s", fname1);
   ifstream tin(fname, ios_base::in);
@@ -983,7 +914,7 @@ void Parser_t2b(char* fname1)
 
   bout.close();
 }
-/////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 
 

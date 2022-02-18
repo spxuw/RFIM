@@ -1,17 +1,3 @@
-/*
- * Copyright (C) 1998 Matthew C. Kuntz, James P. Sethna, Karin A. Dahmen
- * and John Carpenter
- *
- * This file is part of the Hysteresis program.
- *
- * The Hysteresis program is free software; you can redistribute it
- * and/or modify it under the terms of the GNU General Public License
- * version 2 as published by the Free Software Foundation.
- *
- * See the file COPYING for details.
- */
-
-
 #if !defined (RAND_H)
 #define RAND_H
 
@@ -19,7 +5,6 @@
 #include <cmath>
 using namespace std;
 
-//#include <cstdlib>
 
 
 const int BIGPRIME = 899999963;
@@ -63,11 +48,9 @@ public:
 	  return(uni);
 	}
 
-	// Gives all numbers weighted equally, min and max inclusive
 	int discrete(int min, int max)
 	{
 		int ret= (int)(floor(uniform()*(max+1-min)+min));
-//		assert(ret<=max && ret>=min);
 		return ret;
 	}
 
@@ -94,7 +77,6 @@ public:
 	  return y*z*sd;
 	}
 
-	/* John Carpenter added */
 	double lorentzian(double sd) {
 	  double x,y,z;
 	  do {
@@ -106,31 +88,18 @@ public:
 	}
 
 
-    /* Yang Liu added */
     double bimodal(double R)
 	{
 	    return (uniform()>0.5) ? (R) : (-R);
 	}
 
-    /* Yang Liu added */
+
     double rectangular(double R)
 	{
 	    return ((uniform()*2-1)*R); 
 	}
 
-    /* Yang Liu added */
-    // This parabolic distribution is obtained by using the transformation method. See NR:Ch7.2, Pg.291.
-    // normalized parabolic distribution:  P(h) = (R^2-h^2)/(4R^3/3) with h \in [-R,R]
-    // F(h) = \int_0^h p(h) dh = 1/2 - h^3/(4R^3) + 3h/(4R)
-    // given x \in [0,1), we want to find the root(s) of F(h) = x, i.e. 
-    //              h^3 - 3R^2 h + 4 R^3(x-1/2) == 0
 
-    // Basically we are sovling a cubic equation.
-    // Note that here the Discriminant (Disc) for this simple cubic equation is negative (crucially due to x\in[0,1))
-    // which means there are three real roots.
-    // Now it is tricky to apply the analytic formula, e.g see http://en.wikipedia.org/wiki/Cubic_equation
-    // Because Discriminant is negatice, we have to explicitly write the three real roots rather than 
-    // directly applying those formulas. Note that the C++ cannot handle sqrt(negative number). It will give you "nan"
 
     double parabolic(double R)
       {
@@ -161,7 +130,6 @@ public:
 	  else
 	      cout << "range is wrong!";
 	
-	  //cout << x << ' ' << h1 << ' ' << h2 << ' ' << h3 << ' ' << y << endl;
 
 	  return y;
       }

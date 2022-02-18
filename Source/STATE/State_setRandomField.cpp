@@ -24,8 +24,6 @@ void State::SetRandomField(int dim, int length, double disorder, int rngseed)
   double sum = 0;
   for(int i=0; i<num; i++) 
     {
-      //randomField[i] = R*rand.gaussian(1);    // R*(Gaussian with variance=1)  
-      //randomField[i] = rand.gaussian(disorder);     //   (Gaussian with variance=R)
 
       switch(::dist)
 	{
@@ -53,8 +51,6 @@ void State::SetRandomField(int dim, int length, double disorder, int rngseed)
 	  cout <<"\n Distribution type is wrong!\n";
 	}
 	    
-      //cout << i << ' ' << randomField[i] << endl; //test
-
 
       if(randomField[i] > max) max = randomField[i];
       if(randomField[i] < min) min = randomField[i];
@@ -92,89 +88,7 @@ void State::SetRandomField(int dim, int length, double disorder, int rngseed)
   cout << "hmax= " << hmax << endl;
 
 }
-////////////////////////////////////////////////////////////////////////////////////////////////////// 
 
-
-
-
-
-
-/*//////////////////////////////////////////////////////////////////////////////////////////////////////
-  void State::Set_RandomField_Cal_dEmin(int dim, int length, double disorder, int rngseed)
-  {
-  Rand rand;     	    // set up the random number generator(RNG)    
-  rand.seed(rngseed);   
-
-  int num = 1;
-  for(int i=0;i<dim;i++) 
-  num *= length;     
-  int z=2*dim;
-
-  Vec randomField(num);
-  double abs_min = 10000;
-  double abs_max = -10000;
-
-  double dE  = 10000;
-  double min = 0;
-  double max = 0;
-  double sum = 0;
-  for(int i=0; i<num; i++) 
-  {
-  //randomField[i] = R*rand.gaussian(1);    // R*(Gaussian with variance=1)  
-  randomField[i] = rand.gaussian(disorder);     //   (Gaussian with variance=R)
-
-  if(randomField[i] > max) max = randomField[i];
-  if(randomField[i] < min) min = randomField[i];
-
-    if(fabs(randomField[i]) < abs_min) 
-	abs_min = fabs(randomField[i]);
-      
-      if(fabs(randomField[i]) > abs_max) 
-	abs_max = fabs(randomField[i]);
-
-  sum += randomField[i];
-  }
-
-  // the following three for loops will take a very long time.
-  // so in practise, this routine will be useless.
-  for(int nsame=0; nsame<z+1; nsame++)
-  {
-  for(int i=0; i<num; i++) 
-  {
-  for(double H=min; H<=max; H+=0.0001)
-  {
-  double tmp1 = fabs(4*(nsame-dim) + 2*(H+randomField[i]));
-  double tmp2 = fabs(4*(nsame-dim) - 2*(H+randomField[i]));
-  if(tmp1 < dE)
-  dE = tmp1;
-  if(tmp2 < dE)
-  dE = tmp2;
-  }
-  }
-  }
-
-  State::h.resize(num);
-  State::h        = randomField; 
-  State::abshmin  = abs_min;
-  State::abshmax  = abs_max;
-
-  State::dEmin    = dE; 
-  State::hmin     = min; 
-  State::hmax     = max; 
-  State::havg     = sum/(double)num;
-  State::hsum     = sum;
-
-  }
-*////////////////////////////////////////////////////////////////////////////////////////////////////// 
-
-
-
-////////////////////////////////////////////////////////////////////////
-// Bisection search!
-// Give an array xx[0..n-1], and given a value x, 
-// return a value j such that x is between xx[j-1] and xx[j].
-// xx must be monotonic, either increasing or decreasing. 
-// j= -1 or n is returned to indicate that x is out of range.  
 int BisectionSearch(vector<double>& xx, const double x)
 {
   int ju,jm,jl;
@@ -211,16 +125,11 @@ double NormalCDF(double z)
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
-// This is for a random network. 
-// Note that this is a static member function, which cannot use non-static member variables (e.g., N, E, ...) in the class
+
 void State::Set_RandomField_RandomBond(int num, double kmean, double gamma, double disorder, int rngseed)
 {
   Rand rand;
   rand.seed(rngseed);
-  
-  // construct the random network using the static model  
-  //double p = kmean/double(num-1);
-  //Erdos_Renyi(num, p, rngseed);
 
   double alpha = 1.0/(gamma-1.0); // gamma = 1 + 1./alpha;
   vector<double> w(num);
@@ -248,12 +157,7 @@ void State::Set_RandomField_RandomBond(int num, double kmean, double gamma, doub
    
   int edge = 0;
   double wsum = 0;
-  //double wmin = 1e300;
-  //double wmax = -1e300;
 
-  //for (int i=0; i<num; i++) {
-  //for (int j=i+1; j<num; j++) {
-  //  if(rand.ran1() < p) {
 
   for(edge=1; edge<=numedge; ) {
     int i = BisectionSearch(Cum_w, rand.ran1());
@@ -261,17 +165,13 @@ void State::Set_RandomField_RandomBond(int num, double kmean, double gamma, doub
   
     if(!find(Adj[i],j) && i!=j ) {
  
-      //double wij = 1.0; 
       double wij = rand.ran1();
-      //if(wij<wmin) wmin = wij;
-      //if(wij>wmax) wmax = wij;
       
 
       Link link(i, j, edge, wij); 
       EdgeList.push_back(link);
       wsum += wij;
 
-      // build a mapping between the edge (i,j) and the edge index e
       stringstream sst1; sst1 << i << ">" << j;  
       stringstream sst2; sst2 << j << ">" << i;
       IndexMAP[sst1.str()] = edge;
@@ -289,7 +189,6 @@ void State::Set_RandomField_RandomBond(int num, double kmean, double gamma, doub
     }
   }
   cout << "# of edges E= " << numedge << endl; //test
-  //cout << "EdgeList.size() = " << EdgeList.size() << endl;  //test
 
   State::A.resize(num);
   State::K.resize(num);
@@ -304,7 +203,6 @@ void State::Set_RandomField_RandomBond(int num, double kmean, double gamma, doub
   State::Wsum   = wsum;
   State::c      = kmean;
  
-  // set random fields
   Vec randomField(num);
   double abs_min = 10000;
   double abs_max = -10000;
@@ -315,19 +213,10 @@ void State::Set_RandomField_RandomBond(int num, double kmean, double gamma, doub
   double sum = 0;
   double tmp = 0;
 
-  /*
-  vector<double> P(num); // pvalue = 1 - NormalCDF(zscore)
-  double pmin =1e300;  // the smallest pvalue
-  double p1min=1e300;  // the smallest non-zero pvalue
-  double pmax =-1e300;
-  */
 
   for(int i=0; i<num; i++) 
     {
       NodeName[i] = Int2String(i);
-
-      //randomField[i] = R*rand.gaussian(1);    // R*(Gaussian with variance=1)  
-      //randomField[i] = rand.gaussian(disorder);     //   (Gaussian with variance=R)
 
       switch(::dist)
 	{
@@ -355,16 +244,6 @@ void State::Set_RandomField_RandomBond(int num, double kmean, double gamma, doub
 	  cout <<"\n Distribution type is wrong!\n";
 	}
 
-      /*
-      P[i] = 1- NormalCDF(randomField[i]);
-      if(P[i]<pmin) 
-	pmin = P[i];
-      if(P[i]<p1min && P[i] >0) 
-	p1min = P[i];
-      if(P[i]>pmax)
-	pmax = P[i];
-      */
-
       if(randomField[i] > max) max = randomField[i];
       if(randomField[i] < min) min = randomField[i];
 
@@ -390,8 +269,6 @@ void State::Set_RandomField_RandomBond(int num, double kmean, double gamma, doub
   State::abshmin  = abs_min;
   State::abshmax  = abs_max;
 
-  //State::PVALUE.resize(num);
-  //State::PVALUE   = P;
 
 
   State::dEmin    = dE; 
@@ -411,14 +288,6 @@ void State::Set_RandomField_RandomBond(int num, double kmean, double gamma, doub
 ///////////////////////////////////////////////////////////////////////////////
 
 
-
-
-
-
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////
-// This is for a random network. 
-// Note that this is a static member function, which cannot use non-static member variables (e.g., N, E, ...) in the class
 void State::Set_RandomPvalue_RandomBond(int num, double kmean, double gamma, int rngseed)
 {
   Rand rand;
@@ -450,14 +319,8 @@ void State::Set_RandomPvalue_RandomBond(int num, double kmean, double gamma, int
    
   int edge = 0;
   double wsum = 0;
-  //double wmin = 1e300;
-  //double wmax = -1e300;
 
-  //for (int i=0; i<num; i++) {
-  //for (int j=i+1; j<num; j++) {
-  //  if(rand.ran1() < p) {
 
-  // save the edgelistfile
   char fname[256];
   sprintf(fname,"./data/N%d-c%e-gamma%.3lf-seed%d.edgelist", num, kmean, gamma, rngseed);
   ofstream fout1(fname, ios_base::out);
@@ -468,10 +331,8 @@ void State::Set_RandomPvalue_RandomBond(int num, double kmean, double gamma, int
   
     if(!find(Adj[i],j) && i!=j ) {
  
-      //double wij = 1.0; 
       double wij = rand.ran1();
-      //if(wij<wmin) wmin = wij;
-      //if(wij>wmax) wmax = wij;
+
       
       fout1 << i << ' ' << j << ' ' << wij << endl; 
 
@@ -498,7 +359,6 @@ void State::Set_RandomPvalue_RandomBond(int num, double kmean, double gamma, int
   }
   fout1.close();
   cout << "# of edges E= " << numedge << endl; //test
-  //cout << "EdgeList.size() = " << EdgeList.size() << endl;  //test
 
   State::A.resize(num);
   State::K.resize(num);
@@ -513,10 +373,8 @@ void State::Set_RandomPvalue_RandomBond(int num, double kmean, double gamma, int
   State::Wsum   = wsum;
   State::c      = kmean;
  
-  // set random pvalue
   vector<double> P(num); 
 
-  // save the pvalue file  
   sprintf(fname,"./data/N%d-c%e-gamma%.3lf-seed%d.nodeweight", num, kmean, gamma, rngseed);
   ofstream fout2(fname, ios_base::out);
   for(int i=0; i<num; i++) {

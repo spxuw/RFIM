@@ -1,8 +1,3 @@
-//////////////////////////////////////////////////////////////////////////////////////////////////////
-// The following function is almost the same as the function 
-// void Window::report_domains_with_notlabel(int notlabel)
-// It will report on connected domains of labels notequal to notlabel
-//////////////////////////////////////////////////////////////////////////////////////////////////////
 void Window::LY_reportD_with_notlabel(int notlabel)  
 {
     int volume, surface, boxvol, maxdim;
@@ -30,15 +25,7 @@ void Window::LY_reportD_with_notlabel(int notlabel)
   
     highbitzerotwos();   // all 4th bits are now zeroed
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////
-/* The following function is overloaded from the function 
-         void Window::LY_reportD_with_notlabel(int notlabel)  
-   Here, v_D, s_D, bv_D, md_D carry the volume, suface area, boxvolume, maxdim of the domain(D).
-/////////////////////////////////////////////////////////////////////////////////////////////////////*/
 void Window::LY_reportD_with_notlabel(int depth, int notlabel, int* v_D, int* s_D, int* bv_D, int* md_D)  
 {
     int volume, surface, boxvol, maxdim;
@@ -65,27 +52,12 @@ void Window::LY_reportD_with_notlabel(int depth, int notlabel, int* v_D, int* s_
 	    *bv_D= boxvol;  *md_D= maxdim;
 	}
 
-	/*cout << depth << ":" << domain_count++ << ":  (" 
-	     << (spin[start] & 1) << ")  "    
-	     << volume << "/" << surface << "/" 
-	     << boxvol << "/" << maxdim << "\n";
-	*/
+
     }
   
     highbitzerotwos();   // all 4th bits are now zeroed
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////
-/* The following function is overloaded from the function 
-         void Window::LY_reportD_with_notlabel(int notlabel)  
-   Here, we focus on the spin configurations with just one avalanche(spin-UP). The following function 
-   will pass back information about this single avalanche. 03/01/06
-   here, v_D, a_D carry the volume, suface area of the only one spin-UP 
-   domain(D), i.e. the domain description of the single avalanche.
-/////////////////////////////////////////////////////////////////////////////////////////////////////*/
 void Window::LY_reportD_with_notlabel(int depth, int notlabel, int* v_D, int* a_D)  
 {
     int volume, surface;
@@ -112,27 +84,12 @@ void Window::LY_reportD_with_notlabel(int depth, int notlabel, int* v_D, int* a_
 	    *v_D = volume;   *a_D = surface;
 	}
 
-	/*cout << depth << ":" << domain_count++ << ":  (" 
-	     << (spin[start] & 1) << ")  "    
-	     << volume << "/" << surface << "\n";*/
 	
     }
   
     highbitzerotwos();   // all 4th bits are now zeroed
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-
-
-
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////
-// The following function is overloaded from the function:
-// void Window::LY_reportD_with_notlabel(int notlabel)  
-//  Here, we focus on the spin configurations with many avalanches(spin-UP). The following function 
-//   will write the information about those avalanches to a file. 03/02/06
-//////////////////////////////////////////////////////////////////////////////////////////////////////
 void Window::LY_reportD_with_notlabel(int depth, int notlabel, char* filename)  
 {
     ofstream outfile(filename, ios_base::app); // data will be appended to this file 
@@ -158,11 +115,6 @@ void Window::LY_reportD_with_notlabel(int depth, int notlabel, char* filename)
 	    volume = LY_domain_with_notlabel(start, notlabel);
 
 
-	/*cout << depth << "  " << domain_count << ":  (" 
-	     << (spin[start] & 1) << ")  "    
-	     << volume << "/" << surface << "/" 
-	     << boxvol << "/" << maxdim << "\n";
-	*/
 	if(spin[start]&1)
 	{
 	    outfile.width(10); outfile << volume          << " ";
@@ -181,17 +133,7 @@ void Window::LY_reportD_with_notlabel(int depth, int notlabel, char* filename)
     outfile.close();
 
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////
-// The following function is overloaded from the function:
-// void Window::LY_reportD_with_notlabel(int notlabel)  
-//  Here, we focus on the spin configurations with many avalanches(spin-UP). The following function 
-//   will write the information about those avalanches to a file. 03/02/06
-//////////////////////////////////////////////////////////////////////////////////////////////////////
 void Window::LY_reportD_with_notlabel(int depth, int notlabel, bool mark, int seed, char* filename, double H)  
 {
     ofstream outfile(filename, ios_base::app); // append mode

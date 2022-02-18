@@ -1,78 +1,53 @@
-/* ----------------------------------------------------------------- */
-/*  parse (...) :
-    1. Reads maximal flow problem in extended DIMACS format.
-    2. Prepares internal data representation.
-       
-    types: 'arc' and 'node' must be predefined
-    type arc  must contain fields 'head', 'rev', 'resCap'
-    type   node   must contain the field 'first': */
-
-// all parameters are output 
-//long    *n_ad;                 /* address of the number of nodes */
-//long    *m_ad;                 /* address of the number of arcs */
-//node    **nodes_ad;            /* address of the array of nodes */
-//arc     **arcs_ad;             /* address of the array of arcs */
-//unsigned long    **cap_ad;     /* address of the array of capasities */
-//node    **source_ad;           /* address of the pointer to the source */
-//node    **sink_ad;             /* address of the pointer to the source */
-//long    *node_min_ad;          /* address of the minimal node */
-/* ----------------------------------------------------------------- */
-
-#define MAXLINE       100	/* max line length in the input file */
-#define ARC_FIELDS      3	/* No. of fields in arc line  */
-#define NODE_FIELDS     2	/* No. of fields in node line  */
-#define P_FIELDS        3       /* No. of fields in problem line */
-#define PROBLEM_TYPE "max"      /* name of problem type */
+#define MAXLINE       100	
+#define ARC_FIELDS      3	
+#define NODE_FIELDS     2	
+#define P_FIELDS        3       
+#define PROBLEM_TYPE "max"      
 
 int parse( long* n_ad, long* m_ad, node** nodes_ad, arc** arcs_ad, 
 	   unsigned long** cap_ad,  node** source_ad, node** sink_ad, long* node_min_ad )
 {
 
-    long    n,                      /* internal number of nodes */
-        node_min=0,                 /* minimal No. of node  */
-        node_max=0,                 /* maximal No. of nodes */
-	*arc_first=NULL,            /* internal array for holding
-				       - node degree
-				       - position of the first outgoing arc */
-	*arc_tail=NULL,             /* internal array: tails of the arcs */
-        source=0,                   /* No. of the source */
-        sink=0,                     /* No. of the sink */
-        /* temporary variables carrying no of nodes */
+    long    n,                      
+        node_min=0,                 
+        node_max=0,                 
+	*arc_first=NULL,            
+	*arc_tail=NULL,             
+        source=0,                   
+        sink=0,                     
         head, tail, i;
 
-    long    m,                      /* internal number of arcs */
-        /* temporary variables carrying no of arcs */
+    long    m,                     
         last, arc_num, arc_new_num;
 
-    node    *nodes=NULL,            /* pointer to the node structure */
+    node    *nodes=NULL,           
         *head_p,
         *ndp;
 
-    arc     *arcs=NULL,             /* pointer to the arc structure */
+    arc     *arcs=NULL,             
         *arc_current=NULL,
         *arc_new,
         *arc_tmp;
 
-    unsigned long    *acap=NULL,             /* array of capasities */
-	cap;                    /* capasity of the current arc */
+    unsigned long    *acap=NULL,             
+	cap;                    
 
-    long    no_lines=0,             /* No. of current input line */
-        no_plines=0,            /* No. of problem-lines */
-        no_nslines=0,           /* No. of node-source-lines */
-        no_nklines=0,           /* No. of node-source-lines */
-        no_alines=0,            /* No. of arc-lines */
-        pos_current=0;          /* 2*no_alines */
+    long    no_lines=0,             
+        no_plines=0,            
+        no_nslines=0,           
+        no_nklines=0,           
+        no_alines=0,            
+        pos_current=0;         
 
-    char    in_line[MAXLINE],       /* for reading input line */
-        pr_type[3],             /* for reading type of the problem */
-        nd;                     /* source (s) or sink (t) */
+    char    in_line[MAXLINE],      
+        pr_type[3],             
+        nd;                     
 
-    int     k,                      /* temporary */
-        err_no;                 /* No. of detected error */
+    int     k,                  
+        err_no;                
 
 
 
-/* -------------- error numbers & error messages ---------------- */
 #define EN1   0
 #define EN2   1
 #define EN3   2
@@ -119,16 +94,7 @@ int parse( long* n_ad, long* m_ad, node** nodes_ad, arc** arcs_ad,
 	    /*19*/    "source or sink doesn't have incident arcs.",
 	    /*20*/    "can't read anything from the input file."
 	};
-/* --------------------------------------------------------------- */
 
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/* The main loop:  
-   -  reads the line of the input,
-   -  analises its type,
-   -  checks correctness of parameters,
-   -  puts data to the arrays,
-   -  does service functions */
 
     while (fgets(in_line, MAXLINE, stdin) != NULL )
     {
@@ -136,20 +102,19 @@ int parse( long* n_ad, long* m_ad, node** nodes_ad, arc** arcs_ad,
 
 	switch (in_line[0])
 	{
-	    case 'c':                  /* skip lines with comments */
-	    case '\n':                 /* skip empty lines   */
-	    case '\0':                 /* skip empty lines at the end of file */
+	    case 'c':                  
+	    case '\n':                 
+	    case '\0':                
                 break;
 
 
-	    case 'p':                  /* problem description      */
+	    case 'p':                 
 
                 if ( no_plines > 0 )   // more than one problem line 
 		{ err_no = EN1 ; goto error; }
 
                 no_plines = 1;
    
-                /* reading problem line: type of problem, no of nodes, no of arcs */
                 if (sscanf ( in_line, "%*c %3s %ld %ld", pr_type, &n, &m ) != P_FIELDS  )
 		{ err_no = EN2; goto error; } //wrong number of parameters in the problem line
 
@@ -159,13 +124,11 @@ int parse( long* n_ad, long* m_ad, node** nodes_ad, arc** arcs_ad,
                 if ( n <= 0  || m <= 0 )    //wrong value of no of arcs or nodes
 		{ err_no = EN4; goto error; }
 
-		/* allocating memory for  'nodes', 'arcs'  and internal arrays */
                 nodes    = (node*) calloc ( n+2, sizeof(node) );
 		arcs     = (arc*)  calloc ( 2*m+1, sizeof(arc) );
 	        arc_tail = (long*) calloc ( 2*m,   sizeof(long) ); 
 		arc_first= (long*) calloc ( n+2, sizeof(long) );
                 acap     = (unsigned long*) calloc ( 2*m, sizeof(long) );
-                /* arc_first [ 0 .. n+1 ] = 0 - initialized by calloc */
 
                 if ( nodes == NULL || arcs == NULL || arc_first == NULL || arc_tail == NULL ) 
 		{ err_no = EN6; goto error; }   // memory is not allocated 
@@ -176,7 +139,7 @@ int parse( long* n_ad, long* m_ad, node** nodes_ad, arc** arcs_ad,
 
 
 
-	    case 'n':		         /* source(s) description */
+	    case 'n':		         
 
 		if ( no_plines == 0 )    // there was not problem line above 
 		{ err_no = EN8; goto error; }
@@ -191,7 +154,7 @@ int parse( long* n_ad, long* m_ad, node** nodes_ad, arc** arcs_ad,
 
 		switch ( nd )
 		{
-		    case 's':  /* source line */
+		    case 's': 
 			
 			if ( no_nslines != 0)   // more than one source line 
 			{ err_no = EN9; goto error; }
@@ -200,7 +163,7 @@ int parse( long* n_ad, long* m_ad, node** nodes_ad, arc** arcs_ad,
 			source = i;
 			break;
 
-		    case 't':  /* sink line */
+		    case 't':  
 
 			if ( no_nklines != 0)   // more than one sink line 
 			{ err_no = EN9; goto error; }
@@ -209,7 +172,7 @@ int parse( long* n_ad, long* m_ad, node** nodes_ad, arc** arcs_ad,
 			sink = i;
 			break;
 
-		    default:   /* wrong type of node-line */
+		    default:   
 			err_no = EN12; goto error; 
 			break;
 		}
@@ -220,26 +183,22 @@ int parse( long* n_ad, long* m_ad, node** nodes_ad, arc** arcs_ad,
 
 
 
-	    case 'a':                    /* arc description */
-
+	    case 'a':                    
 		if ( no_nslines == 0 || no_nklines == 0 ) // there was not source and sink description above 
 		{ err_no = EN14; goto error; }
 
 		if ( no_alines >= m )	// too many arcs on input
 		{ err_no = EN16; goto error; }
 		
-                /* reading an arc description */
 		if (sscanf ( in_line,"%*c %ld %ld %ld", &tail, &head, &cap ) != ARC_FIELDS ) 
 		{ err_no = EN15; goto error; }   // arc description is not correct 
 
 		if ( tail < 0  ||  tail > n  || head < 0  ||  head > n  )
 		{ err_no = EN17; goto error; }   // wrong value of nodes 
 
-		/* no of arcs incident to node i is stored in arc_first[i+1] */
 		arc_first[tail + 1] ++; 
 		arc_first[head + 1] ++;
 
-                /* storing information about the arc */
 		arc_tail[pos_current]        = tail;
 		arc_tail[pos_current+1]      = head;
 		arc_current       -> head    = nodes + head;
@@ -249,7 +208,6 @@ int parse( long* n_ad, long* m_ad, node** nodes_ad, arc** arcs_ad,
 		( arc_current + 1 ) -> resCap    = 0;
 		( arc_current + 1 ) -> rev  = arc_current;
 
-		/* searching minimumu and maximum node */
                 if ( head < node_min ) node_min = head;
                 if ( tail < node_min ) node_min = tail;
                 if ( head > node_max ) node_max = head;
@@ -261,38 +219,31 @@ int parse( long* n_ad, long* m_ad, node** nodes_ad, arc** arcs_ad,
 		break;
 
 
-	    default:  /* unknown type of line */
+	    default:  
 		err_no = EN18; goto error;
 		break;
 
-	} /* end of switch */
-    }     /* end of input loop */
+	} 
+    }     
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-/* ----- all is red  or  error while reading ----- */ 
 
-    if ( feof (stdin) == 0 ) /* reading error */
+    if ( feof (stdin) == 0 ) 
     { err_no=EN21; goto error; } 
 
-    if ( no_lines == 0 )     /* empty input */
+    if ( no_lines == 0 )     
     { err_no = EN22; goto error; } 
 
-    if ( no_alines < m )     /* not enough arcs */
+    if ( no_alines < m )     
     { err_no = EN19; goto error; } 
 
 
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/********** ordering arcs - linear time algorithm ***********/
-/* first arc from the first node */
+
     ( nodes + node_min ) -> first = arcs;
 
-/* before below loop arc_first[i+1] is the number of arcs outgoing from i;
-   after this loop arc_first[i] is the position of the first 
-   outgoing from node i arcs after they would be ordered;
-   this value is transformed to pointer and written to node.first[i]
-*/
+
     for ( i = node_min + 1; i <= node_max + 1; i ++ ) 
     {
 	arc_first[i]          += arc_first[i-1];
@@ -300,28 +251,21 @@ int parse( long* n_ad, long* m_ad, node** nodes_ad, arc** arcs_ad,
     }
 
 
-    for ( i = node_min; i < node_max; i ++ ) /* scanning all the nodes  except the last*/
+    for ( i = node_min; i < node_max; i ++ ) 
     {
 	last = ( ( nodes + i + 1 ) -> first ) - arcs;
-	/* arcs outgoing from i must be cited    
-	   from position arc_first[i] to the position
-	   equal to initial value of arc_first[i+1]-1  */
+
 
 	for ( arc_num = arc_first[i]; arc_num < last; arc_num ++ )
 	{ 
 	    tail = arc_tail[arc_num];
 
-            /* the arc no  arc_num  is not in place because arc cited here
-	       must go out from i; we'll put it to its place and continue this process
-     	       until an arc in this position would go out from i */
 	    while ( tail != i )
 	    { 
 		arc_new_num  = arc_first[tail];
 		arc_current  = arcs + arc_num;
 		arc_new      = arcs + arc_new_num;
-	    
-		/* arc_current must be cited in the position arc_new    
-		   swapping these arcs:                                 */
+                               */
 		head_p               = arc_new -> head;
 		arc_new -> head      = arc_current -> head;
 		arc_current -> head  = head_p;
@@ -343,25 +287,13 @@ int parse( long* n_ad, long* m_ad, node** nodes_ad, arc** arcs_ad,
 		arc_tail[arc_num] = arc_tail[arc_new_num];
 		arc_tail[arc_new_num] = tail;
 
-		/* we increase arc_first[tail]  */
 		arc_first[tail] ++ ;
 
 		tail = arc_tail[arc_num];
 	    }
 	}
-	/* all arcs outgoing from  i  are in place */
     }       
 
-/* -----------------------  arcs are ordered  ------------------------- */
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/*----------- constructing lists ---------------*/
 
     for ( ndp = nodes + node_min; ndp <= nodes + node_max;  ndp ++ )
 	ndp -> first = (arc*) NULL;
@@ -371,18 +303,10 @@ int parse( long* n_ad, long* m_ad, node** nodes_ad, arc** arcs_ad,
 	arc_num = arc_current - arcs;
 	tail = arc_tail [arc_num];
 	ndp = nodes + tail;
-	/* avg
-	   arc_current -> next = ndp -> first;
-	*/
+
 	ndp -> first = arc_current;
     }
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/* ----------- assigning output values ------------*/
     *m_ad = m;
     *n_ad = node_max - node_min + 1;
     *source_ad = nodes + source;
@@ -395,26 +319,22 @@ int parse( long* n_ad, long* m_ad, node** nodes_ad, arc** arcs_ad,
     for ( arc_current = arcs, arc_num = 0; arc_num < 2*m;  arc_current ++, arc_num ++)
 	acap [ arc_num ] = arc_current -> resCap; 
 
-    if ( source < node_min || source > node_max ) /* bad value of the source */
+    if ( source < node_min || source > node_max ) 
     { err_no = EN20; goto error; }
   
     if ( (*source_ad) -> first == (arc*) NULL || (*sink_ad  ) -> first == (arc*) NULL ) 
-    { err_no = EN20; goto error; } 	/* no arc goes out of the source */
+    { err_no = EN20; goto error; } 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-/* free internal memory */
     free ( arc_first ); 
     free ( arc_tail );
 
-/* Thanks God! all is done */
     return (0);
 
 
-/* error found reading input */
  error:  
     printf ( "\nline %ld of input - %s\n", no_lines, err_message[err_no] );
     exit (1);
 
 }
-/* --------------------   end of parser  -------------------*/

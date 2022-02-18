@@ -2,8 +2,8 @@
 
 using namespace std;
 
-////////////////////////////////////////////////////////////////////////////////////////////////////// 
-// default constructor
+
+
 State::State() 
 {
   network=false;
@@ -15,8 +15,8 @@ State::State()
     R = 1.0;
     seed = 1;
     Hext = 0;
-    //E0 = 0;
-    //E  = 0;
+    
+    
     M  = N;
     m  = 1.0;
 
@@ -46,12 +46,12 @@ State::State()
 
     mapping=false;
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
-////////////////////////////////////////////////////////////////////////////////////////////////////// 
-// construct a lattice (State) without setting the spin values
+
+
+
 State::State(int dimension, int length, double disorder, int rngseed)  
 {
   network=false;
@@ -91,23 +91,23 @@ State::State(int dimension, int length, double disorder, int rngseed)
     for(int i=0;i<Z;i++)
 	neighborCoords[i] = new int[D];
 
-    //for(int i=0; i<N; i++) 
-    //spin[i] = DOWN; //spin[i] = UP;
-    //M = -N;  
-    //m = -1.0;
-    //M = N;  
-    //m = 1.0;
-//    E0 = 0;
-//    E  = 0;
+    
+    
+    
+    
+    
+    
+
+
     mapping=false;
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
 
-////////////////////////////////////////////////////////////////////////////////////////////////////// 
-// construct a lattice (State) with all spins = dir
+
+
+
 State::State(int dimension, int length, double disorder, int rngseed, char dir)  
 {
   network=false;
@@ -163,16 +163,16 @@ State::State(int dimension, int length, double disorder, int rngseed, char dir)
 	m = -1.0;
     }
 
-//    E0 = 0;
-//    E  = 0;
+
+
     mapping=false;
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
-////////////////////////////////////////////////////////////////////////////////////////////////////// 
-// construct a lattice (State) with all spins values depending on external field H
+
+
+
 State::State(int dimension, int length, double disorder, int rngseed, double H)  
 {
   network=false;
@@ -228,18 +228,18 @@ State::State(int dimension, int length, double disorder, int rngseed, double H)
 	m = -1.0;
     }
 
-    //E0 = 0;
-    //E  = 0;
+    
+    
 
     mapping=false;
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
 
-////////////////////////////////////////////////////////////////////////////////////////////////////// 
-// construct a lattice (State) with all spins values depending on external field H
+
+
+
 State::State(const State &X)  
 {
   network=false;
@@ -286,11 +286,11 @@ State::State(const State &X)
     mapping=false;
 
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////// 
+
+
 State::~State() 
 {
   if(!network) {
@@ -309,18 +309,18 @@ State::~State()
   delete [] nUp;
 
 }
-////////////////////////////////////////////////////////////////////////////////////////////////////// 
 
 
 
 
-////////////////////////////////////////////////////////////////////////////////////////////////////// 
-// construct a network (State) with all spins = dir
+
+
+
 State::State(int num, double disorder, int rngseed, char dir)  
 {
-  //cout << "test!!!"; //test 
+  
 
-  network = true; // this flag indicates that the system is a random network
+  network = true; 
   N = num;
   R = disorder;
   seed = rngseed;
@@ -334,7 +334,7 @@ State::State(int num, double disorder, int rngseed, char dir)
   if(dir==1) {
     for(int i=0; i<N; i++) {
       spin[i] = UP;
-      nUp[i] = 0; // this should be K[i], to be calculated 
+      nUp[i] = 0; 
     }
     M = N;  
     m = 1.0;
@@ -348,20 +348,20 @@ State::State(int num, double disorder, int rngseed, char dir)
     m = -1.0;
   }
     
-  //    E0 = 0;
-  //    E  = 0;
+  
+  
   mapping=false;
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
 
-////////////////////////////////////////////////////////////////////////////////////////////////////// 
-// construct a network (State) without spin values
+
+
+
 State::State(int num, double disorder, int rngseed)  
 {
-  network = true; // this flag indicates that the system is a random network
+  network = true; 
   N = num;
   R = disorder;
   seed = rngseed;
@@ -373,20 +373,20 @@ State::State(int num, double disorder, int rngseed)
   Hext = 0;
   heff = new hType[N];
 
-  //    E0 = 0;
-  //    E  = 0;
+  
+  
   mapping=false;
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
 
-////////////////////////////////////////////////////////////////////////////////////////////////////// 
-// construct a real network (State) without spin values
+
+
+
 State::State(int num, char dir)  
 {
-  network = true; // this flag indicates that the system is a random network. This is very important!! 
+  network = true; 
 
   N = num;
   spin = new char[N];
@@ -399,7 +399,7 @@ State::State(int num, char dir)
   if(dir==1) {
     for(int i=0; i<N; i++) {
       spin[i] = UP;
-      nUp[i] = 0; // should be K[i], to be calculated 
+      nUp[i] = 0; 
     }
     M = N;  
     m = 1.0;
@@ -413,27 +413,27 @@ State::State(int num, char dir)
     m = -1.0;
   }
 
-  //    E0 = 0;
-  //    E  = 0;
+  
+  
   mapping=false;
 
 
 
-  // for single spin flip dynamics
+  
   nUp = new int[N];
   
 
 
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
-////////////////////////////////////////////////////////////////////////////////////////////////////// 
-// construct a real network (State) without spin values
+
+
+
 State::State(int num, double disorder, char dir)  
 {
-  network = true; // this flag indicates that the system is a random network. This is very important!! 
+  network = true; 
 
   N = num;
   R = disorder;
@@ -447,7 +447,7 @@ State::State(int num, double disorder, char dir)
   if(dir==1) {
     for(int i=0; i<N; i++) {
       spin[i] = UP;
-      nUp[i] = 0; // should be K[i], to be calculated
+      nUp[i] = 0; 
     }
     M = N;  
     m = 1.0;
@@ -461,18 +461,18 @@ State::State(int num, double disorder, char dir)
     m = -1.0;
   }
 
-  //    E0 = 0;
-  //    E  = 0;
+  
+  
   mapping=false;
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-////////////////////////////////////////////////////////////////////////////////////////////////////// 
-// construct a real network (State) without spin values
+
+
+
 State::State(int num)  
 {
-  network = true; // this flag indicates that the system is a random network. This is very important!! 
+  network = true; 
 
   N = num;
   spin = new char[N];
@@ -482,21 +482,21 @@ State::State(int num)
   Hext = 0;
   heff = new hType[N];
 
-  //    E0 = 0;
-  //    E  = 0;
+  
+  
   mapping=false;
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
 
 
-////////////////////////////////////////////////////////////////////////////////////////////////////// 
-// construct a real network (State) without spin values
+
+
+
 State::State(int num, double disorder)  
 {
-  network = true; // this flag indicates that the system is a random network. This is very important!! 
+  network = true; 
 
   N = num;
   R = disorder;
@@ -507,8 +507,8 @@ State::State(int num, double disorder)
   Hext = 0;
   heff = new hType[N];
 
-  //    E0 = 0;
-  //    E  = 0;
+  
+  
   mapping=false;
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////////
+

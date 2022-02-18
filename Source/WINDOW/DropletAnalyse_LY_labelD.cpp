@@ -1,15 +1,15 @@
-//////////////////////////////////////////////////////////////////////////////////////////////////////
-// The following function will return volume of the domain. It is much similar with the function: 
-// int Window::LY_label_connected_cluster(int idx, int tolabel, char s, 
-//                                        int* surface, int* boxvol, int* maxdim)
-// But here, we just concern those spins with index label are "notlabel", we don't care whether it is 
-// spin UP or DOWN. So in this way we get the domain information. The surfacearea, boxvolume and maxdim 
-// will be passed back via pointers. Y.L.02/27/06
-//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
 int Window::LY_domain_with_notlabel(int loc, int notlabel, int *surface, int *boxvol, int *maxdim)
 {
-    int* max_dim = new int[D];     // max dim of in x,y,z... directions (D dimensional)
-    int** mark_del = new int* [D]; // check whether in a certain direction, a certain point has been counted
+    int* max_dim = new int[D];     
+    int** mark_del = new int* [D]; 
     for(int i=0;i<D;i++)
 	mark_del[i] = new int[size[i]];
 
@@ -20,7 +20,7 @@ int Window::LY_domain_with_notlabel(int loc, int notlabel, int *surface, int *bo
 	    mark_del[i][j] = 0;
     }
 
-    int headQ;                     // head (location) of the queue
+    int headQ;                     
     queue<int> Queue;           
 
     *surface = 0;
@@ -29,24 +29,24 @@ int Window::LY_domain_with_notlabel(int loc, int notlabel, int *surface, int *bo
     int* startingcoords = new int[D];
     GetCoords(loc, startingcoords);   
 
-    spin[loc] |= GRAY;	             // "gray"
+    spin[loc] |= GRAY;	             
 
-    Queue.push(loc);              // push it into the real loc list   
+    Queue.push(loc);              
 
     int* coords = new int[D];   
  
     while (!Queue.empty())     
     {
-	headQ = Queue.front();  // get the real loc from the list
-	Queue.pop();         // pop it from the list
+	headQ = Queue.front();  
+	Queue.pop();         
 
-	GetCoords(headQ, coords); 	// get its coordinates stored in coords[i] 
-	GetNeighbors(headQ, coords);  	//  get its real neighbors' locs stored in neighborLocs[i] 
+	GetCoords(headQ, coords); 	
+	GetNeighbors(headQ, coords);  	
 
-	//   calculate the distance between coords and startingcoords
+	
 	for(int i=D-1;i>=0;i--)
 	{
-	    int temp = ((coords[i] - startingcoords[i] + size[i] + size[i]/2) % size[i]); //relative_coords
+	    int temp = ((coords[i] - startingcoords[i] + size[i] + size[i]/2) % size[i]); 
 	    
 	    if(mark_del[i][temp]==0) 
 	    {
@@ -55,20 +55,20 @@ int Window::LY_domain_with_notlabel(int loc, int notlabel, int *surface, int *bo
 	    }
 	}
 
-	// now look at nn: if white, not labeled notlabel, then color gray and queue
+	
 	for(int i=0;i<Z;i++) 
 	{
 	    int locn = neighborLocs[i]; 
-	    if (label[locn] == notlabel)  //don't include! but increment surface
+	    if (label[locn] == notlabel)  
 		(*surface)++;
-	    else if ((spin[locn] & NOTWHITE) == 0) // if "white"
+	    else if ((spin[locn] & NOTWHITE) == 0) 
 	    {
 		spin[locn] |= GRAY; Queue.push(locn);
 	    }
-	}// end of for each neighbor loop
+	}
 
 
-	spin[headQ] -= GRAY; // better have this bit set! (should by algorithm)
+	spin[headQ] -= GRAY; 
 	spin[headQ] |= BLACK;
 	volume++;
     }
@@ -92,22 +92,22 @@ int Window::LY_domain_with_notlabel(int loc, int notlabel, int *surface, int *bo
  
     return volume;
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
 
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////
-// The following function is overloaded from 
-// int Window::LY_domain_with_notlabel(int loc, int notlabel, 
-//				       int *surface, int *boxvol, int *maxdim)
-// The only difference is that it will NOT calculate the maxdim and boxvol, since for a single avalanche,
-// its maxdim and boxvol have already been obtained in the function: LY_labelCC_getQ(...)
-//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
 int Window::LY_domain_with_notlabel(int loc, int notlabel, int *surface)
 {
-    int headQ;                     // head (location) of the queue
+    int headQ;                     
     queue<int> Queue;           
 
     *surface = 0;
@@ -116,34 +116,34 @@ int Window::LY_domain_with_notlabel(int loc, int notlabel, int *surface)
     int* startingcoords = new int[D];
     GetCoords(loc, startingcoords);   
 
-    spin[loc] |= GRAY;	             // "gray"
+    spin[loc] |= GRAY;	             
 
-    Queue.push(loc);              // push it into the real loc list   
+    Queue.push(loc);              
 
     int* coords = new int[D];   
  
     while (!Queue.empty())     
     {
-	headQ = Queue.front();  // get the real loc from the list
-	Queue.pop();         // pop it from the list
+	headQ = Queue.front();  
+	Queue.pop();         
 
-	GetCoords(headQ, coords); 	// get its coordinates stored in coords[i] 
-	GetNeighbors(headQ, coords);  	//  get its real neighbors' locs stored in neighborLocs[i] 
+	GetCoords(headQ, coords); 	
+	GetNeighbors(headQ, coords);  	
 
-	// now look at nn: if white, not labeled notlabel, then color gray and queue
+	
 	for(int i=0;i<Z;i++) 
 	{
 	    int locn = neighborLocs[i]; 
-	    if (label[locn] == notlabel)  //don't include! but increment surface
+	    if (label[locn] == notlabel)  
 		(*surface)++;
-	    else if ((spin[locn] & NOTWHITE) == 0) // if "white"
+	    else if ((spin[locn] & NOTWHITE) == 0) 
 	    {
 		spin[locn] |= GRAY; Queue.push(locn);
 	    }
-	}// end of for each neighbor loop
+	}
 
 
-	spin[headQ] -= GRAY; // better have this bit set! (should by algorithm)
+	spin[headQ] -= GRAY; 
 	spin[headQ] |= BLACK;
 	volume++;
     }
@@ -154,55 +154,55 @@ int Window::LY_domain_with_notlabel(int loc, int notlabel, int *surface)
  
     return volume;
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////
-// The following function is overloaded from 
-// int Window::LY_domain_with_notlabel(int loc, int notlabel, int *surface)
-// The only difference is that it will NOT calculate the surface.
-// This is for the spin-DOWN domain.
-//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
 int Window::LY_domain_with_notlabel(int loc, int notlabel)
 {
-    int headQ;                     // head (location) of the queue
+    int headQ;                     
     queue<int> Queue;           
 
     int volume = 0;
 
-    spin[loc] |= GRAY;	             // "gray"
+    spin[loc] |= GRAY;	             
 
-    Queue.push(loc);              // push it into the real loc list   
+    Queue.push(loc);              
 
     while (!Queue.empty())     
     {
-	headQ = Queue.front();  // get the real loc from the list
-	Queue.pop();         // pop it from the list
+	headQ = Queue.front();  
+	Queue.pop();         
 
-	GetNeighbors(headQ);  	//  get its real neighbors' locs stored in neighborLocs[i] 
+	GetNeighbors(headQ);  	
 
-	// now look at nn: if white, not labeled notlabel, then color gray and queue
+	
 	for(int i=0;i<Z;i++) 
 	{
 	    int locn = neighborLocs[i]; 
-	    if (label[locn] == notlabel)  //don't include! but increment surface
-		continue; //(*surface)++;
-	    else if ((spin[locn] & NOTWHITE) == 0) // if "white"
+	    if (label[locn] == notlabel)  
+		continue; 
+	    else if ((spin[locn] & NOTWHITE) == 0) 
 	    {
 		spin[locn] |= GRAY; Queue.push(locn);
 	    }
-	}// end of for each neighbor loop
+	}
 
 
-	spin[headQ] -= GRAY; // better have this bit set! (should by algorithm)
+	spin[headQ] -= GRAY; 
 	spin[headQ] |= BLACK;
 	volume++;
     }
 
     return volume;
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 
 

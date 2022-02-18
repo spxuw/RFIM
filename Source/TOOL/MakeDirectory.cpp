@@ -9,8 +9,8 @@ using namespace std;
 
 
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// added by Yang Liu 08/14/06
+
+
 void MakeDirectory()
 {
     struct stat s;
@@ -28,12 +28,12 @@ void MakeDirectory()
     }
 
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// added by Yang Liu 02/10/15
+
+
+
 void MakeDirectory_Default()
 {
     struct stat s;
@@ -44,41 +44,11 @@ void MakeDirectory_Default()
 	    cout << "Failed to create directory data " <<endl;
     }
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
-/*
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// added by Yang Liu 04/18/14
-void MakeDirectory(string file)
-{
-    struct stat s;
-    if (-1==stat("data",&s))
-    {
-	int  err = system("mkdir data");
-	if (err == -1) 
-	    cout << "Failed to create directory data " <<endl;
-    }
-
-    char jobtmp[256]; 
-    //sprintf(jobtmp,"./data/GS-%s",file.c_str());
-    sprintf(jobtmp,"./data/%s",file.c_str());
-    char cmd[256];
-    sprintf(cmd,"mkdir %s",jobtmp);
-    if (-1==stat(jobtmp,&s))
-    {
-	int  err = system(cmd);
-	if (err == -1) 
-	    cout << "Failed to create dir" << jobtmp << endl;
-    }
-}
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-*/
 
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// added by Yang Liu 05/26/06
 void MakeDirectory(int D, int L, double R, int seed)
 {
     struct stat s;
@@ -100,11 +70,10 @@ void MakeDirectory(int D, int L, double R, int seed)
 	    cout << "Failed to create dir" << jobtmp << endl;
     }
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// added by Yang Liu 04/16/14
+
+
 void MakeDirectory(int N, double c, double R, int seed)
 {
     struct stat s;
@@ -126,13 +95,13 @@ void MakeDirectory(int N, double c, double R, int seed)
 	    cout << "Failed to create dir" << jobtmp << endl;
     }
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
 
 
-// for real data analysis
+
+
 void MakeDirectory(string file)
 {
   struct stat s;
@@ -150,17 +119,11 @@ void MakeDirectory(string file)
 }
 
 
-// for real data analysis
+
 void MakeDirectories(string file)
 {
   struct stat s;
-  /*
-  if (-1==stat("data",&s))  {
-    int  err = system("mkdir data");
-    if (err == -1) 
-      cout << "Failed to create directory data " <<endl;
-  }
-  */
+ 
   
   char temp [256];
   sprintf(temp, "data-%s/", file.c_str());

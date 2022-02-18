@@ -1,7 +1,3 @@
-/*######################################################################################################################
-  Permute the gene-wise pvalue file 
-  ######################################################################################################################*/
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
@@ -36,7 +32,6 @@ string Int2String(int i) {
 }
 
 
-// random generator function:
 int myrandom (int i) { return std::rand()%i;}
 
 
@@ -79,7 +74,7 @@ int main (int argc, char** argv)
       name = split[0];
       pvalue = atof(split[1].c_str());
    
-      if(name!="") { // ignore those genes with missing names
+      if(name!="") {
 	if(!find(nodenamelist, name)) 
 	  {
 	    nodenamelist.push_back(name);
@@ -108,19 +103,15 @@ int main (int argc, char** argv)
   cout << endl; 
 
 
-  /////////////////////////////////////////////////////////////////////////
   cout << "Permute the pvalues, and save them to new files : " << endl << endl;
 
   for(int seed=seedi; seed<=seedf; seed++) {
     cout << seed << endl; //test
 
-    // set up the seed of the random generator std::rand()
-    //std::srand(std::time(0)); //use current time as seed for random generator
     std::srand(seed); 
 
     random_shuffle(P.begin(), P.end(), myrandom);
   
-    //cout << "Save the permutated pvalues to a new file:  " << ofile << endl;
     string ofile = pfile + ".seed." + Int2String(seed);
 
     ofstream fout(ofile.c_str(), ios_base::out);

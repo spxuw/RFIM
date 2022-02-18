@@ -2,7 +2,7 @@
 
 using namespace std;
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////
+
 int State::GetLoc(const int* coords) const
 {
     int loc=0;
@@ -13,11 +13,11 @@ int State::GetLoc(const int* coords) const
     }
     return loc;
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 void State::GetCoords(int loc, int* newCoords) const
 {
     long remainder;
@@ -29,11 +29,11 @@ void State::GetCoords(int loc, int* newCoords) const
 	remainder %= stride[i];
     }
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 void State::GetNeighbors(int loc) const  
 {
     int* coords = new int[D];
@@ -42,7 +42,7 @@ void State::GetNeighbors(int loc) const
     for(int i=0;i<D;i++) {
 	for(int j=0;j<D;j++) {
 	    if(j==i) {
-		if(coords[j]==size[j]-1)//if(coords[j]==L-1)
+		if(coords[j]==size[j]-1)
 		{
 		    neighborLocs[2*j]=loc-(size[j]-1)*stride[j];
 		    neighborLocs[2*j+1]=loc-stride[j];
@@ -64,35 +64,35 @@ void State::GetNeighbors(int loc) const
     delete [] coords;
 
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
 
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 void Statistics(const vector<double>& data, double& ave, double& var)
 {
   int k;
   int n = data.size();
 
-  ////////// average value
+  
   double s = 0.0;
   for (k=0;k<n;k++)    {
     s +=  data[k];
   }
   ave = s/n;
  
-  ////////// variance 
+  
   double ep = 0.0;
   var = 0.0;
   for (k=0;k<n;k++) {
     ep += (s=data[k]-ave);
     var += s*s;
   }
-  var=(var-ep*ep/n)/(n-1); // Corrected two-pass algorithm
+  var=(var-ep*ep/n)/(n-1); 
 }
-///////////////////////////////////////////////////////////////////////////////
+
 
 
 #include <sstream>

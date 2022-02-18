@@ -3,15 +3,6 @@
 using namespace std;
 
 
-/////////////////////////////////////////////////////////////////////////////////////////////////
-/* read benchmark gene sets from a multiple-row file (each row correspond to a particular benchmark gene set in the following GSEA format: 
-EXTRINSIC_TO_PLASMA_MEMBRANE	http://www.broadinstitute.org/gsea/msigdb/cards/EXTRINSIC_TO_PLASMA_MEMBRANE	GNA14	APC2	GNAI1	SCUBE1	RGS19	EEA1	ARRB1	TDGF1	SYTL4	TGM3	SYTL2	GNAS	SYTL1
-i.e., the first column is the geneset name, the second is its URL, the rest columns are the genes in the geneset. 
-
-we then do the fisher exact test by considering each benchmark geneset and the disease module!
-*/
-
-/////////////////////////////////////////////////////////////////////////////////////////////////
 int State::ReadGeneSetsFile(char* genesetsfile)
 {
   cout << "\n Read the benchmark gene sets file...\n";
@@ -31,14 +22,14 @@ int State::ReadGeneSetsFile(char* genesetsfile)
   ifstream fin(genesetsfile, ios_base::in);
   string S;
   while(getline(fin,S)) {
-    //Splitter split(S, " ");
-    Splitter split(S, "\t"); // Note that the GSEA data files are using tab for separator!
+    
+    Splitter split(S, "\t"); 
 
     int k = (int)split.size();
     cout << "Gene set " << split[0] << " has " << k-2 << " genes." << endl;  
    
     gs geneset;
-    for(int j=2; j<k; j++) { // note that we start from j=2, not j=0
+    for(int j=2; j<k; j++) { 
       string gene = split[j];
       if(!find(NodeName, gene)) {
 	cout << "Gene " << gene << " is new. Added to the node map.\n"; 
@@ -46,7 +37,7 @@ int State::ReadGeneSetsFile(char* genesetsfile)
 	NodeMAP[gene] = NodeName.size()-1;
       }
 
-      if(NodeMAP[gene]<N) // if we find an existing gene in the network to be a benchmark gene, we color it
+      if(NodeMAP[gene]<N) 
 	  Color[NodeMAP[gene]] = 1;
       
 
@@ -73,25 +64,17 @@ int State::ReadGeneSetsFile(char* genesetsfile)
 
   return count;
 }
-/////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
 
 
-/////////////////////////////////////////////////////////////////////////////////////////////////
-/*
-                 X       non-X
-         Y       a         b       :   Ny
-     non-Y       c         d       : Ntot-Ny
-                Nx      Ntot-Nx       Ntot
-*/
 
 double State::FisherExactTest(gs& X, gs& Y)
 {
   vector<int>::iterator it;
 
-  int Ntot = NodeName.size(); // total number of genes (including genes in PPI and new genes found in the benchmark gene sets.
+  int Ntot = NodeName.size(); 
   int Nx   = X.size();
   int Ny   = Y.size();
 
@@ -99,27 +82,12 @@ double State::FisherExactTest(gs& X, gs& Y)
   it = set_intersection (X.begin(), X.end(), Y.begin(), Y.end(), v.begin());
   v.resize(it-v.begin());
 
-  int a = v.size(); // the size of the intersection of X and Y 
+  int a = v.size(); 
   int b = Ny - a;
   int c = Nx - a;
   int d = Ntot-Nx-b;
 
-  /*
-  cout << "X:";
-  for (it=X.begin(); it!=X.end(); ++it)
-    cout << ' ' << NodeName[*it];
-  cout << '\n';
 
-  cout << "Y:";
-  for (it=Y.begin(); it!=Y.end(); ++it)
-    cout << ' ' << NodeName[*it];
-  cout << '\n';
-  
-  cout << "The intersection has " << (v.size()) << " elements:\n";
-  for (it=v.begin(); it!=v.end(); ++it)
-    cout << ' ' << NodeName[*it];
-  cout << '\n';
-  */
  
   double leftpval;
   double rightpval;
@@ -133,15 +101,15 @@ double State::FisherExactTest(gs& X, gs& Y)
   cout << "Fisher's exact test: left sided pvalue = "<< leftpval << "; right sided pvalue = "<< rightpval << "; two sided pvlaue = "<< twopval << endl << endl;
 
   return twopval;
-  //return rightpval;
+  
  
 }
-/////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
 
-/////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 void State::FisherExactTest(vector<double>& P)
 {
   P.clear();
@@ -156,10 +124,10 @@ void State::FisherExactTest(vector<double>& P)
     }
   }
   
-  int Nbgs = benchmarkgenesets.size(); // # of benchmark gene sets. 
+  int Nbgs = benchmarkgenesets.size(); 
   for(int I=0; I<Nbgs; I++) {
-    double pvalue_LCC = FisherExactTest(genelist_LCC, benchmarkgenesets[I]); // do the Fisher test for the LCC only 
-    double pvalue     = FisherExactTest(genelist, benchmarkgenesets[I]);     // do the Fisher test for all the active genes
+    double pvalue_LCC = FisherExactTest(genelist_LCC, benchmarkgenesets[I]); 
+    double pvalue     = FisherExactTest(genelist, benchmarkgenesets[I]);     
    
     P.push_back(pvalue_LCC);
     P.push_back(pvalue);
@@ -177,7 +145,6 @@ void State::FisherExactTest(vector<double>& P)
   }
 
 }
-/////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
@@ -188,13 +155,14 @@ void State::FisherExactTest(vector<double>& P)
 
 
 
-/////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 void State::WriteGeneSetsFile(char* fname)
 {
   cout << "\n Read the benchmark gene sets file...\n";
 
   ofstream gout(fname, ios::out);
-  int Nbgs = benchmarkgenesets.size(); // # of benchmark gene sets. 
+  int Nbgs = benchmarkgenesets.size(); 
   for(int I=0; I<Nbgs; I++) {
     
     gout << benchmarkgeneset_name[I] << '\t'
@@ -209,7 +177,7 @@ void State::WriteGeneSetsFile(char* fname)
     gout << endl;
   }
 }
-/////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 
 

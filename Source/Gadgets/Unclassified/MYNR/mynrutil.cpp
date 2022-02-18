@@ -1,25 +1,3 @@
-// Note that here, we are using offset pointer:
-// for example, 
-//     v=(int *)calloc((unsigned) (nh-nl+1),sizeof(int));
-//     v-=nl;
-// if we set nl=0, nh=4, then as usual
-//      v[0] means the first element
-//      v[4] means the last element 
-// if we set nl=1, nh=5
-// then v[1] actually means the first element
-//      v[5] ................   last element
-// 
-// Note that if we use offset pointer, when we do the "free" operation,
-// we have to recover the pointer, and then do the "free"!!!
-// Y.L. 01/07/09
-
-/*
-**      File:   nrutil.c
-**      Purpose: Memory allocation routines borrowed from the
-**		book "Numerical Recipes" by Press, Flannery, Teukolsky,
-**		and Vetterling. 
-*/
-
 #include <iostream>
 #include <string>
 #include "mynrutil.h"
@@ -38,7 +16,7 @@ inline void mynrerror(const string error_text)
 }
 
 
-///////////////////////////////////////////////////////////////////////
+
 int* ivector(int nl, int nh)
 {
   int *v;
@@ -65,10 +43,10 @@ void free_dvector(double* v, int nl, int nh)
   v += nl;
   delete [] v;
 }
-///////////////////////////////////////////////////////////////////////
 
 
-///////////////////////////////////////////////////////////////////////
+
+
 int** imatrix(int nrl, int nrh, int ncl, int nch)
 {
   int** m = new int* [nrh-nrl+1];
@@ -121,11 +99,11 @@ void free_dmatrix(double** m, int nrl,int nrh, int ncl, int nch)
   m += nrl;
   delete [] m;
 }
-///////////////////////////////////////////////////////////////////////
 
 
 
-///////////////////////////////////////////////////////////////////////
+
+
 int*** imatrix(int xi, int xf, int yi, int yf, int zi, int zf)
 {
   int*** m = new int** [xf-xi+1];
@@ -203,11 +181,11 @@ void free_dmatrix(double*** m, int xi, int xf, int yi, int yf, int zi, int zf)
   m += xi;
   delete [] m;
 }
-///////////////////////////////////////////////////////////////////////
 
 
 
-//////////////////////////////////////////////////////////////////////
+
+
 int** imatrix(int M, int* T)
 {
   int** X = new int* [M];
@@ -260,11 +238,11 @@ void free_dmatrix(double** X, int M)
   X++;
   delete [] X;
 }
-//////////////////////////////////////////////////////////////////////
 
 
 
-//////////////////////////////////////////////////////////////////////
+
+
 int*** imatrix(int M, int* T, int d)
 {
   int*** X = new int** [M];
@@ -341,13 +319,13 @@ void free_dmatrix(double*** X, int M, int* T)
   X++;
   delete [] X;
 }
-//////////////////////////////////////////////////////////////////////
 
 
 
 
-/////////////////////////////////////////////////////////////////
-/* generate a symmtric and positive-definite matrix randomly. */
+
+
+
 void GenerateCovarianceMatrix(double**& C, int d, int seed)
 {
   static Rand rand;
@@ -368,11 +346,11 @@ void GenerateCovarianceMatrix(double**& C, int d, int seed)
     
   free_dmatrix(M,1,d,1,d);
 }
-/////////////////////////////////////////////////////////////////
 
 
 
-/////////////////////////////////////////////////////////////////
+
+
 void CholeskyDecomposition(double**& C, double**& L, int d)
 {
   double** A = dmatrix(1,d,1,d);
@@ -405,11 +383,11 @@ void CholeskyDecomposition(double**& C, double**& L, int d)
 	}
     }
 }
-/////////////////////////////////////////////////////////////////
 
 
 
-///////////////////////////////////////////////////
+
+
 void PrintMatrix(double**& A, int d)
 {
   for(int i=1;i<=d;i++)
@@ -422,11 +400,11 @@ void PrintMatrix(double**& A, int d)
     }
   cout << endl;
 }
-///////////////////////////////////////////////////
 
 
-///////////////////////////////////////////////////
-// copy A(dxd) to B(dxd)
+
+
+
 void MatrixCopy(double**& A, double**& B, int d)
 {
   for(int i=1;i<=d;i++)
@@ -434,7 +412,7 @@ void MatrixCopy(double**& A, double**& B, int d)
       B[i][j] = A[i][j];
 }
 
-// copy A(nxm) to B(nxm)
+
 void MatrixCopy(double**& A, double**& B, int n, int m)
 {
   for(int i=1;i<=n;i++)
@@ -442,29 +420,29 @@ void MatrixCopy(double**& A, double**& B, int n, int m)
       B[i][j] = A[i][j];
 }
 
-// copy A(nxm) to B(nxm)
+
 void MatrixCopy(int**& A, int**& B, int n, int m)
 {
   for(int i=1;i<=n;i++)
     for(int j=1;j<=m;j++)
       B[i][j] = A[i][j];
 }
-///////////////////////////////////////////////////
 
 
-///////////////////////////////////////////////////
-// transpose A(dxd) to B(dxd)
+
+
+
 void MatrixTranspose(double**& A, double**& B, int d)
 {
   for(int i=1;i<=d;i++)
     for(int j=1;j<=d;j++)
       B[i][j] = A[j][i];
 }
-///////////////////////////////////////////////////
 
 
-///////////////////////////////////////////////////
-// multiply A(dxd) by B(dxd), save result to C
+
+
+
 void MxM(double**& A, double**& B, double**& C, int d)
 {
     
@@ -476,11 +454,11 @@ void MxM(double**& A, double**& B, double**& C, int d)
     }
   }
 }
-///////////////////////////////////////////////////
 
 
-///////////////////////////////////////////////////
-// multiply A(nxm) by B(mxq), save result to C(nxq)
+
+
+
 void MxM(double**& A, double**& B, double**& C, int n, int m, int q)
 {
     
@@ -492,12 +470,12 @@ void MxM(double**& A, double**& B, double**& C, int n, int m, int q)
     }
   }
 }
-///////////////////////////////////////////////////
 
 
 
-///////////////////////////////////////////////////
-// multiply A(dxd) by B(dx1), save result to C(dx1)
+
+
+
 void MxV(double**& A, double*& B, double*& C, int d)
 {
   for(int i=1;i<=d;i++){
@@ -507,31 +485,31 @@ void MxV(double**& A, double*& B, double*& C, int d)
     }
   }
 }
-///////////////////////////////////////////////////
 
 
-///////////////////////////////////////////////////
-//  A(dx1) + B(dx1) = C(dx1)
+
+
+
 void VaV(double*& A, double*& B, double*& C, int d)
 {
   for(int i=1;i<=d;i++)
     C[i] = A[i] + B[i];
 }
-///////////////////////////////////////////////////
 
 
-///////////////////////////////////////////////////
-//  A(dx1) - B(dx1) = C(dx1)
+
+
+
 void VsV(double*& A, double*& B, double*& C, int d)
 {
   for(int i=1;i<=d;i++)
     C[i] = A[i] - B[i];
 }
-///////////////////////////////////////////////////
 
 
-///////////////////////////////////////////////////
-//  A(dx1) . B(dx1) = C
+
+
+
 double VdotV(double*& A, double*& B, int d)
 {
   double sum=0;
@@ -540,17 +518,17 @@ double VdotV(double*& A, double*& B, int d)
 
   return sum;
 }
-///////////////////////////////////////////////////
 
 
 
-//////////////////////////////////////////////////////////////////////
-//LU Decomposition:
-// Given a matrix a(dxd), this routine replaces it by the LU decomposition 
-// of a rowwise permutation of itself. a is input. On output, it is arranged.
-// index(dx1) is an output vector that records the row permutation effected 
-// by the partial pivoting. s is output as +/-1 depending on whether the 
-// number of row interchanges was even or odd, respectively.
+
+
+
+
+
+
+
+
 void LUD(double**& a, int*& indx, double& s, int d)
 {
   const double TINY=1.0e-20;
@@ -612,12 +590,7 @@ void LUD(double**& a, int*& indx, double& s, int d)
 
   free_dvector(vv,1,d);
 }
-//////////////////////////////////////////////////////////////////////
 
-
-
-//////////////////////////////////////////////////////////////////////
-// Compose separately the lower and upper matrices
 void Separate(double**& a, double**& xl, double**& xu, int d)
 {
   int k,l;
@@ -636,19 +609,7 @@ void Separate(double**& a, double**& xl, double**& xu, int d)
     }
   }
 }
-//////////////////////////////////////////////////////////////////////
 
-
-
-//////////////////////////////////////////////////////////////////////
-// solves the set of d linear equations A*X=B
-// Here, a(dxd) is input, not as the matrix A but rather as its LU decomposition,
-// determined by the above routine. indx(dx1) is input as the permutation vector 
-// returned by LUD. b(dx1) is input as the RHS vector B, and returns with the 
-// solution vector X. a and indx are not modified by this routine and can be left
-// in place for successive calls with different RHS b. This routine takes into account
-// the possibility that b will begin with many zero elements, so it is efficient 
-// for use in matrix inversion.
 void LUbksb(double**& a, int*& indx, double*& b, int d)
 {
   int i,ii=1,ip,j;
@@ -673,17 +634,9 @@ void LUbksb(double**& a, int*& indx, double*& b, int d)
     b[i]=sum/a[i][i];
   }
 }
-//////////////////////////////////////////////////////////////////////
 
-
-
-//////////////////////////////////////////////////////////////////////
-// Use the above LU decomposition and backsubstitution routines, it is 
-// completely straightforward to find the inverse of a matrix column by column.
-// Also the determinant of matrix a will be retured.
 void MatrixInverse(double**& a, double**&y, double& det, int d)
 {
-  // we don't want to destory matrix a, so we make a copy first
   double** a0 = dmatrix(1,d,1,d);
   MatrixCopy(a,a0,d);
 
@@ -691,7 +644,7 @@ void MatrixInverse(double**& a, double**&y, double& det, int d)
   int* indx   = ivector(1,d);
   double s;
 
-  LUD(a0,indx,s,d); // note that here a0 will be modified.
+  LUD(a0,indx,s,d);
 
   int i,j;
   for(j=1;j<=d;j++)
@@ -711,11 +664,11 @@ void MatrixInverse(double**& a, double**&y, double& det, int d)
   free_dvector(col,1,d);
   free_ivector(indx,1,d);
 }
-//////////////////////////////////////////////////////////////////////
 
 
-//////////////////////////////////////////////////////////////////////
-// Generate permutation matrix P
+
+
+
 void PermutationMatrix(int**& P, int n)
 {
   for(int i=1; i<=n; i++) 
@@ -730,11 +683,11 @@ void PermutationMatrix(int**& P, int n)
   for(int i=1; i<=n; i++) 
     P[i][x[i-1]] = 1;
 }
-//////////////////////////////////////////////////////////////////////
 
 
-/////////////////////////////////////////////////////////////////////
-// multiply A(axb) by B(bxc), save result to C(axc)
+
+
+
 void MxM(int**& A, int**& B, int**& C, int a, int b, int c)
 {
     
@@ -746,20 +699,20 @@ void MxM(int**& A, int**& B, int**& C, int a, int b, int c)
     }
   }
 }
-/////////////////////////////////////////////////////////////////////
 
 
 
-///////////////////////////////////////////////////
-// multiply P1(axa) * Q(axb) * P2(bxb) with P1 P2 two permutation matries, save result to Y(axb)
+
+
+
 void P1QP2(int**& Q, int**& Y, int a, int b)
 {
   int** P1 = imatrix(1,a, 1,a);
   PermutationMatrix(P1, a);
-  //MatrixPrint(P1, a, a);
+  
   int** P2 = imatrix(1,b, 1,b);
   PermutationMatrix(P2, b);
-  //MatrixPrint(P2, b, b);
+  
 
   int** P1Q = imatrix(1,a, 1,b);
   MxM(P1, Q, P1Q, a, a, b);
@@ -769,15 +722,15 @@ void P1QP2(int**& Q, int**& Y, int a, int b)
   free_imatrix(P1,1,a,1,a);
   free_imatrix(P2,1,b,1,b);
 }
-///////////////////////////////////////////////////
 
 
 
-///////////////////////////////////////////////////
-// multiply P1(axa) * Q0(axb) * P2(bxb) with P1 P2 two permutation matries, save result to Q(axb) and also keep tracking the permutation orders 
+
+
+
 void P1QP2(int**& Q0, int**& Q, int**& rowindex, int**& colindex, int a, int b)
 {
-  // copy Q0 to Q
+  
   MatrixCopy(Q0,Q,a,b);
 
   int** rowindex0 = imatrix(1,a, 1,b);
@@ -786,7 +739,7 @@ void P1QP2(int**& Q0, int**& Q, int**& rowindex, int**& colindex, int a, int b)
   int** colindex0 = imatrix(1,a, 1,b);
   MatrixCopy(colindex,colindex0,a,b);
 
-  // P1 . Q0 ==> permutate rows of Q0
+  
   vector<int> x(a,0);
   for(int i=0; i<a; i++) 
     x[i] = i+1;
@@ -802,7 +755,7 @@ void P1QP2(int**& Q0, int**& Q, int**& rowindex, int**& colindex, int a, int b)
   int** Q1 = imatrix(1,a,1,b);
   MatrixCopy(Q,Q1,a,b);
 
-  // Q . P2 ==> permutate cols of Q
+  
   vector<int> y(b,0);
   for(int j=0; j<b; j++) 
     y[j] = j+1;
@@ -820,12 +773,12 @@ void P1QP2(int**& Q0, int**& Q, int**& rowindex, int**& colindex, int a, int b)
   free_imatrix(colindex0,1,a,1,b);
 
 }
-///////////////////////////////////////////////////
 
 
 
-/////////////////////////////////////////////////////////
-// permute row-i1 and row-i2 for the matrix Q(axb)
+
+
+
 void Permute_Row(int**& Q, int**& rowindex, int a, int b, int i1, int i2)
 {
   for(int j=1;j<=b;j++) {
@@ -833,11 +786,11 @@ void Permute_Row(int**& Q, int**& rowindex, int a, int b, int i1, int i2)
     swap(rowindex[i1][j], rowindex[i2][j]);
   }
 }
-///////////////////////////////////////////////////
 
 
-/////////////////////////////////////////////////////////
-// permute col-j1 and col-j2 for the matrix Q(axb)
+
+
+
 void Permute_Col(int**& Q, int**& colindex, int a, int b, int j1, int j2)
 {
   for(int i=1;i<=a;i++) {
@@ -845,80 +798,13 @@ void Permute_Col(int**& Q, int**& colindex, int a, int b, int j1, int j2)
     swap(colindex[i][j1], colindex[i][j2]);
   }
 }
-///////////////////////////////////////////////////
 
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/* Check whether a Matrix Q is in the Form-III, i.e. there exists two permutation matries P1, P2 such that 
-
-             [ @ ... @ x 0 ..........0 ]
-             | .     . @ x 0 .       . |
-             | .     . . @ x 0 .     . |
-   P1 Q P2 = | .     . .   @ x 0 .   . |
-             | .     . .     @ x 0 . . |
-             | .     . .       @ x 0 . |
-             | .     . .         @ x 0 |
-             [ @ ... @ @ ..........@ x ]
-
-   where the x-elements must be non-zero. The @-elements can be either zero or non-zero. 
-
-   This is used to determine whether a structured system [A,B] is strongly structural controllable.
-   For details, see the paper entitled "On strong structural controllability of linear systems" by K.J. Reinschke et al.
-*/
  
 void MatrixFormIII_check_test(int n, int m)
 {
   Rand rand;
   rand.seed(1);
 
-  /*//make a matrix in the exact form-III
-               1     m m+1           m+n
-             [ @ ... @ x 0 ..........0 ]1
-             | .     . @ x 0 .       . |2
-             | .     . . @ x 0 .     . |
-   i.e. Q0 = | .     . .   @ x 0 .   . |
-             | .     . .     @ x 0 . . |
-             | .     . .       @ x 0 . |
-             | .     . .         @ x 0 |
-             [ @ ... @ @ ..........@ x ]n
-   */
-  /*
-  int** Q0 = imatrix(1,n,1,n+m);
-
-  for(int j=1; j<=m; j++) 
-    for(int i=1; i<=n; i++) 
-      Q0[i][j] = (rand.ran1()>0.5) ? 1 : 0;
-
-  for(int j=m+1; j<=n+m; j++) { 
-    for(int i=1; i<=n; i++){
-      if(j-i==m)
-	Q0[i][j] = 2;
-      else if(j-i>m)
-	Q0[i][j] = 0;
-      else
-	Q0[i][j] = (rand.ran1()>0.5) ? 1 : 0;
-    }
-  }
-  //Q0[1][n+m]=5;
-  //Q0[2][2]=0;
-  //Q0[n][2]=0;
-  */
-  
-
-
-   // make a matrix in such a form of [A,B] that it can be transformed into form-III
-   /*
-               1 2           n n+1   n+m
-             [ x 0 ..........0 @ ... @ ]1
-             | @ x 0 .       . @ ... @ |2
-             | . @ x 0 .     . @ ... @ |
-   i.e. Q0 = | .   @ x 0 .   . @ ... @ |
-             | .     @ x 0 . . @ ... @ |
-             | .       @ x 0 . @ ... @ |
-             | .         @ x 0 @ ... @ |
-             [ @ ..........@ x @ ... @ ]n
-   */
   
   int** Q0 = imatrix(1,n,1,n+m);
 
@@ -929,26 +815,19 @@ void MatrixFormIII_check_test(int n, int m)
       else if(j-i>0)
 	Q0[i][j] = 0;
       else
-	Q0[i][j] = (rand.ran1()>0.5) ? 1 : 0;// 1;
+	Q0[i][j] = (rand.ran1()>0.5) ? 1 : 0;
     }
   }
 
   for(int j=n+1; j<=n+m; j++) 
     for(int i=1; i<=n; i++)
-      Q0[i][j] = (rand.ran1()>0.5) ? 1 : 0; // 1;
+      Q0[i][j] = (rand.ran1()>0.5) ? 1 : 0; 
   
 
 
-  /* test
-  //This form of Q0 can be used to test the tracking of row, col index after the permutations 
-  for(int i=1; i<=n; i++) 
-    for(int j=1; j<=n+m; j++) 
-      Q0[i][j] = 10*i + j;
-  */
-
   cout << " Q0="; MatrixPrint(Q0, n, n+m);
 
-  //store the original row index, col index of each element in Q
+  
   int** rowindex = imatrix(1,n,1,n+m);
   int** colindex = imatrix(1,n,1,n+m);
   for(int i=1; i<=n; i++) { 
@@ -966,10 +845,10 @@ void MatrixFormIII_check_test(int n, int m)
     cout << endl; 
   }
 
-  // permutate the matrix Q0, using two permutation matries P1 (nxn) and P2 ((n+m)x(n+m))
+  
   int** Q = imatrix(1,n, 1,n+m);
-  P1QP2(Q0, Q, rowindex, colindex, n, n+m); // Q = P1 Q0 P2
-  //MatrixCopy(Q0,Q,n,n+m);
+  P1QP2(Q0, Q, rowindex, colindex, n, n+m); 
+  
   cout << " Q="; MatrixPrint(Q, n, n+m);
 
   cout << "row-col index:\n";
@@ -982,23 +861,23 @@ void MatrixFormIII_check_test(int n, int m)
 
 
   
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  
   cout << "\n\nNow check if the matrix Q is in the form-III using Reinschke algorithm.\n";
-  // (1) initialization: I=n; J=n+m; V=0;
+  
   int I = n;
   int J = n+m;
   int V = 0;
 
   while(I>0) {
-    cout << "I = " << I << " J = " << J; // 
+    cout << "I = " << I << " J = " << J; 
 
-    //cout << " Q="; MatrixPrint(Q, n, n+m);
+    
 
-    // (2) set V equal to the number of non-zeros of that column I_s of the IxJ submatrix von Q=[A,B], which fulfills
-    //     the following conditions:
-    //     * The column I_s is different from zero; 
-    //     * The column I_s contains a minimum number of non-zeros.
-    vector<int> Nnzero(J+1,0); // Nnzero[j] = # of non-zeros in column j
+    
+    
+    
+    
+    vector<int> Nnzero(J+1,0); 
     for(int j=1; j<=J; j++) {
       for(int i=1; i<=I; i++) {
 	if(Q[i][j]!=0)
@@ -1015,35 +894,35 @@ void MatrixFormIII_check_test(int n, int m)
       }
     }
     V = Nnz_min;
-    //cout << "I_s = " << I_s << "; J = " << J << "; V = " << V << endl; //test
-    cout << "; V = " << V << endl; //test
+    
+    cout << "; V = " << V << endl; 
  
-    // (3) if V!=1 then the system is not strongly structurally controllable.
+    
     if(V!=1) {
       cout << "\nThe system Q=[A,B] is not strongly structurally controllable.\n";
       break;
     }
 
-    // (4) set I_z equal to the row index of the last non-zero in the column I_s of the IxJ submatrix von Q=[A,B]
+    
     int I_z = 0;
     for(int i=1; i<=I; i++) {
       if(Q[i][I_s]!=0)
 	I_z = i;
     }
-    //cout << "I_z = " << I_z << "; I = " << I << endl; //test
+    
 
     
-    // (5) if I_z != I then permute the row I_z and I of the matrix Q=[A,B]
+    
     if(I_z != I) 
       Permute_Row(Q, rowindex, n,n+m,I_z,I);
 
     
-    // (6) if I_s != J then permute the column I_s and J of the matrix Q=[A,B]
+    
     if(I_s != J)
       Permute_Col(Q, colindex, n,n+m,I_s,J);
     
     
-    // (7) I=I-1; J=J-1; V=0;
+    
     I--;
     J--;
     V=0;
@@ -1061,11 +940,11 @@ void MatrixFormIII_check_test(int n, int m)
   }
 
 
-  // (8) if I=0; then term rank of Q=[A,B]=n
+  
   if(I==0) {
     cout << "term rank Q = " << n <<"; Q is in the form-III\n";
 
-    // Now consider the second condition of Reinschke's theorem
+    
     int n_aii = 0;
     for(int i=1; i<=n; i++) {
       if(rowindex[i][m+i]==i && colindex[i][m+i]==i) {
@@ -1088,39 +967,14 @@ void MatrixFormIII_check_test(int n, int m)
   free_imatrix(colindex,1,n,1,n+m);
 
 }
-//////////////////////////////////////////////////////////////////////
 
-
-
-
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/* Check whether a Matrix Q is in the Form-III, i.e. there exists two permutation matries P1, P2 such that 
-
-             [ @ ... @ x 0 ..........0 ]
-             | .     . @ x 0 .       . |
-             | .     . . @ x 0 .     . |
-   P1 Q P2 = | .     . .   @ x 0 .   . |
-             | .     . .     @ x 0 . . |
-             | .     . .       @ x 0 . |
-             | .     . .         @ x 0 |
-             [ @ ... @ @ ..........@ x ]
-
-   where the x-elements must be non-zero. The @-elements can be either zero or non-zero. 
-
-   This is used to determine whether a structured system [A,B] is strongly structural controllable.
-   For details, see the paper entitled "On strong structural controllability of linear systems" by K.J. Reinschke et al.
-
-   Note that here, Q is given by the structured system [A,B].
-*/
  
 bool Transform_to_MatrixFormIII(int**& Q, int n, int m, int**& rowindex, int**& colindex)
 {
   Rand rand;
   rand.seed(1);
 
-  //store the original row index, col index of each element in Q
+  
   for(int i=1; i<=n; i++) { 
     for(int j=1; j<=n+m; j++) {
       rowindex[i][j] = i;
@@ -1128,26 +982,26 @@ bool Transform_to_MatrixFormIII(int**& Q, int n, int m, int**& rowindex, int**& 
     }
   } 
   
-  //store the original Q matrix
+  
   int** Q0 = imatrix(1,n,1,n+m);
   MatrixCopy(Q, Q0, n, n+m);
 
   
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  
   cout << "\n\nNow check if the matrix Q is in the form-III using Reinschke algorithm.\n";
-  // (1) initialization: I=n; J=n+m; V=0;
+  
   int I = n;
   int J = n+m;
   int V = 0;
 
   while(I>0) {
-    cout << "I = " << I << " J = " << J; // 
+    cout << "I = " << I << " J = " << J; 
 
-    // (2) set V equal to the number of non-zeros of that column I_s of the IxJ submatrix von Q=[A,B], which fulfills
-    //     the following conditions:
-    //     * The column I_s is different from zero; 
-    //     * The column I_s contains a minimum number of non-zeros.
-    vector<int> Nnzero(J+1,0); // Nnzero[j] = # of non-zeros in column j
+    
+    
+    
+    
+    vector<int> Nnzero(J+1,0); 
     for(int j=1; j<=J; j++) {
       for(int i=1; i<=I; i++) {
 	if(Q[i][j]!=0)
@@ -1164,45 +1018,45 @@ bool Transform_to_MatrixFormIII(int**& Q, int n, int m, int**& rowindex, int**& 
       }
     }
     V = Nnz_min;
-    //cout << "I_s = " << I_s << "; J = " << J << "; V = " << V << endl; //test
-    cout << "; V = " << V << endl; //test
+    
+    cout << "; V = " << V << endl; 
  
-    // (3) if V!=1 then the system is not strongly structurally controllable.
+    
     if(V!=1) {
       cout << "\nThe system Q=[A,B] is not strongly structurally controllable.\n";
       break;
     }
 
-    // (4) set I_z equal to the row index of the last non-zero in the column I_s of the IxJ submatrix von Q=[A,B]
+    
     int I_z = 0;
     for(int i=1; i<=I; i++) {
       if(Q[i][I_s]!=0)
 	I_z = i;
     }
-    //cout << "I_z = " << I_z << "; I = " << I << endl; //test
+    
 
     
-    // (5) if I_z != I then permute the row I_z and I of the matrix Q=[A,B]
+    
     if(I_z != I) 
       Permute_Row(Q, rowindex, n,n+m,I_z,I);
 
     
-    // (6) if I_s != J then permute the column I_s and J of the matrix Q=[A,B]
+    
     if(I_s != J)
       Permute_Col(Q, colindex, n,n+m,I_s,J);
     
     
-    // (7) I=I-1; J=J-1; V=0;
+    
     I--;
     J--;
     V=0;
 
   }
 
-  //cout << " Q0="; MatrixPrint(Q0, n, n+m);
-  //cout << " Q="; MatrixPrint(Q, n, n+m);
+  
+  
 
-  // (8) if I=0; then term rank of Q=[A,B]=n
+  
   bool QIII = false;
   if(I==0) {
     cout << "term rank = " << n <<"; in the form-III\n";
@@ -1214,7 +1068,6 @@ bool Transform_to_MatrixFormIII(int**& Q, int n, int m, int**& rowindex, int**& 
 
   return QIII;
 }
-//////////////////////////////////////////////////////////////////////
 
 
 
@@ -1223,26 +1076,27 @@ bool Transform_to_MatrixFormIII(int**& Q, int n, int m, int**& rowindex, int**& 
 
 
 
-////////////////////////////////////////////////////////////////////////
-// Bisection search!
-// Give an array xx[0..n-1], and given a value x, 
-// return a value j such that x is between xx[j-1] and xx[j].
-// xx must be monotonic, either increasing or decreasing. 
-// j= -1 or n is returned to indicate that x is out of range.  
+
+
+
+
+
+
+
 int BisectionSearch(vector<double>& xx, const double x)
 {
   int ju,jm,jl;
   bool ascnd;
 
   int n=xx.size();
-  jl=-1; // initialize lower 
-  ju=n;  // and upper limits
-  ascnd=(xx[n-1] >= xx[0]); // true if ascending order of table, false otherwise
+  jl=-1; 
+  ju=n;  
+  ascnd=(xx[n-1] >= xx[0]); 
 
   while (ju-jl > 1) {
-    jm=(ju+jl) >> 1; // compute a midpoint
-    if ((x >= xx[jm]) == ascnd) jl=jm;       // replace either the lower limit
-    else        	          ju=jm;       // or the upper limit, as appropriate       
+    jm=(ju+jl) >> 1; 
+    if ((x >= xx[jm]) == ascnd) jl=jm;       
+    else        	          ju=jm;       
   }
 
   int j;
@@ -1258,25 +1112,25 @@ int BisectionSearch(vector<double>& xx, const double x)
 
 
 
-// Bisection search!
-// Give an array xx[1..n], and given a value x, 
-// return a value j such that x is between xx[j-1] and xx[j].
-// xx must be monotonic, either increasing or decreasing. 
-// j= 0 or n+1 is returned to indicate that x is out of range.  
+
+
+
+
+
 int BisectionSearch(double* xx, int n, const double x)
 {
   int ju,jm,jl;
   bool ascnd;
 
-  //int n=xx.size();
-  jl=0; // initialize lower 
-  ju=n+1;  // and upper limits
-  ascnd=(xx[n] >= xx[1]); // true if ascending order of table, false otherwise
+  
+  jl=0; 
+  ju=n+1;  
+  ascnd=(xx[n] >= xx[1]); 
 
   while (ju-jl > 1) {
-    jm=(ju+jl) >> 1; // compute a midpoint
-    if ((x >= xx[jm]) == ascnd) jl=jm;       // replace either the lower limit
-    else        	          ju=jm;       // or the upper limit, as appropriate       
+    jm=(ju+jl) >> 1; 
+    if ((x >= xx[jm]) == ascnd) jl=jm;       
+    else        	          ju=jm;       
   }
 
   int j;
@@ -1287,12 +1141,12 @@ int BisectionSearch(double* xx, int n, const double x)
   return j;
 }
 
-////////////////////////////////////////////////////////////////////////
 
 
 
-/////////////////////////////////////////////////////////////////////////////////////////////////
-// find whether the element j is in the list nbl
+
+
+
 bool find(Nbl& nbl, int j)
 {
   for(Nbl::iterator p = nbl.begin(); p!= nbl.end(); p++) {
@@ -1302,11 +1156,11 @@ bool find(Nbl& nbl, int j)
     
   return false;
 }
-/////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
-/////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 bool find(set<int>& nbl, int j)
 {
   for(set<int>::iterator p = nbl.begin(); p!= nbl.end(); p++) {
@@ -1316,11 +1170,11 @@ bool find(set<int>& nbl, int j)
     
   return false;
 }
-/////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
-/////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 bool find(vector<set<int> >& Vset, set<int>& S)
 {
   for(vector<set<int> >::iterator p = Vset.begin(); p!= Vset.end(); p++) {
@@ -1330,11 +1184,11 @@ bool find(vector<set<int> >& Vset, set<int>& S)
     
   return false;
 }
-/////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-/////////////////////////////////////////////////////////////////////////////////////////////////
-// find whether the element j is in the list nbl
+
+
+
 bool find(vector<vector<int> >& Vv, vector<int>& v)
 {
   for(vector<vector<int> >::iterator p = Vv.begin(); p!= Vv.end(); p++) {
@@ -1344,12 +1198,12 @@ bool find(vector<vector<int> >& Vv, vector<int>& v)
     
   return false;
 }
-/////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
-/////////////////////////////////////////////////////////////////////////////////////////////////
-// find whether the element j is in the list nbl
+
+
+
 bool find(vector<vector<string> >& Vs, vector<string>& v)
 {
   for(vector<vector<string> >::iterator p = Vs.begin(); p!= Vs.end(); p++) {
@@ -1359,13 +1213,13 @@ bool find(vector<vector<string> >& Vs, vector<string>& v)
     
   return false;
 }
-/////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
 
-/////////////////////////////////////////////////////////////////////////////////////////////////
-// find whether the state s is in the state pool
+
+
+
 bool find(vector< vector<char>  >& Vstate, vector<char>& state)
 {
   for(vector< vector<char> >::iterator p = Vstate.begin(); p!= Vstate.end(); p++) {
@@ -1375,13 +1229,13 @@ bool find(vector< vector<char>  >& Vstate, vector<char>& state)
     
   return false;
 }
-/////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
 
-/////////////////////////////////////////////////////////////////////////////////////////////////
-// find whether the element j is in the vector nbv
+
+
+
 bool find(vector<int>& nbv, int j)
 {
   int n = nbv.size();
@@ -1391,12 +1245,12 @@ bool find(vector<int>& nbv, int j)
 
   return false;
 }
-/////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
-/////////////////////////////////////////////////////////////////////////////////////////////////
-// find whether the element j is in the vector nbv
+
+
+
 bool find(vector<string>& nbs, string s)
 {
   int n = nbs.size();
@@ -1406,12 +1260,12 @@ bool find(vector<string>& nbs, string s)
 
   return false;
 }
-/////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
-/////////////////////////////////////////////////////////////////////////////////////////////////
-// find whether the element x is in the deque Q
+
+
+
 bool find(deque<int>& Q, int x)
 {
   for(deque<int>::iterator q = Q.begin(); q!= Q.end(); q++) {
@@ -1421,11 +1275,11 @@ bool find(deque<int>& Q, int x)
   
   return false;
 }
-/////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-/////////////////////////////////////////////////////////////////////////////////////////////////
-// find whether the element x is in the vector<Link> L
+
+
+
 bool find(list<ULink>& L, ULink e)
 {
   for(list<ULink>::iterator q = L.begin(); q!= L.end(); q++) {
@@ -1435,12 +1289,12 @@ bool find(list<ULink>& L, ULink e)
   
   return false;
 }
-/////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
-/////////////////////////////////////////////////////////////////////////////////////////////////
-// find whether the element x is in the vector<Link> L
+
+
+
 bool find(list<Link>& L, Link e)
 {
   for(list<Link>::iterator q = L.begin(); q!= L.end(); q++) {
@@ -1450,7 +1304,7 @@ bool find(list<Link>& L, Link e)
   
   return false;
 }
-/////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 
 bool find(list<int>& X, int j) {
@@ -1486,18 +1340,18 @@ bool find(vector<list<int> >& X, list<int>& j) {
 }
 
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 void print(deque<int>& Q) 
 {
   for(deque<int>::iterator q = Q.begin(); q!= Q.end(); q++) 
     cout << (*q) << "-->";
   cout << endl;
 }
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-/////////////////////////////////////////////////////////////////////////////////////////////////
-// find the position of the element j in the list nbl  (assume j is definitely in the list)
+
+
+
 int findpos(Nbl& nbl, int j)
 {
   int pos=0;
@@ -1508,11 +1362,11 @@ int findpos(Nbl& nbl, int j)
       pos++;
   }
 }
-/////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-/////////////////////////////////////////////////////////////////////////////////////////////////
-// find the position of the element j in the vector nbv  (assume j is definitely in the vector)
+
+
+
 int findpos(vector<int>& nbv, int j)
 {
   int n = nbv.size();
@@ -1522,12 +1376,12 @@ int findpos(vector<int>& nbv, int j)
   
   return -1;
 }
-/////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
-/////////////////////////////////////////////////////////////////////////////////////////////////
-// find the position of the element j in the vector nbv  (assume j is definitely in the vector)
+
+
+
 int findpos(vector<string>& nbs, string s)
 {
   int n = nbs.size();
@@ -1537,11 +1391,11 @@ int findpos(vector<string>& nbs, string s)
   
   return -1;
 }
-/////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-/////////////////////////////////////////////////////////////////////////////////////////////////
-// return the element in the list nbl with a given position (index)
+
+
+
 int print(Nbl& nbl)
 {
   Nbl::iterator p = nbl.begin();
@@ -1552,12 +1406,12 @@ int print(Nbl& nbl)
   }
   cout << endl;
 }
-/////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
-/////////////////////////////////////////////////////////////////////////////////////////////////
-// return the element in the list nbl with a given position (index)
+
+
+
 int getnodeinNbl(Nbl& nbl, int index)
 {
   int pos=0;
@@ -1566,12 +1420,12 @@ int getnodeinNbl(Nbl& nbl, int index)
       return (*p);
   }
 }
-/////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
-/////////////////////////////////////////////////////////////////////////////////////////////////
-// return the element in the list X with a given position (index)
+
+
+
 double getnodeinlist(list<double>& X, int index)
 {
   int pos=0;
@@ -1589,12 +1443,12 @@ int getnodeinlist(list<int>& X, int index)
       return (*p);
   }
 }
-/////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-///////////////////////////////////////////////////////////////////////////////
+
+
 template <typename Iter> 
-void getNbl(Iter begin, Iter end) //, Nbl& nbl) 
+void getNbl(Iter begin, Iter end) 
 { 
   int count=1;
   int i = *begin++;
@@ -1605,20 +1459,20 @@ void getNbl(Iter begin, Iter end) //, Nbl& nbl)
     cout << j << ' ';
   }
   cout << endl;
-  //cout << "count= " << count << endl;
+  
 } 
-///////////////////////////////////////////////////////////////////////////////
 
 
 
 
-/////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 const string numbers="0123456789";
-// get the number from a string
+
 void GetNumberFromaString(string str, int& x) 
 {
-  // x = atoi((str.substr(11)).c_str()); // this just works if we know exactly the posisition of the first number
-  // in general, we have to do the following:
+  
+  
   int first = str.find_first_of(numbers);
   if(first == string::npos) 
     cout<<"find no numbers"<<endl;
@@ -1627,13 +1481,13 @@ void GetNumberFromaString(string str, int& x)
   if(last == string::npos) 
     cout<<"find no numbers"<<endl;
 
-  // the following statements have the same function: convert string to int
-  // x = atoi((str.substr(first, last-first+1)).c_str());
+  
+  
   istringstream buffer(str.substr(first, last-first+1)); 
   buffer >> x;
   
 }
-/////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 #include <sstream>
 void Char2String(char& c, string& s) {
@@ -1653,7 +1507,7 @@ string Int2String(int i) {
 
 
 
-/////////////////////////////////////////////////////////////////////////////////////////////////
+
 /**
  * cpx_polylog_sum -- compute the polylogarithm by direct summation
  *
@@ -1676,43 +1530,21 @@ double polylog(double s, double z)
       break;
     }
   }
-  //cout << "n= " << nmax << endl; //test
+  
 
   return sum;
 }
-/////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-/*
-/////////////////////////////////////////////////////////////////////////////////////////////////
-double polylog(double s, double z, int prec)
-{
-cpx_t plog;
-cpx_init (plog);
-
-cpx_t ess;
-cpx_init (ess);
-cpx_set_d(ess, s, 0);
-
-cpx_t zee;
-cpx_init (zee);
-cpx_set_d(zee, z, 0);
-
-cpx_polylog_euler (plog, ess, zee, prec);
-//cout << "cpx_polylog_euler: Li_" << s << "[" << z << "] = " << plog[0].re << endl;
-
-return mpf_get_d(plog[0].re);
-}
-/////////////////////////////////////////////////////////////////////////////////////////////////
-*/
 
 
- /////////////////////////////////////////////////////////////////////////////////////////////////
- // find the root(s) of f(x)=0 in the interval [X1, X2]
+
+ 
+ 
 int FindRoots(double fx(const double), double X1, double X2, double& rootmin, double& rootmax, vector<double>& roots)
 {
   const int n=100,NBMAX=20;
-  //const int n=10000,NBMAX=20;  
+  
 
   int i,nb=NBMAX;
   DP xacc,root;
@@ -1721,7 +1553,7 @@ int FindRoots(double fx(const double), double X1, double X2, double& rootmin, do
   zbrak(fx,X1,X2,n,xb1,xb2,nb);
   cout << endl << "Roots of f:" << endl;
   cout << setw(20) << "x" << setw(16) << "f(x)" << endl;
-  //cout << fixed << setprecision(10);
+  
 
   roots.clear();
   roots.resize(nb,0);
@@ -1729,7 +1561,7 @@ int FindRoots(double fx(const double), double X1, double X2, double& rootmin, do
   rootmin = 1e300;
   rootmax = -1e300;
   for (i=0;i<nb;i++) {
-    //xacc = (1.0e-10)*(xb1[i]+xb2[i])/2.0;
+    
     xacc = (1.0e-10)*(fabs(xb1[i])+fabs(xb2[i]))/2.0;
     root = rtbis(fx,xb1[i],xb2[i],xacc);
     cout << "root " << setw(3) << (i+1) << setw(15) << root;
@@ -1749,17 +1581,17 @@ int FindRoots(double fx(const double), double X1, double X2, double& rootmin, do
   cout << "nb= " << nb << endl; 
   
   return nb;
-  //cout << "root_min = " << rootmin << endl;
-  //cout << "root_max = " << rootmax << endl;
+  
+  
 
 }
-///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 void zbrak_2D(double fx(const double, const double), 
 	      const double a, 
 	      const double x1, const double x2, 
@@ -1777,7 +1609,7 @@ void zbrak_2D(double fx(const double, const double),
   for (int i=0;i<n;i++) {
     x+=dx;
     double fc=fx(x,a);
-    //cout << x-dx << ',' << x << ',' << fp << ',' << fc << endl; //debug
+    
     if (fc*fp <= 0.0) {
       xb1[nroot]=x-dx;
       xb2[nroot++]=x;
@@ -1786,13 +1618,13 @@ void zbrak_2D(double fx(const double, const double),
     fp=fc;
   }
 
-  //cout << nroot << endl; //debug
+  
 }
-///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
- /////////////////////////////////////////////////////////////////////////////////////////////////
+
+ 
 double rtbis_2D(double func(const double, const double), 
 		const double a,
 		const double x1, const double x2, const double xacc)
@@ -1803,7 +1635,7 @@ double rtbis_2D(double func(const double, const double),
 
   f=func(x1,a);
   fmid=func(x2,a);
-  //if (f*fmid >= 0.0) nrerror("Root must be bracketed for bisection in rtbis");                                   
+  
   if (f*fmid > 1e-16) nrerror("Root must be bracketed for bisection in rtbis");
   rtb = f < 0.0 ? (dx=x2-x1,x1) : (dx=x1-x2,x2);
   for (j=0;j<JMAX;j++) {
@@ -1814,11 +1646,11 @@ double rtbis_2D(double func(const double, const double),
   nrerror("Too many bisections in rtbis");
   return 0.0;
 }
- /////////////////////////////////////////////////////////////////////////////////////////////////
+ 
 
 
- /////////////////////////////////////////////////////////////////////////////////////////////////
- // find the root(s) of f(x;a)=0 in the interval [X1, X2]
+ 
+ 
 int FindRoots(double fx(const double, const double), 
 	      const double a,
 	      double X1, double X2, double& rootmin, double& rootmax, vector<double>& roots)
@@ -1829,21 +1661,21 @@ int FindRoots(double fx(const double, const double),
   vector<double> xb1(NBMAX),xb2(NBMAX);
   
   zbrak_2D(fx,a,X1,X2,n,xb1,xb2,nb);
-  //cout << endl << "Roots of F:" << endl;
-  //cout << setw(20) << "x" << setw(16) << "F(x)" << endl;
-  //cout << fixed << setprecision(10);
+  
+  
+  
 
   roots.clear();
   roots.resize(nb,0);
 
-  rootmin = 1;//1e300;
-  rootmax = 0;//-1e300;
+  rootmin = 1;
+  rootmax = 0;
   for (i=0;i<nb;i++) {
-    //xacc = (1.0e-10)*(xb1[i]+xb2[i])/2.0;
+    
     xacc = (1.0e-11)*(fabs(xb1[i])+fabs(xb2[i]))/2.0;
     root = rtbis_2D(fx,a,xb1[i],xb2[i],xacc);
-    //cout << "Root " << setw(3) << (i+1) << setw(15) << root;
-    //cout << setw(15) << fx(root,a) << endl;
+    
+    
 
     if (root < rootmin) {
       rootmin = root;
@@ -1856,19 +1688,19 @@ int FindRoots(double fx(const double, const double),
     roots[i] = root;
   }
 
-  //cout << "nb= " << nb << endl; 
+  
   
   return nb;
-  //cout << "root_min = " << rootmin << endl;
-  //cout << "root_max = " << rootmax << endl;
+  
+  
 
 }
-///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 void zbrak_3D(double fx(const double, const double, const double), 
 	      const double a, const double b, 
 	      const double x1, const double x2, 
@@ -1886,7 +1718,7 @@ void zbrak_3D(double fx(const double, const double, const double),
   for (int i=0;i<n;i++) {
     x+=dx;
     double fc=fx(x,a,b);
-    //cout << x-dx << ',' << x << ',' << fp << ',' << fc << endl; //debug
+    
     if (fc*fp <= 0.0) {
       xb1[nroot]=x-dx;
       xb2[nroot++]=x;
@@ -1896,11 +1728,11 @@ void zbrak_3D(double fx(const double, const double, const double),
   }
 
 }
-///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
- /////////////////////////////////////////////////////////////////////////////////////////////////
+
+ 
 double rtbis_3D(double func(const double, const double, const double), 
 		const double a, const double b,
 		const double x1, const double x2, const double xacc)
@@ -1911,7 +1743,7 @@ double rtbis_3D(double func(const double, const double, const double),
 
   f=func(x1,a,b);
   fmid=func(x2,a,b);
-  //if (f*fmid >= 0.0) nrerror("Root must be bracketed for bisection in rtbis");                                   
+  
   if (f*fmid > 1e-16) mynrerror("Root must be bracketed for bisection in rtbis");
   rtb = f < 0.0 ? (dx=x2-x1,x1) : (dx=x1-x2,x2);
   for (j=0;j<JMAX;j++) {
@@ -1922,11 +1754,11 @@ double rtbis_3D(double func(const double, const double, const double),
   nrerror("Too many bisections in rtbis");
   return 0.0;
 }
- /////////////////////////////////////////////////////////////////////////////////////////////////
+ 
 
 
- /////////////////////////////////////////////////////////////////////////////////////////////////
- // find the root(s) of f(x;a,b)=0 in the interval [X1, X2]
+ 
+ 
 int FindRoots(double fx(const double, const double, const double), 
 	      const double a, const double b,
 	      double X1, double X2, double& rootmin, double& rootmax, vector<double>& roots)
@@ -1937,21 +1769,21 @@ int FindRoots(double fx(const double, const double, const double),
   vector<double> xb1(NBMAX),xb2(NBMAX);
   
   zbrak_3D(fx,a,b,X1,X2,n,xb1,xb2,nb);
-  //cout << endl << "Roots of f:" << endl;
-  //cout << setw(20) << "x" << setw(16) << "f(x)" << endl;
-  //cout << fixed << setprecision(10);
+  
+  
+  
 
   roots.clear();
   roots.resize(nb,0);
 
-  rootmin = 1;//1e300;
-  rootmax = 0;//-1e300;
+  rootmin = 1;
+  rootmax = 0;
   for (i=0;i<nb;i++) {
-    //xacc = (1.0e-10)*(xb1[i]+xb2[i])/2.0;
+    
     xacc = (1.0e-11)*(fabs(xb1[i])+fabs(xb2[i]))/2.0;
     root = rtbis_3D(fx,a,b,xb1[i],xb2[i],xacc);
-    //cout << "root " << setw(3) << (i+1) << setw(15) << root;
-    //cout << setw(15) << fx(root,a,b) << endl;
+    
+    
 
     if (root < rootmin) {
       rootmin = root;
@@ -1964,19 +1796,19 @@ int FindRoots(double fx(const double, const double, const double),
     roots[i] = root;
   }
 
-  //cout << "nb= " << nb << endl; 
+  
   
   return nb;
-  //cout << "root_min = " << rootmin << endl;
-  //cout << "root_max = " << rootmax << endl;
+  
+  
 
 }
-///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 void zbrak_long(long double fx(const long double), const long double x1, const long double x2, const int n,
 		vector<long double> &xb1, vector<long double> &xb2, int &nroot)
 {
@@ -1997,11 +1829,11 @@ void zbrak_long(long double fx(const long double), const long double x1, const l
     fp=fc;
   }
 }
-///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 long double rtbis_long(long double func(const long double), const long double x1, const long double x2, const long double xacc)
 {
   const int JMAX=40;
@@ -2010,7 +1842,7 @@ long double rtbis_long(long double func(const long double), const long double x1
 
   f=func(x1);
   fmid=func(x2);
-  //if (f*fmid >= 0.0) nrerror("Root must be bracketed for bisection in rtbis");
+  
   if (f*fmid > 1e-16) mynrerror("Root must be bracketed for bisection in rtbis");
   rtb = f < 0.0 ? (dx=x2-x1,x1) : (dx=x1-x2,x2);
   for (j=0;j<JMAX;j++) {
@@ -2021,13 +1853,13 @@ long double rtbis_long(long double func(const long double), const long double x1
   nrerror("Too many bisections in rtbis");
   return 0.0;
 }
-///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
 
-/////////////////////////////////////////////////////////////////////////////////////////////////
-// find the root(s) of f(x)=0 in the interval [X1, X2]
+
+
+
 int FindRoots_long(long double fx(const long double), long double X1, long double X2, long double& rootmin, long double& rootmax, vector<long double>& roots)
 {
   const int n=100,NBMAX=20;
@@ -2038,7 +1870,7 @@ int FindRoots_long(long double fx(const long double), long double X1, long doubl
   zbrak_long(fx,X1,X2,n,xb1,xb2,nb);
   cout << endl << "Roots of f:" << endl;
   cout << setw(20) << "x" << setw(16) << "f(x)" << endl;
-  //cout << fixed << setprecision(10);
+  
 
   roots.clear();
   roots.resize(nb,0);
@@ -2046,7 +1878,7 @@ int FindRoots_long(long double fx(const long double), long double X1, long doubl
   rootmin = 1e300;
   rootmax = -1e300;
   for (i=0;i<nb;i++) {
-    //xacc = (1.0e-10)*(xb1[i]+xb2[i])/2.0;
+    
     xacc = (1.0e-11)*(fabs(xb1[i])+fabs(xb2[i]))/2.0;
     root = rtbis_long(fx,xb1[i],xb2[i],xacc);
     cout << "root " << setw(3) << (i+1) << setw(15) << root;
@@ -2066,20 +1898,20 @@ int FindRoots_long(long double fx(const long double), long double X1, long doubl
   cout << "nb= " << nb << endl; 
   
   return nb;
-  //cout << "root_min = " << rootmin << endl;
-  //cout << "root_max = " << rootmax << endl;
+  
+  
 
 }
-///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
 
-/////////////////////////////////////////////////////////////////////////////////////////////////
-// find the root(s) of f(x)=0 in the interval [X1, X2]
-// we first find roots in a slightly bigger interval [X1', X2'] with X1' = X1- (X2-X1)*0.01
-//                                                                   X2' = X2+ (X2-X1)*0.01
-// then only choose roots within the interval [X1, X2]
+
+
+
+
+
+
 int FindRoots_u(double fx(const double), double X1, double X2, vector<double>& roots)
 {
   const int n=100,NBMAX=20;
@@ -2096,11 +1928,11 @@ int FindRoots_u(double fx(const double), double X1, double X2, vector<double>& r
   zbrak(fx,X1u,X2u,n,xb1,xb2,nb);
   cout << endl << "Roots of f:" << endl;
   cout << setw(20) << "x" << setw(16) << "f(x)" << endl;
-  //cout << fixed << setprecision(10);
+  
 
   roots.clear();
   for (i=0;i<nb;i++) {
-    //xacc = (1.0e-10)*(xb1[i]+xb2[i])/2.0;
+    
     xacc = (1.0e-10)*(fabs(xb1[i])+fabs(xb2[i]))/2.0;
     root = rtbis(fx,xb1[i],xb2[i],xacc);
 
@@ -2124,7 +1956,7 @@ int FindRoots_u(double fx(const double), double X1, double X2, vector<double>& r
   cout << "nb= " << nb << endl; 
   return nb;
 }
-///////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 
 
@@ -2158,7 +1990,7 @@ double rtbis_rrg(DP func(const int, const DP), const int r, const DP x1, const D
 
   f=func(r, x1);
   fmid=func(r, x2);
-  //if (f*fmid >= 0.0) nrerror("Root must be bracketed for bisection in rtbis");
+  
   if (f*fmid > 1e-16) nrerror("Root must be bracketed for bisection in rtbis");
   rtb = f < 0.0 ? (dx=x2-x1,x1) : (dx=x1-x2,x2);
   for (j=0;j<JMAX;j++) {
@@ -2172,12 +2004,12 @@ double rtbis_rrg(DP func(const int, const DP), const int r, const DP x1, const D
 
 
 
-/////////////////////////////////////////////////////////////////////////////////////////////////
-// designed in particular for random regular graph's population dynamics 
-// find the root(s) of f(x)=0 in the interval [X1, X2]
-// we first find roots in a slightly bigger interval [X1', X2'] with X1' = X1- (X2-X1)*0.01
-//                                                                   X2' = X2+ (X2-X1)*0.01
-// then only choose roots within the interval [X1, X2]
+
+
+
+
+
+
 int FindRoots_RRG(double frx(const int, const double), const int r, double X1, double X2, vector<double>& roots)
 {
   const int n=100,NBMAX=20;
@@ -2194,11 +2026,11 @@ int FindRoots_RRG(double frx(const int, const double), const int r, double X1, d
   zbrak_rrg(frx,r,X1u,X2u,n,xb1,xb2,nb);
   cout << endl << "Roots of f:" << endl;
   cout << setw(20) << "x" << setw(16) << "f(x)" << endl;
-  //cout << fixed << setprecision(10);
+  
 
   roots.clear();
   for (i=0;i<nb;i++) {
-    //xacc = (1.0e-10)*(xb1[i]+xb2[i])/2.0;
+    
     xacc = (1.0e-10)*(fabs(xb1[i])+fabs(xb2[i]))/2.0;
     root = rtbis_rrg(frx,r,xb1[i],xb2[i],xacc);
 
@@ -2228,14 +2060,14 @@ int FindRoots_RRG(double frx(const int, const double), const int r, double X1, d
 
   return nb;
 }
-///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
 
 
-//////////////////////////////////////////////////////////////////////////////////////////////////
-// return the binomial coefficient: C(m,k)
+
+
+
 double binom(int m, int k)
 {
   double c = 1.;
@@ -2243,13 +2075,13 @@ double binom(int m, int k)
     c *= (m-i)/(i+1.);
   return c;
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
 
 
-//////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 void NR_gser(double &gamser, const double a, const double x)
 {
   const int ITMAX=100;
@@ -2257,7 +2089,7 @@ void NR_gser(double &gamser, const double a, const double x)
   int n;
   double sum,del,ap;
 
-  //gln=gammln(a);
+  
   if (x <= 0.0) {
     if (x < 0.0) mynrerror("x less than 0 in routine gser");
     gamser=0.0;
@@ -2270,7 +2102,7 @@ void NR_gser(double &gamser, const double a, const double x)
       del *= x/ap;
       sum += del;
       if (fabs(del) < fabs(sum)*EPS) {
-	//gamser=sum*exp(-x+a*log(x)-gln);
+	
 	gamser=sum*exp(-x+a*log(x));
 	return;
       }
@@ -2291,7 +2123,7 @@ void NR_gcf(double &gammcf, const double a, const double x)
   int i;
   double an,b,c,d,del,h;
 
-  //gln=gammln(a);
+  
   b=x+1.0-a;
   c=1.0/FPMIN;
   d=1.0/b;
@@ -2309,7 +2141,7 @@ void NR_gcf(double &gammcf, const double a, const double x)
     if (fabs(del-1.0) <= EPS) break;
   }
   if (i > ITMAX) nrerror("a too large, ITMAX too small in gcf");
-  //gammcf=exp(-x+a*log(x)-gln)*h;
+  
   gammcf=exp(-x+a*log(x))*h;
 }
 
@@ -2335,7 +2167,6 @@ double NR_gammq(const double a, const double x)
   return exp(gln)*temp;
   
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
@@ -2344,18 +2175,13 @@ double NR_gammq(const double a, const double x)
 
 
 
-/* gsl_sf_gamma_inc(k-1/a, z*(1-a)); will overflow for large k.
-   k-1/a=170; z*(1-a)=3 4.26907e+304
-   k-1/a=171; z*(1-a)=3 7.25742e+306
-   gsl: gamma.c:1106: ERROR: overflow
-   Default GSL error handler invoked.
-   Aborted
-*/
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Note that P[k] = C * Get_Gammas_StaticModel(double z, double a, int k) 
-// with C = pow(z*(1-a), 1/a)/a;
-//
+
+
+
+
+
+
 double Get_Gammas_StaticModel(double z, double a, int k)
 {
   double P = 0;
@@ -2368,36 +2194,36 @@ double Get_Gammas_StaticModel(double z, double a, int k)
     Q = gsl_sf_gamma_inc_Q(s,x);
     P = Q * exp(gsl_sf_lngamma(s)-gsl_sf_lngamma(k+1));
   }
-  //cout << "k-1/a=" << k-1/a << "; z*(1-a)=" << z*(1-a) << "; P=" << P << endl;//' ' << NR_gammq(s, x) << endl; //test  
+  
   return P;
 }
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Adaptive calculation, depending on k, we can choose calculate P[k]
-// according to the exact definition or use approximation : Gamma(k-1/a, z(1-a))/Gamma(k+1) ~= k^{-1-1/a}
+
+
+
+
 double Get_Gammas_StaticModel_Adaptive(double z, double a, int k)
 {
   if(k>100000) { 
-    //cout << k << endl; //test
+    
     return pow((double)k, -1-1/a);
   }
   else 
     return Get_Gammas_StaticModel(z, a, k);
 }
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
 
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// H7:=  <|k/z - 1|> = 2 \sum_{k=0}^z (1-k/z) P(k)
+
+
+
 double Get_SF_SM_AbsoluteDeviation(double z, double a)
 {
   double sum = 0.0;
@@ -2409,17 +2235,17 @@ double Get_SF_SM_AbsoluteDeviation(double z, double a)
   }
   return 2*sum;
 }
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// H8:=  - \sum_{k=0}^\infty  P(k) logP(k)
+
+
+
 double Get_SF_SM_ShannonEntropy(double z, double a)
 {
   double sum  = 0.0;
-  double term = DBL_MAX;  // Here DBL_MAX is the max double number
+  double term = DBL_MAX;  
   bool   flag = true;
   int kmax;
   double C = pow(z*(1-a), 1/a)/a;
@@ -2428,9 +2254,9 @@ double Get_SF_SM_ShannonEntropy(double z, double a)
     double Pk = C*Get_Gammas_StaticModel(z, a, k);
     if(flag) {
       term = - Pk * log(Pk);
-      //cout << k << ' ' << term << ' ' << sum << endl; //test
-      //if(term>DBL_MIN) // too slow
-      //if(fabs(term/sum) > TOLERANCE)
+      
+      
+      
       if(fabs(term/sum) > 1e-8)
 	sum += term;
       else {
@@ -2440,29 +2266,29 @@ double Get_SF_SM_ShannonEntropy(double z, double a)
     }
   }
 
-  //cout << "kmax ="  << kmax << endl;
+  
 
   return sum;
 }
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
 
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// The following function calculate those concave means, such as <log(k+1)> and <k^0.5> for SF network (static model)
-// z = 2m = <k>
-// a = 1/(gamma-1)
+
+
+
+
+
 
 void Get_SF_SM_concavemean(double z, double a, double& logk1, double& ksr)
 {
-  double Sum_logk1  = 0.0; // k=0 term
-  double Sum_ksr    = 0.0; // k=0 term
+  double Sum_logk1  = 0.0; 
+  double Sum_ksr    = 0.0; 
 
-  double term_logk1 = DBL_MAX;  // Here DBL_MAX is the max double number
-  double term_ksr   = DBL_MAX;  // Here DBL_MAX is the max double number
+  double term_logk1 = DBL_MAX;  
+  double term_ksr   = DBL_MAX;  
   
   bool flag_logk1 = true;
   bool flag_ksr   = true;
@@ -2474,12 +2300,12 @@ void Get_SF_SM_concavemean(double z, double a, double& logk1, double& ksr)
 
   for(int k=1; (flag_logk1 || flag_ksr); k++)  {
     double Pk = C * Get_Gammas_StaticModel(z, a, k);
-    //if(k%100==0) cout << k << ' ' << Pk << endl; //test
+    
 
     if(flag_logk1) {
       term_logk1 = log(k+1.0) * Pk;
-      //if(term_logk1>DBL_MIN)
-      //if(term_logk1/Sum_logk1 > TOLERANCE)
+      
+      
       if(term_logk1/Sum_logk1 > 1e-8)
 	Sum_logk1 += term_logk1;
       else {
@@ -2490,8 +2316,8 @@ void Get_SF_SM_concavemean(double z, double a, double& logk1, double& ksr)
 
     if(flag_ksr) {
       term_ksr = sqrt((double)k) * Pk;
-      //if(term_ksr>DBL_MIN)
-      //if(term_ksr/Sum_ksr > TOLERANCE)
+      
+      
       if(term_ksr/Sum_ksr > 1e-8)
 	Sum_ksr += term_ksr;
       else {
@@ -2507,15 +2333,15 @@ void Get_SF_SM_concavemean(double z, double a, double& logk1, double& ksr)
   logk1 = Sum_logk1;
   ksr   = Sum_ksr;
 }
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
 
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// H9:=  relative mean difference = mean difference/mean
+
+
+
 double Get_SF_SM_RMD(double z, double a)
 {
   double sum = 0; 
@@ -2525,7 +2351,7 @@ double Get_SF_SM_RMD(double z, double a)
   double C = pow(z*(1-a), 1/a)/a;
 
   for(int i=0; flag; i++) {
-    //double Pi = C * Get_Gammas_StaticModel(z, a, i);
+    
     double Pi = C * Get_Gammas_StaticModel_Adaptive(z, a, i);
     Pk.push_back(Pi);
     
@@ -2535,14 +2361,14 @@ double Get_SF_SM_RMD(double z, double a)
       term += (i-j)*Pi*Pj;
     }
     
-    //if(i==0 || fabs(term/sum) > TOLERANCE)
-    //if(i<1000 || term > DBL_MIN) {
-    //if(i<1000 || fabs(term/sum) > TOLERANCE) {
-    //if(i<1000 || term > TOLERANCE) { // slow
+    
+    
+    
+    
     if(i<10000 || fabs(term/sum) > 1e-8) {
       sum += term;
       if(i%10000==0)
-	cout << i << ' ' << term <<' ' << sum << " H9= " << 2*sum/z << endl; //test
+	cout << i << ' ' << term <<' ' << sum << " H9= " << 2*sum/z << endl; 
     }
     else {
       flag = false;
@@ -2551,17 +2377,17 @@ double Get_SF_SM_RMD(double z, double a)
   }
   
   double MD = 2 * sum;
-  //cout << "<k>= " << z << " MD= " << MD << " with imax = " << imax << endl; //test
+  
   return MD/z;
 }
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
 
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 int InverseCDF_SF_SM(double z, double a, double x)
 {
   double sum = 0;
@@ -2578,11 +2404,11 @@ int InverseCDF_SF_SM(double z, double a, double x)
     k--;
   }
   
-  //cout << "CDF^(-1) (" << x << ") = " << k << " CDF(" << k << ")=" << sum << endl; 
+  
   return k;
 }
 
-// H10:=  Quartile coefficient of dispersion = (Q3-Q1)/(Q3+Q1)
+
 double Get_SF_SM_QCD(double z, double a)
 {
   double Q1,Q3;
@@ -2591,7 +2417,6 @@ double Get_SF_SM_QCD(double z, double a)
 
   return (Q3-Q1)/(Q3+Q1);
 }
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
@@ -2600,7 +2425,8 @@ double Get_SF_SM_QCD(double z, double a)
 
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 double Get_Pk_ChungLu(vector<double>& w, int k)
 { 
   int N = w.size();
@@ -2610,13 +2436,13 @@ double Get_Pk_ChungLu(vector<double>& w, int k)
   
   return sum/N;
 }
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// H9:=  relative mean difference = mean difference/mean
+
+
+
 double Get_CL_RMD(vector<double>& P, double z)
 {
   int kmax = P.size()-1;
@@ -2629,16 +2455,16 @@ double Get_CL_RMD(vector<double>& P, double z)
     
   return 2*sum/z;
 }
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// H9:=  relative mean difference = mean difference/mean
-// Note that for exponential digraphs, 
-// if P(kin) = P(kout) =  (1-e^{-1/kappa}) e^{-k/kappa}
-// then P(k) = (1-e^{-1/kappa})^2 e^{-k/kappa} (k+1)
+
+
+
+
+
+
 double Get_EXP_D_RMD(double enkappa, double z)
 {
   double sum = 0; 
@@ -2663,7 +2489,7 @@ double Get_EXP_D_RMD(double enkappa, double z)
     if(i==0 || fabs(term/sum) > TOLERANCE) {
       sum += term;
       if(i%10000==0)
-	cout << i << ' ' << term <<' ' << sum << endl; //test
+	cout << i << ' ' << term <<' ' << sum << endl; 
     }
     else {
       flag = false;
@@ -2672,17 +2498,17 @@ double Get_EXP_D_RMD(double enkappa, double z)
   }
   
   double MD = 2 * sum;
-  //cout << "<k>= " << z << " MD= " << MD << " with imax = " << imax << endl; //test
+  
   return MD/z;
 
 }
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 double GetPoisson(double lambda, int k)
 {
   double P = 1.0/exp(lambda);
@@ -2691,19 +2517,19 @@ double GetPoisson(double lambda, int k)
 
   return P;
 }
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// The following function calculate those concave means, such as <log(k+1)> and <k^0.5> for ER network
+
+
+
 void Get_ER_concavemean(double lambda, double& logk1, double& ksr)
 {
-  double Sum_logk1  = 0.0; // k=0 term
-  double Sum_ksr    = 0.0; // k=0 term
+  double Sum_logk1  = 0.0; 
+  double Sum_ksr    = 0.0; 
 
-  double term_logk1 = DBL_MAX;  // Here DBL_MAX is the max double number
-  double term_ksr   = DBL_MAX;  // Here DBL_MAX is the max double number
+  double term_logk1 = DBL_MAX;  
+  double term_ksr   = DBL_MAX;  
   
   bool flag_logk1 = true;
   bool flag_ksr   = true;
@@ -2741,13 +2567,13 @@ void Get_ER_concavemean(double lambda, double& logk1, double& ksr)
   logk1 = Sum_logk1;
   ksr   = Sum_ksr;
 }
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// H7:=  <|k/z - 1|> = 2 \sum_{k=0}^z (1-k/z) P(k)
+
+
+
 double Get_ER_AbsoluteDeviation(double z)
 {
   double sum = 0.0;
@@ -2757,16 +2583,16 @@ double Get_ER_AbsoluteDeviation(double z)
   }
   return 2*sum;
 }
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// H8:=  - \sum_{k=0}^\infty  P(k) logP(k)
+
+
+
 double Get_ER_ShannonEntropy(double z)
 {
   double sum  = 0.0;
-  double term = DBL_MAX;  // Here DBL_MAX is the max double number
+  double term = DBL_MAX;  
   bool   flag = true;
   int kmax;
 
@@ -2774,7 +2600,7 @@ double Get_ER_ShannonEntropy(double z)
     double Pk = GetPoisson(z, k);
     if(flag) {
       term = - Pk * log(Pk);
-      //if(term>DBL_MIN)
+      
       if(fabs(term/sum) > TOLERANCE)
 	sum += term;
       else {
@@ -2784,31 +2610,31 @@ double Get_ER_ShannonEntropy(double z)
     }
   }
 
-  //cout << "kmax ="  << kmax << endl;
+  
 
   return sum;
 }
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// H9:=  relative mean difference = mean difference/mean
+
+
+
 double Get_ER_RMD(double z)
 {
   double MD = 2*z * exp(-2*z) * (gsl_sf_bessel_I0(2*z) + gsl_sf_bessel_I1(2*z));
-  //cout << "<k>= " << z << " MD= " << MD << endl; //test
+  
   return MD/z;
 }
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
 
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 int InverseCDF_ER(double z, double x)
 {
   double sum = 0;
@@ -2823,11 +2649,11 @@ int InverseCDF_ER(double z, double x)
     k--;
   }
   
-  //cout << "CDF^(-1) (" << x << ") = " << k << " CDF(" << k << ")=" << sum << endl; 
+  
   return k;
 }
 
-// H10:=  Quartile coefficient of dispersion = (Q3-Q1)/(Q3+Q1)
+
 double Get_ER_QCD(double z)
 {
   double Q1,Q3;
@@ -2836,19 +2662,19 @@ double Get_ER_QCD(double z)
 
   return (Q3-Q1)/(Q3+Q1);
 }
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// H9:=  relative mean difference = mean difference/mean
+
+
+
 double Get_SF_EC_RMD(double gamma, double kappa, double z)
 {
   double sum = 0; 
   vector<double> Pk;
-  Pk.push_back(0); // Pk=0 for k=0
+  Pk.push_back(0); 
 
   bool   flag = true;
   int imax;
@@ -2864,14 +2690,14 @@ double Get_SF_EC_RMD(double gamma, double kappa, double z)
       term += (i-j)*Pi*Pj;
     }
     
-    //if(i==0 || fabs(term/sum) > TOLERANCE)
-    //if(i<1000 || term > DBL_MIN) {
+    
+    
     if(i<1000 || fabs(term/sum) > TOLERANCE) {
-      //if(i<1000 || term > TOLERANCE) { // slow
-      //if(i<10000 || fabs(term/sum) > 1e-8) {
+      
+      
       sum += term;
-      //if(i%1000==0)
-      //cout << i << ' ' << term <<' ' << sum << endl; //test
+      
+      
     }
     else {
       flag = false;
@@ -2880,30 +2706,30 @@ double Get_SF_EC_RMD(double gamma, double kappa, double z)
   }
   
   double MD = 2 * sum;
-  //cout << "<k>= " << z << " MD= " << MD << " with imax = " << imax << endl; //test
+  
   return MD/z;
 }
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// H9:=  relative mean difference = mean difference/mean
-// Note that the total degree distribution will be not exactly the same functional form (Poisson is a very special case)
-// Actually it should be calculated from  
-// P(k) = sum_{kin=0}^k Pin(kin) * Pout(k-kin)  
+
+
+
+
+
+
 double Get_SF_EC_D_RMD(double gamma, double kappa, double z)
 {
   double sum = 0; 
-  vector<double> Pkin; // = Pkout 
-  Pkin.push_back(0); // Pk=0 for k=0
+  vector<double> Pkin; 
+  Pkin.push_back(0); 
 
-  vector<double> Pk; // = Ptotal 
-  Pk.push_back(0); // Pk=0 for k=0
+  vector<double> Pk; 
+  Pk.push_back(0); 
 
-  // Don't do this. index will mismatch!! And cause calculated H9 wrong!!
-  //Pk.push_back(0); // Pk=0 for k=1 in P(k=1) = Pin(0)Pout(1) + Pin(1)Pout(0) = 0
+  
+  
 
   bool   flag = true;
   int imax;
@@ -2924,14 +2750,14 @@ double Get_SF_EC_D_RMD(double gamma, double kappa, double z)
       term += (i-j)*P_i*P_j;
     }
     
-    //if(i==0 || fabs(term/sum) > TOLERANCE)
-    //if(i<1000 || term > DBL_MIN) {
-    //if(i<100000 || fabs(term/sum) > TOLERANCE) {
-    //if(i<1000 || term > TOLERANCE) { // slow
+    
+    
+    
+    
     if(i<1000 || fabs(term/sum) > 1e-8) {
       sum += term;
-      //if(i%100==0)
-      //cout << i << ' ' << term <<' ' << sum << ' ' << term/sum << endl; //test
+      
+      
     }
     else {
       flag = false;
@@ -2940,21 +2766,21 @@ double Get_SF_EC_D_RMD(double gamma, double kappa, double z)
   }
   
   double MD = 2 * sum;
-  cout << "<k>= " << z << " MD= " << MD << " with imax = " << imax << endl; //test
+  cout << "<k>= " << z << " MD= " << MD << " with imax = " << imax << endl; 
   return MD/z;
 }
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// H9:=  relative mean difference = mean difference/mean
+
+
+
 double Get_SF_RMD(double gamma, double z)
 {
   double sum = 0; 
   vector<double> Pk;
-  Pk.push_back(0); // Pk=0 for k=0
+  Pk.push_back(0); 
 
   bool   flag = true;
   int imax;
@@ -2970,14 +2796,14 @@ double Get_SF_RMD(double gamma, double z)
       term += (i-j)*Pi*Pj;
     }
     
-    //if(i==0 || fabs(term/sum) > TOLERANCE)
-    //if(i<1000 || term > DBL_MIN) {
+    
+    
     if(i<1000 || fabs(term/sum) > TOLERANCE) {
-      //if(i<1000 || term > TOLERANCE) { // slow
-      //if(i<10000 || fabs(term/sum) > 1e-8) {
+      
+      
       sum += term;
-      //if(i%1000==0)
-      //cout << i << ' ' << term <<' ' << sum << endl; //test
+      
+      
     }
     else {
       flag = false;
@@ -2986,10 +2812,9 @@ double Get_SF_RMD(double gamma, double z)
   }
   
   double MD = 2 * sum;
-  //cout << "<k>= " << z << " MD= " << MD << " with imax = " << imax << endl; //test
+  
   return MD/z;
 }
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
@@ -2997,20 +2822,21 @@ double Get_SF_RMD(double gamma, double z)
 
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// H9:=  relative mean difference = mean difference/mean for a digraph with the same power-law P(kin) and P(kout)
-// Note that the total degree distribution will be not exactly the same functional form (Poisson is a very special case)
-// Actually it should be calculated from  
-// P(k) = sum_{kin=0}^k Pin(kin) * Pout(k-kin)  
 
-double Get_SF_D_RMD(double gamma, double z) // here z is the mean total degree; gamma is the gamma for P(kin) and P(kout)
+
+
+
+
+
+
+double Get_SF_D_RMD(double gamma, double z) 
 {
   double sum = 0; 
-  vector<double> Pkin; // = Pkout 
-  Pkin.push_back(0); // Pk=0 for k=0
+  vector<double> Pkin; 
+  Pkin.push_back(0); 
 
-  vector<double> Pk; // = Ptotal 
-  Pk.push_back(0); // Pk=0 for k=0
+  vector<double> Pk; 
+  Pk.push_back(0); 
 
   bool   flag = true;
   int imax;
@@ -3031,14 +2857,14 @@ double Get_SF_D_RMD(double gamma, double z) // here z is the mean total degree; 
       term += (i-j)*P_i*P_j;
     }
     
-    //if(i==0 || fabs(term/sum) > TOLERANCE)
-    //if(i<1000 || term > DBL_MIN) {
+    
+    
     if(i<1000 || fabs(term/sum) > TOLERANCE) {
-      //if(i<1000 || term > TOLERANCE) { // slow
-      //if(i<10000 || fabs(term/sum) > 1e-8) {
+      
+      
       sum += term;
-      //if(i%1000==0)
-      //cout << i << ' ' << term <<' ' << sum << endl; //test
+      
+      
     }
     else {
       flag = false;
@@ -3047,10 +2873,9 @@ double Get_SF_D_RMD(double gamma, double z) // here z is the mean total degree; 
   }
   
   double MD = 2 * sum;
-  //cout << "<k>= " << z << " MD= " << MD << " with imax = " << imax << endl; //test
+  
   return MD/z;
 }
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
@@ -3058,14 +2883,15 @@ double Get_SF_D_RMD(double gamma, double z) // here z is the mean total degree; 
 
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///   semi-tensor product  (STP)  /////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//  STP of vectors 
-//     X: 1xa    Y: bx1   ==> C:1xn with n=a/b or b/a
-// (1) X: 1xnp,  Y: px1   ==> C:1xn
-// (2) X: 1xp,   Y: npx1  ==> C:nx1
+
+
+
+
+
+
+
+
 void STP(double* X, int a, double* Y, int b, double* C)
 {
   if(a%b!=0 && b%a!=0) 
@@ -3096,17 +2922,17 @@ void STP(double* X, int a, double* Y, int b, double* C)
 
 
 
-//  STP of matrices:  A : m x n, B : p x q ===> C : a x b
-// (1) n<p and n*t = p , C : m*t x q   , a=m*t, b=q
-// (2) n>p and n = p*t , C : m  x t*q  , a=m, b=t*q
+
+
+
 void STP(double** A, int m, int n,  double** B, int p, int q, double** C)
 {
   if(n%p!=0 && p%n!=0) 
     mynrerror("Factor dimension condition (A:mxn, B:pxq) fails");
 
-  // i-th row of A:  A[i]
   
-  // j-th column of B is given by BT[j]
+  
+  
   double** BT= new double* [q];
   for(int i=0;i<q;i++) {
     BT[i] = new double [p];
@@ -3123,7 +2949,7 @@ void STP(double** A, int m, int n,  double** B, int p, int q, double** C)
     for(int i=0; i<m; i++) {
       for(int j=0; j<q; j++) {
 	STP(A[i], n, BT[j], p, Cij);
-	//cout << "Cij=(";  for(int k=0; k<t; k++)    cout << Cij[k] << ',';  cout << ")\n";
+	
 	for(int z=0;z<t;z++)
 	  C[t*i+z][j] = Cij[z];
       }
@@ -3139,7 +2965,7 @@ void STP(double** A, int m, int n,  double** B, int p, int q, double** C)
     for(int i=0; i<m; i++) {
       for(int j=0; j<q; j++) {
 	STP(A[i], n, BT[j], p, Cij);
-	//cout << "Cij=(";  for(int k=0; k<t; k++)    cout << Cij[k] << ',';  cout << ")\n";
+	
 	for(int z=0;z<t;z++)
 	  C[i][t*j+z] = Cij[z];
       }
@@ -3165,23 +2991,7 @@ void STP(double** A, int m, int n,  double** B, int p, int q, double** C)
 }
 
 
-  /*
-  cout << "B= \n";
-  for(int i=0;i<p;i++) {
-    for(int j=0; j<q; j++) {
-      cout << B[i][j] << ' ';
-    }
-    cout << endl;
-  }
-
-  cout << "B^T= \n";
-  for(int i=0;i<q;i++) {
-    for(int j=0; j<p; j++) {
-      cout << BT[i][j] << ' ';
-    }
-    cout << endl;
-  }
-  */
+ 
 
 void print(double** C, int a, int b) 
 {
@@ -3219,8 +3029,8 @@ void MatrixPrint(int** X, int a, int b)
 }
 
 
-//////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////
+
+
 double Norm(vector<double>& V)
 {
   int N = V.size();

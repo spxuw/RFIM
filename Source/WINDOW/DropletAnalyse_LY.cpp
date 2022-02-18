@@ -1,11 +1,3 @@
-//////////////////////////////////////////////////////////////////////////////////////////////////////
-/* The functions (with prefix LY_) are modified based on the original corresponding functions. 
-    For the original functions, see DropletAnalyse_AAM.cpp.  Y.L. 02/28/06 
-/////////////////////////////////////////////////////////////////////////////////////////////////////*/
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////
-// modified from the void Window::print_bubble_surfaces()  
-/////////////////////////////////////////////////////////////////////////////////////////////////////
 void Window::LY_print_bubble_surfaces()
 {
     int start, locn;
@@ -27,8 +19,6 @@ void Window::LY_print_bubble_surfaces()
     cout << "Q=" << Q << "  Qvol=" << Qvol << endl;
 
 
-    // Largest spin-DOWN boundarytouching connected cluster label is now Q .Y.L. 02/28/06
-    // but specialize: set all Q spins to have label -1
     for (start = 0; start < nums; ++start)
 	if (label[start] == Q)
 	    label[start] = -1;
@@ -66,20 +56,7 @@ void Window::LY_print_bubble_surfaces()
 
 
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/* Following functions will deals with such a spin configuration with just ONE spin-UP avalanche.
-//////////////////////////////////////////////////////////////////////////////////////////////////////*/
-//////////////////////////////////////////////////////////////////////////////////////////////////////
-// Suppose we construct a Window with just one avalanche, say, use 
-//  Window::Window(int dimension, int length, list<int>& spinList).
-// Then the following function will calculate the clutervolume (size or mass), clustersurface, 
-// domainvolume, domainsurface (outermost surface area), depth (how deep the avalanche is nested) 
-// and the shape tensor (information about the anisotropy). Y.L. 02/28/06
-//////////////////////////////////////////////////////////////////////////////////////////////////////
 void Window::LY_analyse_one_avalanche()
 {
     int start, locn;
@@ -154,15 +131,7 @@ void Window::LY_analyse_one_avalanche()
 	cout <<"EVinfo["<<i<<"]= " << EV_CC[i] << endl;
 
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////
-// This function is overloaded from the same name function. The only difference is that it will write the 
-// result about the singel avalanche to a file.
-//////////////////////////////////////////////////////////////////////////////////////////////////////
 void Window::LY_analyse_one_avalanche(char* filename)
 {
     ofstream outfile(filename, ios_base::out);
@@ -207,9 +176,7 @@ void Window::LY_analyse_one_avalanche(char* filename)
     while (Qvol != nums) 
     {
 	LY_reportD_with_notlabel(depth, -1, &v_D, &a_D);  
-	//LY_reportD_with_notlabel(depth, -1, &v_D, &a_D, &bv_D, &md_D);  
-	// It has been checked that for a single avalanche, the boxvol, as well as the maxdim, is the same 
-	// for both connected cluster and domain description. So we needn't calculate it again. 03/02/06
+
 
 	for (start = 0; start < nums; ++start) {
 	    if (label[start] == -1) {
@@ -255,14 +222,7 @@ void Window::LY_analyse_one_avalanche(char* filename)
 
 
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////
-// Following functions will deals with such a spin configuration with MANY spin-UP avalanches.
-//////////////////////////////////////////////////////////////////////////////////////////////////////
 int Window::LY_analyse_many_avalanches(char* mainname)
 {
     char fname1[256];
@@ -324,18 +284,7 @@ int Window::LY_analyse_many_avalanches(char* mainname)
     //return depth;
     return UPcluster_count;
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-
-/*////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-Note that the following funcitons are only applied to the Hysteresis code. 
-Data files are opened with append mode. For each random seed, a comment line showing the seed will be written to the 
-file, which indicates that now avalanches for this random seed begin.
-*/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void Window::LY_analyse_one_avalanche(bool mark, int seed, char* filename)
 {
     ofstream outfile(filename, ios_base::app); // append mode
@@ -374,32 +323,6 @@ void Window::LY_analyse_one_avalanche(bool mark, int seed, char* filename)
     //int md_D;
     int depth = 0 ;
 
-/*    while (Qvol != nums) 
-    {
-	LY_reportD_with_notlabel(depth, -1, &v_D, &a_D);  
-	//LY_reportD_with_notlabel(depth, -1, &v_D, &a_D, &bv_D, &md_D);  
-	// It has been checked that for a single avalanche, the boxvol, as well as the maxdim, is the same 
-	// for both connected cluster and domain description. So we needn't calculate it again. 03/02/06
-
-	for (start = 0; start < nums; ++start) {
-	    if (label[start] == -1) {
-		GetNeighbors(start);
-		for(int i=0; i<Z;i++){
-		    locn = neighborLocs[i]; 
-		    if (label[locn] != -1 && label[locn] != Q)
-			Qvol += LY_labelCC(locn, Q, spin[locn], &surf, &vol, &maxdim);
-		}
-	    }
-	}
-	// now take all of the Q clusters and relabel as -1
-	for (start = 0; start < nums; ++start)
-	    if (label[start] == Q)
-		label[start] = -1;
-    
-	highbitzerotwos();
-	depth++;
-    }
-*/
 
     LY_reportD_with_notlabel(depth, -1, &v_D, &a_D);  
  
@@ -416,13 +339,7 @@ void Window::LY_analyse_one_avalanche(bool mark, int seed, char* filename)
 
 
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-// The following function is modified from the above function. 
-// Here we don't consider domain description explicitly, which avoid the smallest system problem. 03/14/06
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//void Window::LY_modified_analyse_one_avalanche(bool mark, int seed, char* filename)
 int Window::LY_modified_analyse_one_avalanche(bool &mark, int seed, char* filename)
 {
     ofstream outfile(filename, ios_base::app); // append mode

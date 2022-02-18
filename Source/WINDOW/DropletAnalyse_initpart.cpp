@@ -1,9 +1,9 @@
-//////////////////////////////////////////////////////////////////////////////////////////////////////
-// init Window by taking central chunk of size W, L, H   
+
+
 Window::Window( istream& f)
 {
     int tmpstore;
-    f >> W >> L >> H;   // note that D <= 3. The Droplet code cannot be applied to higher dimension. 
+    f >> W >> L >> H;   
     N = W * L * H;
 
     if(H==1)
@@ -11,7 +11,7 @@ Window::Window( istream& f)
         else     D = 2;
     else D = 3;
 
-    Z = 2*D;            // number of nearest neighbors
+    Z = 2*D;            
 
     size = new int[D];
     stride = new int[D];
@@ -22,18 +22,18 @@ Window::Window( istream& f)
     switch(D)
     {
 	case 1: 
-	    size[0]   = W;    stride[0] = 1;  //x
+	    size[0]   = W;    stride[0] = 1;  
 	    break;
 
 	case 2:
-	    size[1]   = W;    stride[1] = 1;  //x
-	    size[0]   = L;    stride[0] = W;  //y
+	    size[1]   = W;    stride[1] = 1;  
+	    size[0]   = L;    stride[0] = W;  
 	    break;
 
 	case 3: 
-	    size[2]   = W;    stride[2] = 1;  //x
-	    size[1]   = L;    stride[1] = W;  //y
-	    size[0]   = H;    stride[0] = W*L;//z
+	    size[2]   = W;    stride[2] = 1;  
+	    size[1]   = L;    stride[1] = W;  
+	    size[0]   = H;    stride[0] = W*L;
 	    break;
     }
 	
@@ -48,7 +48,7 @@ Window::Window( istream& f)
 
     int mark=0;
     for (int k = 0; k < H; ++k)
-	for (int j = 0; j < L; ++j)//for (int j = L-1; j >=0; j--) //
+	for (int j = 0; j < L; ++j)
 	    for (int i = 0; i < W; ++i)
 	    {
 		f >> tmpstore;
@@ -60,14 +60,14 @@ Window::Window( istream& f)
 		}
 	    }
 
-    //Note that in the data file, the lower line corresponds
-    //to higher value of L. 
+    
+    
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////
-// init Window by taking the valued cluster(a separated avalanche)                     //Y.L. 06/15/05
+
+
+
 Window::Window(int dimension, int length, list<int>& spinList)
 {
     D= dimension;
@@ -97,18 +97,18 @@ Window::Window(int dimension, int length, list<int>& spinList)
     switch(D)
     {
 	case 1: 
-	    size[0]   = W;    stride[0] = 1;  //x
+	    size[0]   = W;    stride[0] = 1;  
 	    break;
 
 	case 2:
-	    size[1]   = W;    stride[1] = 1;  //x
-	    size[0]   = L;    stride[0] = W;  //y
+	    size[1]   = W;    stride[1] = 1;  
+	    size[0]   = L;    stride[0] = W;  
 	    break;
 
 	case 3: 
-	    size[2]   = W;    stride[2] = 1;  //x
-	    size[1]   = L;    stride[1] = W;  //y
-	    size[0]   = H;    stride[0] = W*L;//z
+	    size[2]   = W;    stride[2] = 1;  
+	    size[1]   = L;    stride[1] = W;  
+	    size[0]   = H;    stride[0] = W*L;
 	    break;
     }
 	
@@ -124,20 +124,20 @@ Window::Window(int dimension, int length, list<int>& spinList)
     for(int i=0; i<N; i++) 
 	spin[i] = SPINDN;
 
-    list<int>::iterator p = spinList.begin(); //the starting spin when scanning the avalanche  
+    list<int>::iterator p = spinList.begin(); 
     startingSpinLoc = (*p);
     
     for(; p != spinList.end(); p++)
 	spin[(*p)] = SPINUP;
 
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////
-// init Window by taking the valued array(a separated avalanche)                      // Y.L. 06/15/05
+
+
+
 Window::Window(int dimension, int length, char* spinCluster)
 {
     D= dimension;
@@ -169,18 +169,18 @@ Window::Window(int dimension, int length, char* spinCluster)
     switch(D)
     {
 	case 1: 
-	    size[0]   = W;    stride[0] = 1;  //x
+	    size[0]   = W;    stride[0] = 1;  
 	    break;
 
 	case 2:
-	    size[1]   = W;    stride[1] = 1;  //x
-	    size[0]   = L;    stride[0] = W;  //y
+	    size[1]   = W;    stride[1] = 1;  
+	    size[0]   = L;    stride[0] = W;  
 	    break;
 
 	case 3: 
-	    size[2]   = W;    stride[2] = 1;  //x
-	    size[1]   = L;    stride[1] = W;  //y
-	    size[0]   = H;    stride[0] = W*L;//z
+	    size[2]   = W;    stride[2] = 1;  
+	    size[1]   = L;    stride[1] = W;  
+	    size[0]   = H;    stride[0] = W*L;
 	    break;
     }
 
@@ -205,11 +205,11 @@ Window::Window(int dimension, int length, char* spinCluster)
 	}
     }
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////
-// constructor: init window from another window 
+
+
+
 Window::Window(const Window& x)                       
 {
     
@@ -232,18 +232,18 @@ Window::Window(const Window& x)
     switch(D)
     {
 	case 1: 
-	    size[0]   = W;    stride[0] = 1;  //x
+	    size[0]   = W;    stride[0] = 1;  
 	    break;
 
 	case 2:
-	    size[1]   = W;    stride[1] = 1;  //x
-	    size[0]   = L;    stride[0] = W;  //y
+	    size[1]   = W;    stride[1] = 1;  
+	    size[0]   = L;    stride[0] = W;  
 	    break;
 
 	case 3: 
-	    size[2]   = W;    stride[2] = 1;  //x
-	    size[1]   = L;    stride[1] = W;  //y
-	    size[0]   = H;    stride[0] = W*L;//z
+	    size[2]   = W;    stride[2] = 1;  
+	    size[1]   = L;    stride[1] = W;  
+	    size[0]   = H;    stride[0] = W*L;
 	    break;
     }
 
@@ -257,13 +257,13 @@ Window::Window(const Window& x)
     for (int i = 0; i < N; ++i)
 	spin[i] = x.spin[i];
 }
-////////////////////////////////////////////////////////////////////////////////////////////////////// 
+
    
 
 
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////
-// constructor: init window from a state
+
+
 Window::Window(const State& x)                       
 {
     int length=x.GetL();
@@ -295,18 +295,18 @@ Window::Window(const State& x)
     switch(D)
     {
 	case 1: 
-	    size[0]   = W;    stride[0] = 1;  //x
+	    size[0]   = W;    stride[0] = 1;  
 	    break;
 
 	case 2:
-	    size[1]   = W;    stride[1] = 1;  //x
-	    size[0]   = L;    stride[0] = W;  //y
+	    size[1]   = W;    stride[1] = 1;  
+	    size[0]   = L;    stride[0] = W;  
 	    break;
 
 	case 3: 
-	    size[2]   = W;    stride[2] = 1;  //x
-	    size[1]   = L;    stride[1] = W;  //y
-	    size[0]   = H;    stride[0] = W*L;//z
+	    size[2]   = W;    stride[2] = 1;  
+	    size[1]   = L;    stride[1] = W;  
+	    size[0]   = H;    stride[0] = W*L;
 	    break;
     }
 
@@ -332,19 +332,19 @@ Window::Window(const State& x)
     }
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////// 
 
 
 
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 void Window::printme()
 {
 
-    cout << "\nSpin configuration:  \n";  //06/16/05 by Yang Liu
+    cout << "\nSpin configuration:  \n";  
 
     for (int k = 0; k < H; ++k) {
-	for (int j = 0; j < L; ++j) {//for (int j = L-1; j >=0; --j) {	//for (int j = 0; j < L; ++j) {
+	for (int j = 0; j < L; ++j) {
 	    for (int i = 0; i < W; ++i) {
 		if (spin[i + W * (j + L * k)] == SPINUP)
 		    cout << '1';
@@ -355,7 +355,7 @@ void Window::printme()
 	}
 	cout << "\n";
     }
-    //Note that in the data file, the lower line corresponds to higher value of L. 
+    
     cout << "Dimension       = " << D << " and StartingSpinLoc = " << startingSpinLoc << endl;
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////////
+

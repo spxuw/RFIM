@@ -7,14 +7,14 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-//#include <values.h>
+
 #include <limits.h>
 #include "State.h"   
-#include "types.h"                      // type definitions 
+#include "types.h"                      
 
 extern  const hType RESOLUTION;
-#define J     RESOLUTION          // magnify the coupling constant 
-#define CC    (4*J)               // capacity constant  
+#define J     RESOLUTION          
+#define CC    (4*J)               
 
 #define GLOB_UPDT_FREQ 0.5
 #define ALPHA 6
@@ -25,8 +25,8 @@ extern  const hType RESOLUTION;
 
 #define forAllNodes(i) for ( i = nodes; i != sentinelNode; i++ )
 #define forAllArcs(i,a) for (a = i->first, stopA = (i+1)->first; a != stopA; a++)
-//#define nNode( i ) ( (i) - nodes + nMin ) //return the index of the node, comments by Yang Liu 05/24/06 
-#define nNode( i ) ( (i) - nodes ) //return the index of the node, comments by Yang Liu 06/21/06 
+
+#define nNode( i ) ( (i) - nodes ) 
 #define nArc( a )  ( ( a == NULL )? -1 : (a) - arcs )
 #define min( a, b ) ( ( (a) < (b) ) ? a : b )
 
@@ -43,7 +43,7 @@ extern  const hType RESOLUTION;
     dMax = aMax;\
 }
 
-/* i must be the first element */
+
 #define aRemove(l,i)\
 {\
   l->firstActive = i->bNext;\
@@ -83,7 +83,7 @@ void discharge(node* i);
 void wave();
 void stageOne();
 
-//////////////////////////////////////////////////////////
+
 void initilize_pointer();
 float timer();
 
@@ -92,9 +92,9 @@ void DeleTempfiles(int N, double c, double R, int seed);
 void DeleTempfiles(string file);
 
 void Calculate_GS_M(State &W, bool uES, char FZdir); 
-/////////////////////////////////////////////////////////
 
-#endif /* !HIPR_H */
+
+#endif
 
 
 

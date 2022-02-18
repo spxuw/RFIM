@@ -6,50 +6,50 @@
 #include <vector>
 using namespace std;
 
-///////////////////////////////////////////////////////
-// Note that this point class is only valid for D<=3. 
-// and I limit it useness in integers.
+
+
+
 class Point 
 {
 public:
-    Point(int x=0, int y=0, int z=0)                    // constructor
+    Point(int x=0, int y=0, int z=0)                    
 	{ 
 	    m_x = x; 
 	    m_y = y; 
 	    m_z = z; 
 	} 
     
-   // Pay attention to that Coords[D-1] is the x component!
-    Point(int dimension, int* Coords)                    // constructor
+   
+    Point(int dimension, int* Coords)                    
 	{ 
 	  
 	    switch(dimension)
 	    {
 		case 1: 
-		    m_x = Coords[0];////size[0]   = W;    stride[0] = 1;  //x
+		    m_x = Coords[0];
 		    m_y = 0;
 		    m_z = 0;
 		    break;
 
 		case 2:
-		    m_x = Coords[1];// size[1]   = W;    stride[1] = 1;  //x
-		    m_y = Coords[0];//size[0]   = L;    stride[0] = W;  //y
+		    m_x = Coords[1];
+		    m_y = Coords[0];
 		    m_z = 0; 
 		    break;
 		    
 		case 3: 
-		    m_x = Coords[2];//size[2]   = W;    stride[2] = 1;  //x
-		    m_y = Coords[1];//size[1]   = L;    stride[1] = W;  //y
-		    m_z = Coords[0];//size[0]   = H;    stride[0] = W*L;//z
+		    m_x = Coords[2];
+		    m_y = Coords[1];
+		    m_z = Coords[0];
 		    break;
 	    }
   
 	} 
 
-    void Move(int, int, int);                          // Move to position (r,s)
-    void Move(Point);                                            // Move to position (r,s)
+    void Move(int, int, int);                          
+    void Move(Point);                                            
 
-    void Shift(int, int, int);                          // Move to position (r,s)
+    void Shift(int, int, int);                          
     void Shift(int, vector<int>);  
 
     int x() const;
@@ -65,8 +65,8 @@ public:
     int GetIyz() const;
     int GetIzz() const;
 
-    void Draw() const;                                          // a const member 
-    friend double Norm(Point);                                   // a friend
+    void Draw() const;                                          
+    friend double Norm(Point);                                   
 	 
 private:
     int m_x;
@@ -149,14 +149,14 @@ inline void Point::Shift(int D, vector<int> deltCoords)
 	    m_x -= deltCoords[0];
 	    break;
 	case 2:
-	    m_x -= deltCoords[1];// size[1]=W;  stride[1]=1; 
-	    m_y -= deltCoords[0];// size[0]=L;  stride[0]=W;
+	    m_x -= deltCoords[1];
+	    m_y -= deltCoords[0];
 	    break;
 
 	case 3:
-	    m_x -= deltCoords[2];// size[2]=W; stride[2]=1;
-	    m_y -= deltCoords[1];// size[1]=L; stride[1]=W;
-	    m_z -= deltCoords[0];// size[0]=H  stride[0]=W*L;
+	    m_x -= deltCoords[2];
+	    m_y -= deltCoords[1];
+	    m_z -= deltCoords[0];
 	    break;
     }
 }
@@ -214,4 +214,4 @@ inline double Norm(Point P)
 }
 
 
-#endif // _POINT_H_
+#endif 

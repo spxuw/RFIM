@@ -5,11 +5,11 @@
 using namespace std;
 
 
-typedef vector<double>  Vec;         // for h[i]
-typedef long long      hType;        // for RESOLUTION, J, CC, heff[i], Wi, // Yang Liu 06/19/06  
-typedef unsigned long long cType;    // for capacity // Yang Liu 06/19/06
+typedef vector<double>  Vec;         
+typedef long long      hType;        
+typedef unsigned long long cType;    
 
-class myarc               // added by Yang Liu 06/21/06
+class myarc               
 {
  public:
     long tail;
@@ -20,41 +20,40 @@ class myarc               // added by Yang Liu 06/21/06
 };
 
 
-////////////////////////////////////////////////////////////////////////////////
+
 #ifdef EXCESS_TYPE_LONG
 typedef unsigned long excessType;
 #else
-typedef unsigned long long excessType; /* change to double if not supported */
+typedef unsigned long long excessType;
 #endif
 
 
-/* arc */
+
 typedef  struct arcSt
 {
-   cType           resCap;          /* residual capacity */
-   struct nodeSt   *head;           /* arc head */
-   struct arcSt    *rev;            /* reverse arc */
+   cType           resCap;         
+   struct nodeSt   *head;          
+   struct arcSt    *rev;           
 } arc;
 
 
-/* node */
+
 typedef  struct nodeSt
 {
-   arc             *first;           /* first outgoing arc */
-   arc             *current;         /* current outgoing arc */
-   excessType      excess;           /* excess at the node 
-				        change to double if needed */
-   long            d;                /* distance label */
-   struct nodeSt   *bNext;           /* next node in bucket */
-   struct nodeSt   *bPrev;           /* previous node in bucket */
+   arc             *first;          
+   arc             *current;        
+   excessType      excess;          
+   long            d;               
+   struct nodeSt   *bNext;          
+   struct nodeSt   *bPrev;          
 } node;
 
 
-/* bucket */
+
 typedef  struct bucketSt
 {
-  node             *firstActive;      /* first node with positive excess */
-  node             *firstInactive;    /* first node with zero excess */
+  node             *firstActive;     
+  node             *firstInactive;   
 } bucket;
 
-#endif /* !TYPE_H */
+#endif

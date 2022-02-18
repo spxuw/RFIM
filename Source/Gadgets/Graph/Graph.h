@@ -24,26 +24,26 @@
 #include "Rand.h"
 #include "color.h"
 
-//#include "Histogram.h"
+
 
 using namespace std;
 
-typedef list<int> Nbl; // neighbor list
+typedef list<int> Nbl; 
 typedef Nbl::iterator Nbl_itr;
 typedef vector<double> VECTOR;
 typedef vector<VECTOR> MATRIX;
 typedef vector<MATRIX> TENSOR;
 const string numbers="0123456789";
 
-//const string red="#ff0000";
-//const string green="#00ff00";
-//const string blue="#0000ff";
+
+
+
 
 
 
 
 const int  INFINITE = INT_MAX;
-const int  NIL      = -1;//INT_MAX;
+const int  NIL      = -1;
 const int  INF      = INT_MAX;
 
 
@@ -78,15 +78,15 @@ class Graph
   double GetNetworkDistance(Graph& G0);
   double GetMatrixDistance(Graph& G0);
 
-  ///////////////////////////////////////////////////////////////////////////////////////////////////
+  
   vector<Link>  L;
-  map<string,int> MAP; // the map between (i,j) and the edge index e
+  map<string,int> MAP; 
 
   int N;
   int E;
   vector<int> K;
-  vector<Nbl> A;      // Adjacency list
-  MATRIX AM;      // Adjacency Matrix
+  vector<Nbl> A;      
+  MATRIX AM;      
 
   int Ncopy;
   int Ecopy;
@@ -95,33 +95,33 @@ class Graph
 
   
   Rand rand;
-  /////////////////////////////////////////////////////////////////////////////////////////////////
-  list<int> LClist; // the vertex list of the largest component
+  
+  list<int> LClist; 
 
-  // To build a mapping between indices: we use the following two vertors
-  // OriginalIndexof[i] give the original index of the largest component's i-th node 
+  
+  
   vector<int>  OriginalIndexofLCCnode;
  
-  // LCCIndexof[i] give the in-largest-component index of the original network's i-th node
-  vector<int>  LCCIndexofOriginalnode; // if IndexinLC[i] = -1, this means it doesn't belong to the lc
-  // otherwise, its value just gives the index
+  
+  vector<int>  LCCIndexofOriginalnode; 
+  
 
-  int Ncc; // # of connected components
-  vector<Nbl>  AllComponents; // connected component
-  vector<int>  ccindex; // which connected component each node belongs to 
+  int Ncc; 
+  vector<Nbl>  AllComponents; 
+  vector<int>  ccindex; 
 
-  vector<bool> LC; // whether the node belongs to the largest component
-  int          lcc_index; // the index of the largest component
-  int          Nlc; // number of nodes in the largest connected component
-  double       Nac; // average size of connected components
+  vector<bool> LC; 
+  int          lcc_index; 
+  int          Nlc; 
+  double       Nac; 
 
-  double       nlc; // :=Nlc/N
-  int          Elc; // number of edges in the largest connected component
-  double       mlc; // edge density for the largest connected component 
-  /////////////////////////////////////////////////////////////////////////////////////////////////
+  double       nlc; 
+  int          Elc; 
+  double       mlc; 
+  
 
 
-  MATRIX M; // neighborhood matrix
+  MATRIX M; 
   int diameter;
 
 };

@@ -1,10 +1,10 @@
 #ifndef PARSER_H
 #define PARSER_H
-#define MAXLINE       100	/* max line length in the input file */
-#define ARC_FIELDS      3	/* No. of fields in arc line  */
-#define NODE_FIELDS     2	/* No. of fields in node line  */
-#define P_FIELDS        3       /* No. of fields in problem line */
-#define PROBLEM_TYPE "max"      /* name of problem type */
+#define MAXLINE       100
+#define ARC_FIELDS      3
+#define NODE_FIELDS     2
+#define P_FIELDS        3      
+#define PROBLEM_TYPE "max"     
 #define EN1   0
 #define EN2   1
 #define EN3   2
@@ -45,30 +45,30 @@ arc_current += 2;                                   \
 pos_current += 2;                                   \
 }
 
-/* -------------- error numbers & error messages ---------------- */
+
     static char *err_message[] = 
 	{ 
-	    /* 0*/    "more than one problem line.",
-	    /* 1*/    "wrong number of parameters in the problem line.",
-	    /* 2*/    "it is not a Max Flow problem line.",
-	    /* 3*/    "bad value of a parameter in the problem line.",
-	    /* 4*/    "can't obtain enough memory to solve this problem.",
-	    /* 5*/    "more than one line with the problem name.",
-	    /* 6*/    "can't read problem name.",
-	    /* 7*/    "problem description must be before node description.",
-	    /* 8*/    "this parser doesn't support multiply sources and sinks.",
-	    /* 9*/    "wrong number of parameters in the node line.",
-	    /*10*/    "wrong value of parameters in the node line.",
-	    /*11*/    " ",
-	    /*12*/    "source and sink descriptions must be before arc descriptions.",
-	    /*13*/    "too many arcs in the input.",
-	    /*14*/    "wrong number of parameters in the arc line.",
-	    /*15*/    "wrong value of parameters in the arc line.",
-	    /*16*/    "unknown line type in the input.",
-	    /*17*/    "reading error.",
-	    /*18*/    "not enough arcs in the input.",
-	    /*19*/    "source or sink doesn't have incident arcs.",
-	    /*20*/    "can't read anything from the input file."
+	       "more than one problem line.",
+	       "wrong number of parameters in the problem line.",
+	       "it is not a Max Flow problem line.",
+	       "bad value of a parameter in the problem line.",
+	       "can't obtain enough memory to solve this problem.",
+	       "more than one line with the problem name.",
+	       "can't read problem name.",
+	       "problem description must be before node description.",
+	       "this parser doesn't support multiply sources and sinks.",
+	       "wrong number of parameters in the node line.",
+	       "wrong value of parameters in the node line.",
+	       " ",
+	       "source and sink descriptions must be before arc descriptions.",
+	       "too many arcs in the input.",
+	       "wrong number of parameters in the arc line.",
+	       "wrong value of parameters in the arc line.",
+	       "unknown line type in the input.",
+	       "reading error.",
+	       "not enough arcs in the input.",
+	       "source or sink doesn't have incident arcs.",
+	       "can't read anything from the input file."
 	};
-/* --------------------------------------------------------------- */
-#endif /* !PARSER_H */
+
+#endif

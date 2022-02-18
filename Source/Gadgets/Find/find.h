@@ -1,13 +1,6 @@
 #ifndef _MYNR_H_
 #define _MYNR_H_
 
-/*
-**      File:   nrutil.h
-**      Purpose: Memory allocation routines borrowed from the
-**              book "Numerical Recipes" by Press, Flannery, Teukolsky,
-**              and Vetterling.
-*/
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
@@ -53,4 +46,4 @@ int getnodeinNbl(Nbl& nbl, int j);
 double getnodeinlist(list<double>& X, int index);
 int getnodeinlist(list<int>& X, int index);
 
-#endif /* _NR_H_ */
+#endif

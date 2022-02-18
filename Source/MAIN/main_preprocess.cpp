@@ -1,30 +1,3 @@
-/*######################################################################################################################
-  Pre-process the node-weight file and edge-weight file into a standard single file in the following format 
-
-  #N E pmin p1min pmax wmin wmax
-  N E pmin p1min pmax wmin wmax
-  #nodeindex nodename nodeweight
-  .
-  .
-  .
-  #source target weight
-  .
-  .
-  .
-
-  here   
-  N      # of nodes
-  E      # of edges
-  pmin   minimum p-value 
-  p1min  minimum non-zero p-value 
-  pmax   maximum p-value
-  wmin   minimum edge weight
-  wmax   maximum edge weight
-
-  nodeweight = p-value
-  edgeweight = confidence level
-  ######################################################################################################################*/
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
@@ -81,11 +54,8 @@ int main (int argc, char** argv)
     if(k==2) {
       name = split[0];
       pvalue = atof(split[1].c_str());
-    
-      //while (fin1 >> name >> pvalue) {
-      //if(!find(nodenamelist, name)) 
 
-      if(name!="") { // ignore those genes with missing names
+      if(name!="") {
 	if(!find(nodenamelist, name)) 
 	  {
 	    nodenamelist.push_back(name);
@@ -120,7 +90,7 @@ int main (int argc, char** argv)
   if(!fin2) {cout << "Cannot open " << efile  << " for read."; exit(0);}
 
   string source, target;
-  double weight;  // Note that weight = confidence level
+  double weight;
   double wmin = 1e300;
   double wmax = -1e300;
   int E=0;
@@ -158,8 +128,8 @@ int main (int argc, char** argv)
  
   int N = nodenamelist.size();
   cout << "There are " << N << " nodes: " << N1 << " of them have pre-assigned pvalues. Others are assigned pvalue=1.\n";
-  double pmin =1e300;  // the smallest pvalue
-  double p1min=1e300;  // the smallest non-zero pvalue
+  double pmin =1e300;
+  double p1min=1e300;
   double pmax =-1e300;
   for(int i=0;i<N;i++) {
     if(P[i]<pmin) 

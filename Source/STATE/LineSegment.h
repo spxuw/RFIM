@@ -4,11 +4,11 @@
 using namespace std;
 
 
-// line segment in the M-H curve, representing a ground state and its H-boundaries
+
 class LineSegment                
 {
  public:
-    // constructor
+    
     LineSegment(){}
 
     LineSegment(double b, double B, double e0, double e, int mag, int num, int Index)
@@ -17,12 +17,12 @@ class LineSegment
     LineSegment(State& C, int Index)
 	{E0= C.GetE0(); E=C.GetE(); M= C.GetM(); N=C.GetN(); index=Index;}
 
-    // for the sorting of the Hlower field
+    
     bool operator() (const LineSegment& A, const LineSegment& B) const 
 	{return A.Get_Hlower() < B.Get_Hlower() ;}
 
-    // get the crossing field of two states
-    friend double Get_CrossField(LineSegment& A, LineSegment& B)  // Attention: the symbol & is necessary. 
+    
+    friend double Get_CrossField(LineSegment& A, LineSegment& B)  
 	{ return (A.GetE0() - B.GetE0())/(double)(A.GetM() - B.GetM());}
 
     double Get_Hlower() const {return Hlower;}        
@@ -42,13 +42,13 @@ class LineSegment
     double  Get_ndn()  const {return 0.5*(1-M/(double)N);}
 
  private:
-    double Hlower;               // the lower boundary of the validity of the GS
-    double Hupper;               // the upper boundary of the validity of the GS
-    double E0;                   // internal energy E0= - sum_<i,j> Si*Sj - sum_i h[i]*Si 
-    double E;                    // total energy    E = E0 - Hext * M
-    int    M;                    // magnetization   M = sum_i Si = nUP-nDN = 2*nUP-N = N-2*nDN
-    int    N;                    // number of spins
-    int    index;                // index of this LineSegment  
+    double Hlower;               
+    double Hupper;               
+    double E0;                   
+    double E;                    
+    int    M;                    
+    int    N;                    
+    int    index;                
 };
 
-#endif /* ! LINESEGMENT_H_ */
+#endif
