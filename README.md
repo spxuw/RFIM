@@ -8,7 +8,8 @@ This is the repository for the "Disease module detection using random-field Isin
 
 # code
 * Source: C++ codes for the disease module detection using RFIM.
-* Prepare_RFIM_input.R: prepare the input data format of RFIM.
+* Prepare_data_RFIM.R: prepare the input data format of RFIM.
+* figure_code: code to generate figures.
 
 # data
 All relevant data have been processed and are saved in the folder "Source/BUILD/data".
