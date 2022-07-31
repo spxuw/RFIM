@@ -97,7 +97,7 @@ for k in range(8):
 
 # other methods
 methods = ['DIAMOnD','ModuleDiscoverer','DOMINO','ROBUST','Hierarchical HotNet']
-for i in range(0):
+for i in range(5):
 	for k in range(8):
 		p_array=[]
 		gene_true = np.loadtxt('../../results/module_txt/'+str(methods[i])+'_'+str(phenotype[k])+'_String.txt',dtype=str)
@@ -107,7 +107,7 @@ for i in range(0):
 		np.savetxt('../../results/GSEA_meaningfulness/'+str(methods[i])+'_'+str(phenotype[k])+'_String.txt',p_array)
 
 
-for i in range(0):
+for i in range(5):
 	for k in range(8):
 		p_array=[]
 		gene_true = np.loadtxt('../../results/module_txt/'+str(methods[i])+'_'+str(phenotype[k])+'_iRefIndex.txt',dtype=str)
